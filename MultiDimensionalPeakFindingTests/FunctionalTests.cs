@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using MultiDimensionalPeakFinding;
@@ -34,7 +35,7 @@ namespace MultiDimensionalPeakFindingTests
 
 			double[,] intensityBlock = uimfUtil.GetXic(targetMz, ppmTolerance, DataReader.FrameType.MS1);
 
-			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(3, 2);
+			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
 			smoother.Smooth(ref intensityBlock);
 		}
 
@@ -49,7 +50,7 @@ namespace MultiDimensionalPeakFindingTests
 
 			double[,] intensityBlock = uimfUtil.GetXic(targetMz, ppmTolerance, DataReader.FrameType.MS1);
 
-			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(3, 2);
+			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
 			smoother.Smooth(ref intensityBlock);
 
 			WaterShedMapUtil.BuildWatershedMap(intensityBlock);
@@ -66,7 +67,7 @@ namespace MultiDimensionalPeakFindingTests
 
 			double[,] intensityBlock = uimfUtil.GetXic(targetMz, ppmTolerance, DataReader.FrameType.MS1);
 
-			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(3, 2);
+			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
 			smoother.Smooth(ref intensityBlock);
 
 			IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock);
@@ -82,10 +83,40 @@ namespace MultiDimensionalPeakFindingTests
 			double targetMz = 643.27094937;
 			double ppmTolerance = 50;
 
+			TextWriter unsmoothedWriter = new StreamWriter("unsmoothedRaw.csv");
+
 			double[,] intensityBlock = uimfUtil.GetXic(targetMz, ppmTolerance, DataReader.FrameType.MS1);
 
-			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(3, 2);
+			int boundX = intensityBlock.GetUpperBound(0);
+			int boundY = intensityBlock.GetUpperBound(1);
+
+			for (int i = 0; i < boundX; i++)
+			{
+				StringBuilder row = new StringBuilder();
+				for (int j = 0; j < boundY; j++)
+				{
+					row.Append(intensityBlock[i, j] + ",");
+				}
+				unsmoothedWriter.WriteLine(row.ToString());
+			}
+
+			unsmoothedWriter.Close();
+
+			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
 			smoother.Smooth(ref intensityBlock);
+
+			TextWriter smoothedWriter = new StreamWriter("smoothedRaw.csv");
+			for (int i = 0; i < boundX; i++)
+			{
+				StringBuilder row = new StringBuilder();
+				for (int j = 0; j < boundY; j++)
+				{
+					row.Append(intensityBlock[i, j] + ",");
+				}
+				smoothedWriter.WriteLine(row.ToString());
+			}
+
+			smoothedWriter.Close();
 
 			IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock);
 			IEnumerable<FeatureBlob> featureList = FeatureDetection.DoWatershedAlgorithm(pointList);

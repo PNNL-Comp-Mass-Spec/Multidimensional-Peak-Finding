@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MathNet.Numerics.LinearAlgebra.Double;
+using MathNet.Numerics.LinearAlgebra.Generic;
 
 namespace MultiDimensionalPeakFinding
 {
 	public class SavitzkyGolaySmoother
 	{
 		private int m_numPointsForSmoothing;
-		private DenseMatrix m_smoothingFilters;
+		private Matrix<double> m_smoothingFiltersConjugateTranspose;
 
 		public SavitzkyGolaySmoother(int pointsForSmoothing, int polynomialOrder)
 		{
@@ -17,7 +18,8 @@ namespace MultiDimensionalPeakFinding
 			if (pointsForSmoothing % 2 == 0) throw new ArgumentOutOfRangeException("savGolayPoints must be an odd number 3 or higher");
 
 			m_numPointsForSmoothing = pointsForSmoothing;
-			m_smoothingFilters = CalculateSmoothingFilters(polynomialOrder, pointsForSmoothing);
+			var smoothingFilters = CalculateSmoothingFilters(polynomialOrder, pointsForSmoothing);
+			m_smoothingFiltersConjugateTranspose = smoothingFilters.ConjugateTranspose();
 		}
 
 		public void Smooth(ref double[,] inputValues)
@@ -34,6 +36,8 @@ namespace MultiDimensionalPeakFinding
 			{
 				inputMatrix.SetColumn(i, Smooth(inputMatrix.Column(i).ToArray()));
 			}
+
+			inputValues = inputMatrix.ToArray();
 		}
 
 		public double[] Smooth(double[] inputValues)
@@ -45,7 +49,7 @@ namespace MultiDimensionalPeakFinding
 			int colCount = inputValues.Length;
 			double[] returnYValues = new double[colCount];
 
-			var conjTransposeMatrix = m_smoothingFilters.ConjugateTranspose();
+			var conjTransposeMatrix = m_smoothingFiltersConjugateTranspose;
 
 			for (int i = 0; i <= m; i++)
 			{
