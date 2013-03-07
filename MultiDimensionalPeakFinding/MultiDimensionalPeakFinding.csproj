@@ -48,9 +48,6 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="alglibnet2">
-      <HintPath>..\lib\alglibnet2.dll</HintPath>
-    </Reference>
     <Reference Include="MathNet.Numerics">
       <HintPath>..\lib\MathNet.Numerics.dll</HintPath>
     </Reference>
