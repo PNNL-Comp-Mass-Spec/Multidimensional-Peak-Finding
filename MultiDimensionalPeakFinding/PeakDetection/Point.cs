@@ -9,7 +9,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 	{
 		public int ScanLc { get; private set; }
 		public int ScanIms { get; private set; }
-		public double Intensity { get; private set; }
+		public double Intensity { get; set; }
 
 		public Point North { get; set; }
 		public Point South { get; set; }

@@ -48,8 +48,14 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="alglibnet2">
+      <HintPath>..\lib\alglibnet2.dll</HintPath>
+    </Reference>
     <Reference Include="MathNet.Numerics">
       <HintPath>..\lib\MathNet.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="PNNLOmics">
+      <HintPath>..\lib\PNNLOmics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -66,7 +72,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PeakCorrelation\FeatureCorrelator.cs" />
     <Compile Include="PeakDetection\FeatureBlob.cs" />
+    <Compile Include="PeakDetection\FeatureBlobStatistics.cs" />
     <Compile Include="PeakDetection\FeatureDetection.cs" />
     <Compile Include="PeakDetection\Point.cs" />
     <Compile Include="PeakDetection\WaterShedMapUtil.cs" />

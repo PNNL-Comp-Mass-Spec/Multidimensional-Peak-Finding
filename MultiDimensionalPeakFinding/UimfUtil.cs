@@ -15,9 +15,14 @@ namespace MultiDimensionalPeakFinding
 			m_uimfReader = new DataReader(fileLocation);
 		}
 
-		public double[,] GetXic(double targetMz, double ppmTolerance, DataReader.FrameType frameType)
+		public double[,] GetXic(double targetMz, double tolerance, DataReader.FrameType frameType, DataReader.ToleranceType toleranceType)
 		{
-			return m_uimfReader.GetXic(targetMz, ppmTolerance, frameType);
+			return m_uimfReader.GetXic(targetMz, tolerance, frameType, toleranceType);
+		}
+
+		public double[,] GetXic(double targetMz, double tolerance, DataReader.FrameType frameType, int scanLcMin, int scanLcMax, int scanImsMin, int scanImsMax, DataReader.ToleranceType toleranceType)
+		{
+			return m_uimfReader.GetXic(targetMz, tolerance, scanLcMin, scanLcMax, scanImsMin, scanImsMax, frameType, toleranceType);
 		}
 	}
 }
