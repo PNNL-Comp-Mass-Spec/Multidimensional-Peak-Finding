@@ -44,7 +44,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 
 			foreach (var point in PointList)
 			{
-				returnArray[point.ScanLc - scanLcMin, point.ScanIms - scanImsMin] = point.Intensity;
+				returnArray[point.ScanLcIndex, point.ScanImsIndex] = point.Intensity;
 			}
 
 			return returnArray;

@@ -7,7 +7,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 {
 	public class WaterShedMapUtil
 	{
-		public static IEnumerable<Point> BuildWatershedMap(double[,] inputData)
+		public static IEnumerable<Point> BuildWatershedMap(double[,] inputData, int scanLcMin, int scanImsMin)
 		{
 			int boundX = inputData.GetUpperBound(0);
 			int boundY = inputData.GetUpperBound(1);
@@ -17,7 +17,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 
 			// First create a Point at 0,0
 			double intensity = inputData[0, 0];
-			Point basePoint = new Point(0,0, intensity);
+			Point basePoint = new Point(0, scanLcMin, 0, scanImsMin, intensity);
 			pointArray[0, 0] = basePoint;
 
 			// Build the map Point by Point
@@ -33,17 +33,17 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 					if(currentPoint.Intensity > 0) pointList.Add(currentPoint);
 
 					// Build all Points around the current Point
-					LookForNeighbors(currentPoint, pointArray, inputData, boundX, boundY);
+					LookForNeighbors(currentPoint, pointArray, inputData, boundX, boundY, scanLcMin, scanImsMin);
 				}
 			}
 
 			return pointList;
 		}
 
-		private static void LookForNeighbors(Point point, Point[,] pointArray, double[,] inputData, int boundX, int boundY)
+		private static void LookForNeighbors(Point point, Point[,] pointArray, double[,] inputData, int boundX, int boundY, int xOffset, int yOffset)
 		{
-			int xValue = point.ScanLc;
-			int yValue = point.ScanIms;
+			int xValue = point.ScanLcIndex;
+			int yValue = point.ScanImsIndex;
 
 			int westXValue = xValue - 1;
 			int eastXValue = xValue + 1;
@@ -77,7 +77,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 				else
 				{
 					double intensity = inputData[xValue, northYValue];
-					Point northPoint = new Point(xValue, northYValue, intensity);
+					Point northPoint = new Point(xValue, xOffset, northYValue, yOffset, intensity);
 					pointArray[xValue, northYValue] = northPoint;
 
 					point.North = northPoint;
@@ -88,7 +88,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 				{
 					// You always have to create a new NE point
 					double intensity = inputData[eastXValue, northYValue];
-					Point northEastPoint = new Point(eastXValue, northYValue, intensity);
+					Point northEastPoint = new Point(eastXValue, xOffset, northYValue, yOffset, intensity);
 					pointArray[eastXValue, northYValue] = northEastPoint;
 
 					point.NorthEast = northEastPoint;
@@ -110,7 +110,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 				else
 				{
 					double intensity = inputData[eastXValue, yValue];
-					Point eastPoint = new Point(eastXValue, yValue, intensity);
+					Point eastPoint = new Point(eastXValue, xOffset, yValue, yOffset, intensity);
 					pointArray[eastXValue, yValue] = eastPoint;
 
 					point.East = eastPoint;

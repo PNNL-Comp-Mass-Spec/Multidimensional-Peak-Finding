@@ -54,7 +54,7 @@ namespace MultiDimensionalPeakFindingTests
 			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
 			smoother.Smooth(ref intensityBlock);
 
-			WaterShedMapUtil.BuildWatershedMap(intensityBlock);
+			WaterShedMapUtil.BuildWatershedMap(intensityBlock, 0, 0);
 		}
 
 		[Test]
@@ -71,7 +71,7 @@ namespace MultiDimensionalPeakFindingTests
 			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
 			smoother.Smooth(ref intensityBlock);
 
-			IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock);
+			IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, 0, 0);
 			IEnumerable<FeatureBlob> featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
 		}
 
@@ -119,7 +119,7 @@ namespace MultiDimensionalPeakFindingTests
 
 			smoothedWriter.Close();
 
-			IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock);
+			IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, 0, 0);
 			IEnumerable<FeatureBlob> featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
 
 			Console.WriteLine(featureList.Count());
@@ -147,7 +147,7 @@ namespace MultiDimensionalPeakFindingTests
 			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
 			smoother.Smooth(ref parentIntensityBlock);
 
-			IEnumerable<Point> parentPointList = WaterShedMapUtil.BuildWatershedMap(parentIntensityBlock);
+			IEnumerable<Point> parentPointList = WaterShedMapUtil.BuildWatershedMap(parentIntensityBlock, 0, 0);
 			FeatureBlob parentFeature = FeatureDetection.DoWatershedAlgorithm(parentPointList).First();
 
 			FeatureBlobStatistics statistics = parentFeature.Statistics;
@@ -198,7 +198,7 @@ namespace MultiDimensionalPeakFindingTests
 
 					smoothedWriter.Close();
 
-					IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock);
+					IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, scanLcMin, scanImsMin);
 					IEnumerable<FeatureBlob> featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
 
 					featureList = featureList.Where(x => x.PointList.Count > 50).OrderByDescending(x => x.PointList.Count);
@@ -229,7 +229,7 @@ namespace MultiDimensionalPeakFindingTests
 			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
 			smoother.Smooth(ref parentIntensityBlock);
 
-			IEnumerable<Point> parentPointList = WaterShedMapUtil.BuildWatershedMap(parentIntensityBlock);
+			IEnumerable<Point> parentPointList = WaterShedMapUtil.BuildWatershedMap(parentIntensityBlock, 0, 0);
 			FeatureBlob parentFeature = FeatureDetection.DoWatershedAlgorithm(parentPointList).First();
 
 			using (TextReader fragmentReader = new StreamReader(@"..\..\..\testFiles\fragments.csv"))
@@ -275,7 +275,7 @@ namespace MultiDimensionalPeakFindingTests
 
 					smoothedWriter.Close();
 
-					IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock);
+					IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, 0, 0);
 					IEnumerable<FeatureBlob> featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
 
 					featureList = featureList.Where(x => x.PointList.Count > 50).OrderByDescending(x => x.PointList.Count);

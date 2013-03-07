@@ -7,8 +7,21 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 {
 	public class Point : IComparable<Point>
 	{
-		public int ScanLc { get; private set; }
-		public int ScanIms { get; private set; }
+		public int ScanLc 
+		{
+			get { return this.ScanLcIndex + this.ScanLcOffset; } 
+		}
+
+		public int ScanIms
+		{
+			get { return this.ScanImsIndex + this.ScanImsOffset; }
+		}
+
+		public int ScanLcIndex { get; private set; }
+		public int ScanLcOffset { get; private set; }
+		public int ScanImsIndex { get; private set; }
+		public int ScanImsOffset { get; private set; }
+		
 		public double Intensity { get; set; }
 
 		public Point North { get; set; }
@@ -23,11 +36,13 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 		public bool IsBackground { get; set; }
 		public FeatureBlob FeatureBlob { get; set; }
 
-		public Point(int scanLc, int scanIms, double intensity)
+		public Point(int scanLcIndex, int scanLcOffset, int scanImsIndex, int scanImsOffset, double intensity)
 		{
-			ScanLc = scanLc;
-			ScanIms = scanIms;
-			Intensity = intensity;
+			this.ScanLcIndex = scanLcIndex;
+			this.ScanLcOffset = scanLcOffset;
+			this.ScanImsIndex = scanImsIndex;
+			this.ScanImsOffset = scanImsOffset;
+			this.Intensity = intensity;
 			this.IsBackground = false;
 		}
 
@@ -51,7 +66,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 		{
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;
-			return other.ScanLc == ScanLc && other.ScanIms == ScanIms;
+			return other.ScanLcIndex == ScanLcIndex && other.ScanImsIndex == ScanImsIndex;
 		}
 
 		public override bool Equals(object obj)
@@ -66,7 +81,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 		{
 			unchecked
 			{
-				return (ScanLc*397) ^ ScanIms;
+				return (ScanLcIndex * 397) ^ ScanImsIndex;
 			}
 		}
 
@@ -82,8 +97,8 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 
 		public int CompareTo(Point other)
 		{
-			if (this.ScanLc != other.ScanLc) return this.ScanLc.CompareTo(other.ScanLc);
-			return this.ScanIms.CompareTo(other.ScanIms);
+			if (this.ScanLcIndex != other.ScanLcIndex) return this.ScanLcIndex.CompareTo(other.ScanLcIndex);
+			return this.ScanImsIndex.CompareTo(other.ScanImsIndex);
 		}
 	}
 }
