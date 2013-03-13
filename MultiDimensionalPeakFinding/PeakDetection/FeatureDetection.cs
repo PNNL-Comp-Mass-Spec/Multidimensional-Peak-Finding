@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MathNet.Numerics.Distributions;
 
 namespace MultiDimensionalPeakFinding.PeakDetection
 {
@@ -67,7 +68,27 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 				}
 			}
 
-			return featureList;
+			return FilterFeatureList(featureList);
+		}
+
+		private static IEnumerable<FeatureBlob> FilterFeatureList(IEnumerable<FeatureBlob> featureList)
+		{
+			double meanOfMaxIntensities = featureList.Average(x => x.PointList.First().Intensity);
+			Gamma gammaDistribution = new Gamma(1, 1 / meanOfMaxIntensities);
+
+			List<FeatureBlob> filteredFeatureList = new List<FeatureBlob>();
+
+			// Frst filter based on intensity p-value
+			foreach (FeatureBlob featureBlob in featureList)
+			{
+				double value = gammaDistribution.CumulativeDistribution(featureBlob.PointList.First().Intensity);
+				if (value < 0.995) break;
+
+				filteredFeatureList.Add(featureBlob);
+			}
+
+			// Then filter based on number of points
+			return filteredFeatureList.Where(x => x.PointList.Count >= 25);
 		}
 	}
 }
