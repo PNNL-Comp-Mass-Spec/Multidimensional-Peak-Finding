@@ -24,5 +24,15 @@ namespace MultiDimensionalPeakFinding
 		{
 			return m_uimfReader.GetXic(targetMz, tolerance, scanLcMin, scanLcMax, scanImsMin, scanImsMax, frameType, toleranceType);
 		}
+
+		public double[,] GetXic(int targetBin, DataReader.FrameType frameType)
+		{
+			return m_uimfReader.GetXic(targetBin, frameType);
+		}
+
+		public int GetNumberOfBins()
+		{
+			return m_uimfReader.GetGlobalParameters().Bins;
+		}
 	}
 }

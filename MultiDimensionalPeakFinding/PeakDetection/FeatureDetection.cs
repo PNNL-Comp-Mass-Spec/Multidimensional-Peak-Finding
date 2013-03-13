@@ -73,6 +73,8 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 
 		private static IEnumerable<FeatureBlob> FilterFeatureList(IEnumerable<FeatureBlob> featureList)
 		{
+			if (!featureList.Any()) return featureList;
+
 			double meanOfMaxIntensities = featureList.Average(x => x.PointList.First().Intensity);
 			Gamma gammaDistribution = new Gamma(1, 1 / meanOfMaxIntensities);
 
