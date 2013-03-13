@@ -34,5 +34,19 @@ namespace MultiDimensionalPeakFinding
 		{
 			return m_uimfReader.GetGlobalParameters().Bins;
 		}
+
+		public double GetMzFromBin(int bin)
+		{
+			GlobalParameters globalParameters = m_uimfReader.GetGlobalParameters();
+			FrameParameters frameParameters = m_uimfReader.GetFrameParameters(1);
+			return DataReader.ConvertBinToMZ(frameParameters.CalibrationSlope, frameParameters.CalibrationIntercept, globalParameters.BinWidth, globalParameters.TOFCorrectionTime, bin);
+		}
+
+		public int GetBinFromMz(double mz)
+		{
+			GlobalParameters globalParameters = m_uimfReader.GetGlobalParameters();
+			FrameParameters frameParameters = m_uimfReader.GetFrameParameters(1);
+			return (int)Math.Round(DataReader.GetBinClosestToMZ(frameParameters.CalibrationSlope, frameParameters.CalibrationIntercept, globalParameters.BinWidth, globalParameters.TOFCorrectionTime, mz));
+		}
 	}
 }
