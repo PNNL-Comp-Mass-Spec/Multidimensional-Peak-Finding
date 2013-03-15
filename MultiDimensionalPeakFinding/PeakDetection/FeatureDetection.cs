@@ -11,19 +11,18 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 		public static IEnumerable<FeatureBlob> DoWatershedAlgorithm (IEnumerable<Point> pointList)
 		{
 			// First make sure we are ordered by intensity
-			pointList = pointList.OrderByDescending(x => x.Intensity);
+			pointList = pointList.Where(x => x.Intensity > 0).OrderByDescending(x => x.Intensity);
 
 			List<FeatureBlob> featureList = new List<FeatureBlob>();
 			int featureIndex = 0;
 
 			foreach (Point point in pointList)
 			{
-				// Stop detecting features once we reach 0 intensity points
-				if (point.Intensity <= 0) break;
+				FeatureBlob moreIntenseFeature = null;
+				HigherNeighborResult higherNeighborResult = point.FindMoreIntenseNeighbors(out moreIntenseFeature);
 
-				List<Point> moreIntenseNeighbors = point.FindMoreIntenseNeighbors();
-
-				if(moreIntenseNeighbors.Count == 0)
+				// If no higher features are found, then seed a new Feature
+				if (higherNeighborResult == HigherNeighborResult.None)
 				{
 					// Local maximum and will be the seed of a new blob
 					FeatureBlob newFeature = new FeatureBlob(featureIndex);
@@ -35,37 +34,16 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 					continue;
 				}
 
-				HashSet<FeatureBlob> featureBlobsOfMoreIntenseNeighbors = new HashSet<FeatureBlob>();
-
-				foreach (Point moreIntenseNeighbor in moreIntenseNeighbors)
+				// Background or Multiple Features means that this Point will be Background
+				if (higherNeighborResult == HigherNeighborResult.Background || higherNeighborResult == HigherNeighborResult.MultipleFeatures)
 				{
-					// If it has at least one higher neighbor, which is background, then it cannot be part of any blob and must be background.
-					if(moreIntenseNeighbor.IsBackground)
-					{
-						point.IsBackground = true;
-						break;
-					}
-
-					if (moreIntenseNeighbor.FeatureBlob != null)
-					{
-						featureBlobsOfMoreIntenseNeighbors.Add(moreIntenseNeighbor.FeatureBlob);
-
-						// If it has more than one higher neighbor and if those higher neighbors are parts of different blobs, then it cannot be a part of any blob, and must be background.
-						if(featureBlobsOfMoreIntenseNeighbors.Count > 1)
-						{
-							point.IsBackground = true;
-							break;
-						}
-					}
+					point.IsBackground = true;
+					continue;
 				}
 
-				if(!point.IsBackground)
-				{
-					// It has one or more higher neighbors, which are all parts of the same blob. Then, it must also be a part of that blob.
-					FeatureBlob feature = featureBlobsOfMoreIntenseNeighbors.First();
-					feature.PointList.Add(point);
-					point.FeatureBlob = feature;
-				}
+				// If we get here, then we know the only option is that a single Feature was returned
+				moreIntenseFeature.PointList.Add(point);
+				point.FeatureBlob = moreIntenseFeature;
 			}
 
 			return FilterFeatureList(featureList);
