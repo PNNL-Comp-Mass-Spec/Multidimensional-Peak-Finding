@@ -51,89 +51,89 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 			FeatureBlob savedFeature = null;
 			feature = null;
 
-			if (this.North != null && this.North.Intensity > this.Intensity)
+			if (this.North != null && this.North.Intensity >= this.Intensity)
 			{
 				if(this.North.IsBackground) return HigherNeighborResult.Background;
 				savedFeature = this.North.FeatureBlob;
 			}
-			if (this.South != null && this.South.Intensity > this.Intensity)
+			if (this.South != null && this.South.Intensity >= this.Intensity)
 			{
 				if (this.South.IsBackground) return HigherNeighborResult.Background;
 				if (savedFeature != null)
 				{
-					if(savedFeature != this.South.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
+					if (this.South.FeatureBlob != null && savedFeature != this.South.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
 				}
 				else
 				{
 					savedFeature = this.South.FeatureBlob;
 				}
 			}
-			if (this.East != null && this.East.Intensity > this.Intensity)
+			if (this.East != null && this.East.Intensity >= this.Intensity)
 			{
 				if (this.East.IsBackground) return HigherNeighborResult.Background;
 				if (savedFeature != null)
 				{
-					if (savedFeature != this.East.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
+					if (this.East.FeatureBlob != null && savedFeature != this.East.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
 				}
 				else
 				{
 					savedFeature = this.East.FeatureBlob;
 				}
 			}
-			if (this.West != null && this.West.Intensity > this.Intensity)
+			if (this.West != null && this.West.Intensity >= this.Intensity)
 			{
 				if (this.West.IsBackground) return HigherNeighborResult.Background;
 				if (savedFeature != null)
 				{
-					if (savedFeature != this.West.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
+					if (this.West.FeatureBlob != null && savedFeature != this.West.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
 				}
 				else
 				{
 					savedFeature = this.West.FeatureBlob;
 				}
 			}
-			if (this.NorthEast != null && this.NorthEast.Intensity > this.Intensity)
+			if (this.NorthEast != null && this.NorthEast.Intensity >= this.Intensity)
 			{
 				if (this.NorthEast.IsBackground) return HigherNeighborResult.Background;
 				if (savedFeature != null)
 				{
-					if (savedFeature != this.NorthEast.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
+					if (this.NorthEast.FeatureBlob != null && savedFeature != this.NorthEast.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
 				}
 				else
 				{
 					savedFeature = this.NorthEast.FeatureBlob;
 				}
 			}
-			if (this.NorthWest != null && this.NorthWest.Intensity > this.Intensity)
+			if (this.NorthWest != null && this.NorthWest.Intensity >= this.Intensity)
 			{
 				if (this.NorthWest.IsBackground) return HigherNeighborResult.Background;
 				if (savedFeature != null)
 				{
-					if (savedFeature != this.NorthWest.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
+					if (this.NorthWest.FeatureBlob != null && savedFeature != this.NorthWest.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
 				}
 				else
 				{
 					savedFeature = this.NorthWest.FeatureBlob;
 				}
 			}
-			if (this.SouthEast != null && this.SouthEast.Intensity > this.Intensity)
+			if (this.SouthEast != null && this.SouthEast.Intensity >= this.Intensity)
 			{
 				if (this.SouthEast.IsBackground) return HigherNeighborResult.Background;
 				if (savedFeature != null)
 				{
-					if (savedFeature != this.SouthEast.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
+					if (this.SouthEast.FeatureBlob != null && savedFeature != this.SouthEast.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
 				}
 				else
 				{
 					savedFeature = this.SouthEast.FeatureBlob;
 				}
 			}
-			if (this.SouthWest != null && this.SouthWest.Intensity > this.Intensity)
+			if (this.SouthWest != null && this.SouthWest.Intensity >= this.Intensity)
 			{
 				if (this.SouthWest.IsBackground) return HigherNeighborResult.Background;
 				if (savedFeature != null)
 				{
-					if (savedFeature != this.SouthWest.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
+					if (this.SouthWest.FeatureBlob != null && savedFeature != this.SouthWest.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
 				}
 				else
 				{
@@ -187,6 +187,11 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 		{
 			if (this.ScanLcIndex != other.ScanLcIndex) return this.ScanLcIndex.CompareTo(other.ScanLcIndex);
 			return this.ScanImsIndex.CompareTo(other.ScanImsIndex);
+		}
+
+		public override string ToString()
+		{
+			return string.Format("ScanLcIndex: {0}, ScanImsIndex: {1}, Intensity: {2}", ScanLcIndex, ScanImsIndex, Intensity);
 		}
 	}
 }

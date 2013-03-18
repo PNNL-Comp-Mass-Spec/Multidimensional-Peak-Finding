@@ -61,7 +61,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 					nextPoint.West = currentPoint;
 				}
 
-				Point dummyPoint = new Point(currentScanLc + 1, currentScanIms - 1, 0, 0, 0);
+				Point dummyPoint = new Point(currentScanLc + 1, 0, currentScanIms - 1, 0, 0);
 				int binarySearchResult = pointList.BinarySearch(dummyPoint);
 				binarySearchResult = binarySearchResult < 0 ? ~binarySearchResult : binarySearchResult;
 				for(int j = binarySearchResult; j <= binarySearchResult + 2; j++)
