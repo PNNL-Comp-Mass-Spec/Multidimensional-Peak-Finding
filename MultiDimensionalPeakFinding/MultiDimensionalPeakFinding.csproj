@@ -76,6 +76,7 @@
     <Compile Include="PeakDetection\FeatureBlob.cs" />
     <Compile Include="PeakDetection\FeatureBlobStatistics.cs" />
     <Compile Include="PeakDetection\FeatureDetection.cs" />
+    <Compile Include="PeakDetection\HigherNeighborResult.cs" />
     <Compile Include="PeakDetection\Point.cs" />
     <Compile Include="PeakDetection\WaterShedMapUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

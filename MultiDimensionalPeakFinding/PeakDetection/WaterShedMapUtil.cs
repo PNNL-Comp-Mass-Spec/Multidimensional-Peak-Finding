@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UIMFLibrary;
 
 namespace MultiDimensionalPeakFinding.PeakDetection
 {
@@ -34,6 +35,65 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 
 					// Build all Points around the current Point
 					LookForNeighbors(currentPoint, pointArray, inputData, boundX, boundY, scanLcMin, scanImsMin);
+				}
+			}
+
+			return pointList;
+		}
+
+		public static IEnumerable<Point> BuildWatershedMap(List<IntensityPoint> intensityPointList)
+		{
+			int numPoints = intensityPointList.Count;
+
+			List<Point> pointList = new List<Point>(numPoints);
+			pointList.AddRange(intensityPointList.Select(intensityPoint => new Point(intensityPoint.ScanLc, 0, intensityPoint.ScanIms, 0, intensityPoint.Intensity)));
+
+			for (int i = 0; i < numPoints - 1; i++)
+			{
+				Point currentPoint = pointList[i];
+				int currentScanLc = currentPoint.ScanLc;
+				int currentScanIms = currentPoint.ScanIms;
+
+				Point nextPoint = pointList[i + 1];
+				if(nextPoint.ScanLc == currentScanLc && nextPoint.ScanIms == currentScanIms + 1)
+				{
+					currentPoint.East = nextPoint;
+					nextPoint.West = currentPoint;
+				}
+
+				Point dummyPoint = new Point(currentScanLc + 1, currentScanIms - 1, 0, 0, 0);
+				int binarySearchResult = pointList.BinarySearch(dummyPoint);
+				binarySearchResult = binarySearchResult < 0 ? ~binarySearchResult : binarySearchResult;
+				for(int j = binarySearchResult; j <= binarySearchResult + 2; j++)
+				{
+					// Get out if we reach the list boundary
+					if (j >= numPoints) break;
+
+					Point testPoint = pointList[j];
+
+					// If LC Scan is too big, get out
+					if (testPoint.ScanLc > currentScanLc + 1) break;
+
+					int testScanIms = testPoint.ScanIms;
+
+					// If IMS Scan is too big, get out
+					if (testScanIms > currentScanIms + 1) break;
+
+					if(testScanIms == currentScanIms - 1)
+					{
+						currentPoint.NorthWest = testPoint;
+						testPoint.SouthEast = currentPoint;
+					}
+					else if (testScanIms == currentScanIms)
+					{
+						currentPoint.North = testPoint;
+						testPoint.South = currentPoint;
+					}
+					else
+					{
+						currentPoint.NorthEast = testPoint;
+						testPoint.SouthWest = currentPoint;
+					}
 				}
 			}
 

@@ -58,7 +58,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 
 			List<FeatureBlob> filteredFeatureList = new List<FeatureBlob>();
 
-			// Frst filter based on intensity p-value
+			// First filter based on intensity p-value
 			foreach (FeatureBlob featureBlob in featureList)
 			{
 				double value = gammaDistribution.CumulativeDistribution(featureBlob.PointList.First().Intensity);
@@ -68,7 +68,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 			}
 
 			// Then filter based on number of points
-			return filteredFeatureList.Where(x => x.PointList.Count >= 25);
+			return filteredFeatureList.Where(x => x.PointList.Count >= 9);
 		}
 	}
 }

@@ -63,16 +63,20 @@ namespace MultiDimensionalPeakFindingTests
 			string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
 			UimfUtil uimfUtil = new UimfUtil(fileLocation);
 
-			double targetMz = 643.27094937;
-			double ppmTolerance = 50;
+			for(int i = 0; i < 100; i++)
+			{
+				double targetMz = 643.27094937;
+				double ppmTolerance = 50;
 
-			double[,] intensityBlock = uimfUtil.GetXic(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+				double[,] intensityBlock = uimfUtil.GetXic(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
 
-			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
-			smoother.Smooth(ref intensityBlock);
+				SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
+				smoother.Smooth(ref intensityBlock);
 
-			IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, 0, 0);
-			IEnumerable<FeatureBlob> featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
+				IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, 0, 0);
+				IEnumerable<FeatureBlob> featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
+				Console.WriteLine(i + "\t" + featureList.Count());
+			}
 		}
 
 		[Test]
@@ -126,10 +130,13 @@ namespace MultiDimensionalPeakFindingTests
 
 			featureList = featureList.OrderByDescending(x => x.PointList.Count);
 
+			TextWriter intensityWriter = new StreamWriter("intensities.csv");
+
 			foreach (FeatureBlob featureBlob in featureList)
 			{
-				Point mostIntensePoint = featureBlob.PointList.OrderByDescending(x => x.Intensity).First();
+				Point mostIntensePoint = featureBlob.PointList.First();
 				Console.WriteLine("Num Points = " + featureBlob.PointList.Count + "\tLC = " + mostIntensePoint.ScanLc + "\tIMS = " + mostIntensePoint.ScanIms + "\tIntensity = " + mostIntensePoint.Intensity);
+				intensityWriter.WriteLine(mostIntensePoint.Intensity.ToString());
 			}
 		}
 
@@ -290,6 +297,66 @@ namespace MultiDimensionalPeakFindingTests
 						//Console.WriteLine("Num Points = " + featureBlob.PointList.Count + "\tLC = " + mostIntensePoint.ScanLc + "\tIMS = " + mostIntensePoint.ScanIms + "\tIntensity = " + mostIntensePoint.Intensity + "\tRSquared = " + rSquared);
 					}
 				}
+			}
+		}
+
+		[Test]
+		public void TestDoWaterShedAlgorithmByBin()
+		{
+			string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
+			UimfUtil uimfUtil = new UimfUtil(fileLocation);
+			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
+
+			int bin = 73009;
+			List<IntensityPoint> intensityPointList = uimfUtil.GetXic(bin, DataReader.FrameType.MS1);
+
+			IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityPointList);
+
+			IEnumerable<FeatureBlob> preSmoothedFeatureList = FeatureDetection.DoWatershedAlgorithm(pointList);
+			Console.WriteLine(DateTime.Now + "\tBefore Smoothing:\tNumPoints = " + pointList.Count() + "\tNumFeatures = " + preSmoothedFeatureList.Count());
+
+			smoother.Smooth(ref pointList);
+			IEnumerable<FeatureBlob> smoothedFeatureList = FeatureDetection.DoWatershedAlgorithm(pointList);
+			Console.WriteLine(DateTime.Now + "\tAfter Smoothing:\tNumPoints = " + pointList.Count() + "\tNumFeatures = " + smoothedFeatureList.Count());
+		}
+
+		[Test]
+		public void TestDoWaterShedAlgorithmAllBins()
+		{
+			string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
+			UimfUtil uimfUtil = new UimfUtil(fileLocation);
+			int numberOfBins = uimfUtil.GetNumberOfBins();
+
+			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
+
+			for (int i = 73009; i <= 84000; i++)
+			{
+				List<IntensityPoint> intensityPointList = uimfUtil.GetXic(i, DataReader.FrameType.MS1);
+
+				//SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(9, 2);
+				//smoother.Smooth(ref intensityBlock);
+
+				//int boundX = intensityBlock.GetUpperBound(0);
+				//int boundY = intensityBlock.GetUpperBound(1);
+
+				//TextWriter smoothedWriter = new StreamWriter("smoothedRaw.csv");
+				//for (int j = 0; j < boundX; j++)
+				//{
+				//    StringBuilder row = new StringBuilder();
+				//    for (int k = 0; k < boundY; k++)
+				//    {
+				//        row.Append(intensityBlock[j, k] + ",");
+				//    }
+				//    smoothedWriter.WriteLine(row.ToString());
+				//}
+
+				//smoothedWriter.Close();
+
+				IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityPointList);
+				smoother.Smooth(ref pointList);
+				IEnumerable<FeatureBlob> featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
+
+				Console.WriteLine(DateTime.Now + "\tBin = " + i + "\tNumPoints = " + pointList.Count() + "\tNumFeatures = " + featureList.Count());
 			}
 		}
 	}

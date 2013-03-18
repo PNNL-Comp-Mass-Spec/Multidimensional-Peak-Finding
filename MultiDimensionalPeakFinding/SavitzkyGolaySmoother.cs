@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.LinearAlgebra.Generic;
+using MultiDimensionalPeakFinding.PeakDetection;
 
 namespace MultiDimensionalPeakFinding
 {
@@ -20,6 +21,59 @@ namespace MultiDimensionalPeakFinding
 			m_numPointsForSmoothing = pointsForSmoothing;
 			var smoothingFilters = CalculateSmoothingFilters(polynomialOrder, pointsForSmoothing);
 			m_smoothingFiltersConjugateTranspose = smoothingFilters.ConjugateTranspose();
+		}
+
+		public void Smooth(ref IEnumerable<Point> pointList)
+		{
+			int m = (m_numPointsForSmoothing - 1) / 2;
+			var conjTransposeColumnResult = m_smoothingFiltersConjugateTranspose.Column(m);
+
+			foreach (Point point in pointList)
+			{
+				double summedValue = (conjTransposeColumnResult[m] * point.Intensity) * 2.0;
+
+				// Smooth Left
+				Point currentPoint = point;
+				for(int i = m - 1; i >= 0; i--)
+				{
+					Point nextPoint = currentPoint.West;
+					if (nextPoint == null) break;
+					summedValue += (conjTransposeColumnResult[i] * nextPoint.Intensity);
+					currentPoint = nextPoint;
+				}
+
+				// Smooth Right
+				currentPoint = point;
+				for (int i = m + 1; i < m_numPointsForSmoothing; i++)
+				{
+					Point nextPoint = currentPoint.East;
+					if (nextPoint == null) break;
+					summedValue += (conjTransposeColumnResult[i] * nextPoint.Intensity);
+					currentPoint = nextPoint;
+				}
+
+				// Smooth Down
+				currentPoint = point;
+				for (int i = m - 1; i >= 0; i--)
+				{
+					Point nextPoint = currentPoint.South;
+					if (nextPoint == null) break;
+					summedValue += (conjTransposeColumnResult[i] * nextPoint.Intensity);
+					currentPoint = nextPoint;
+				}
+
+				// Smooth Up
+				currentPoint = point;
+				for (int i = m + 1; i < m_numPointsForSmoothing; i++)
+				{
+					Point nextPoint = currentPoint.North;
+					if (nextPoint == null) break;
+					summedValue += (conjTransposeColumnResult[i] * nextPoint.Intensity);
+					currentPoint = nextPoint;
+				}
+
+				point.Intensity = summedValue / (m_numPointsForSmoothing * 2);
+			}
 		}
 
 		public void Smooth(ref double[,] inputValues)
