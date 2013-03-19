@@ -72,7 +72,7 @@ namespace MultiDimensionalPeakFinding
 					currentPoint = nextPoint;
 				}
 
-				point.Intensity = summedValue / (m_numPointsForSmoothing * 2);
+				point.Intensity = summedValue;
 			}
 		}
 
