@@ -22,7 +22,7 @@ namespace MultiDimensionalPeakFindingTests
 			double targetMz = 643.27094937;
 			double ppmTolerance = 50;
 
-			double[,] intensityBlock = uimfUtil.GetXic(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+			double[,] intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
 		}
 
 		[Test]
@@ -34,7 +34,7 @@ namespace MultiDimensionalPeakFindingTests
 			double targetMz = 643.27094937;
 			double ppmTolerance = 50;
 
-			double[,] intensityBlock = uimfUtil.GetXic(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+			double[,] intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
 
 			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
 			smoother.Smooth(ref intensityBlock);
@@ -49,7 +49,7 @@ namespace MultiDimensionalPeakFindingTests
 			double targetMz = 643.27094937;
 			double ppmTolerance = 50;
 
-			double[,] intensityBlock = uimfUtil.GetXic(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+			double[,] intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
 
 			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
 			smoother.Smooth(ref intensityBlock);
@@ -63,19 +63,32 @@ namespace MultiDimensionalPeakFindingTests
 			string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
 			UimfUtil uimfUtil = new UimfUtil(fileLocation);
 
-			for(int i = 0; i < 100; i++)
+			double targetMz = 643.27094937;
+			double ppmTolerance = 50;
+
+			double[,] intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+
+			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
+			smoother.Smooth(ref intensityBlock);
+
+			IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, 0, 0);
+			IEnumerable<FeatureBlob> featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
+			foreach (FeatureBlob featureBlob in featureList)
 			{
-				double targetMz = 643.27094937;
-				double ppmTolerance = 50;
+				Point mostIntensePoint = featureBlob.PointList.First();
+				Console.WriteLine("Num Points = " + featureBlob.PointList.Count + "\tLC = " + mostIntensePoint.ScanLc + "\tIMS = " + mostIntensePoint.ScanIms + "\tIntensity = " + mostIntensePoint.Intensity);
+			}
+			Console.WriteLine("******************************************************");
 
-				double[,] intensityBlock = uimfUtil.GetXic(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+			List<IntensityPoint> intensityPointList = uimfUtil.GetXic(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
 
-				SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
-				smoother.Smooth(ref intensityBlock);
-
-				IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, 0, 0);
-				IEnumerable<FeatureBlob> featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
-				Console.WriteLine(i + "\t" + featureList.Count());
+			IEnumerable<Point> newPointList = WaterShedMapUtil.BuildWatershedMap(intensityPointList);
+			smoother.Smooth(ref newPointList);
+			IEnumerable<FeatureBlob> newFeatureList = FeatureDetection.DoWatershedAlgorithm(newPointList);
+			foreach (FeatureBlob featureBlob in newFeatureList)
+			{
+				Point mostIntensePoint = featureBlob.PointList.First();
+				Console.WriteLine("Num Points = " + featureBlob.PointList.Count + "\tLC = " + mostIntensePoint.ScanLc + "\tIMS = " + mostIntensePoint.ScanIms + "\tIntensity = " + mostIntensePoint.Intensity);
 			}
 		}
 
@@ -90,7 +103,7 @@ namespace MultiDimensionalPeakFindingTests
 
 			TextWriter unsmoothedWriter = new StreamWriter("unsmoothedRaw.csv");
 
-			double[,] intensityBlock = uimfUtil.GetXic(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+			double[,] intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
 
 			int boundX = intensityBlock.GetUpperBound(0);
 			int boundY = intensityBlock.GetUpperBound(1);
@@ -149,7 +162,7 @@ namespace MultiDimensionalPeakFindingTests
 			double parentMz = 643.27094937;
 			double ppmTolerance = 50;
 
-			double[,] parentIntensityBlock = uimfUtil.GetXic(parentMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+			double[,] parentIntensityBlock = uimfUtil.GetXicAsArray(parentMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
 
 			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
 			smoother.Smooth(ref parentIntensityBlock);
@@ -173,7 +186,7 @@ namespace MultiDimensionalPeakFindingTests
 
 					TextWriter unsmoothedWriter = new StreamWriter("unsmoothedRaw" + targetMz + ".csv");
 
-					double[,] intensityBlock = uimfUtil.GetXic(targetMz, ppmTolerance, DataReader.FrameType.MS2, scanLcMin, scanLcMax, scanImsMin, scanImsMax, DataReader.ToleranceType.PPM);
+					double[,] intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, DataReader.FrameType.MS2, scanLcMin, scanLcMax, scanImsMin, scanImsMax, DataReader.ToleranceType.PPM);
 
 					int boundX = intensityBlock.GetUpperBound(0);
 					int boundY = intensityBlock.GetUpperBound(1);
@@ -208,8 +221,6 @@ namespace MultiDimensionalPeakFindingTests
 					IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, scanLcMin, scanImsMin);
 					IEnumerable<FeatureBlob> featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
 
-					featureList = featureList.Where(x => x.PointList.Count > 50).OrderByDescending(x => x.PointList.Count);
-
 					Console.WriteLine("******************************************************");
 					Console.WriteLine("targetMz = " + targetMz);
 
@@ -231,7 +242,7 @@ namespace MultiDimensionalPeakFindingTests
 			double parentMz = 643.27094937;
 			double ppmTolerance = 50;
 
-			double[,] parentIntensityBlock = uimfUtil.GetXic(parentMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+			double[,] parentIntensityBlock = uimfUtil.GetXicAsArray(parentMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
 
 			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
 			smoother.Smooth(ref parentIntensityBlock);
@@ -250,7 +261,7 @@ namespace MultiDimensionalPeakFindingTests
 
 					TextWriter unsmoothedWriter = new StreamWriter("unsmoothedRaw" + targetMz + ".csv");
 
-					double[,] intensityBlock = uimfUtil.GetXic(targetMz, ppmTolerance, DataReader.FrameType.MS2, DataReader.ToleranceType.PPM);
+					double[,] intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, DataReader.FrameType.MS2, DataReader.ToleranceType.PPM);
 
 					int boundX = intensityBlock.GetUpperBound(0);
 					int boundY = intensityBlock.GetUpperBound(1);
@@ -314,10 +325,22 @@ namespace MultiDimensionalPeakFindingTests
 
 			IEnumerable<FeatureBlob> preSmoothedFeatureList = FeatureDetection.DoWatershedAlgorithm(pointList);
 			Console.WriteLine(DateTime.Now + "\tBefore Smoothing:\tNumPoints = " + pointList.Count() + "\tNumFeatures = " + preSmoothedFeatureList.Count());
+			foreach (FeatureBlob featureBlob in preSmoothedFeatureList)
+			{
+				Point mostIntensePoint = featureBlob.PointList.First();
+				Console.WriteLine("Num Points = " + featureBlob.PointList.Count + "\tLC = " + mostIntensePoint.ScanLc + "\tIMS = " + mostIntensePoint.ScanIms + "\tIntensity = " + mostIntensePoint.Intensity);
+			}
+			Console.WriteLine("******************************************************");
 
-			smoother.Smooth(ref pointList);
-			IEnumerable<FeatureBlob> smoothedFeatureList = FeatureDetection.DoWatershedAlgorithm(pointList);
-			Console.WriteLine(DateTime.Now + "\tAfter Smoothing:\tNumPoints = " + pointList.Count() + "\tNumFeatures = " + smoothedFeatureList.Count());
+			IEnumerable<Point> newPointList = WaterShedMapUtil.BuildWatershedMap(intensityPointList);
+			smoother.Smooth(ref newPointList);
+			IEnumerable<FeatureBlob> smoothedFeatureList = FeatureDetection.DoWatershedAlgorithm(newPointList);
+			Console.WriteLine(DateTime.Now + "\tAfter Smoothing:\tNumPoints = " + newPointList.Count() + "\tNumFeatures = " + smoothedFeatureList.Count());
+			foreach (FeatureBlob featureBlob in smoothedFeatureList)
+			{
+				Point mostIntensePoint = featureBlob.PointList.First();
+				Console.WriteLine("Num Points = " + featureBlob.PointList.Count + "\tLC = " + mostIntensePoint.ScanLc + "\tIMS = " + mostIntensePoint.ScanIms + "\tIntensity = " + mostIntensePoint.Intensity);
+			}
 		}
 
 		[Test]
@@ -331,7 +354,9 @@ namespace MultiDimensionalPeakFindingTests
 
 			for (int i = 73009; i <= 84000; i++)
 			{
-				List<IntensityPoint> intensityPointList = uimfUtil.GetXic(i, DataReader.FrameType.MS1);
+				double mz = uimfUtil.GetMzFromBin(i);
+				List<IntensityPoint> intensityPointList = uimfUtil.GetXic(mz, 25, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+				//List<IntensityPoint> intensityPointList = uimfUtil.GetXic(i, DataReader.FrameType.MS1);
 
 				//SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(9, 2);
 				//smoother.Smooth(ref intensityBlock);
@@ -357,6 +382,31 @@ namespace MultiDimensionalPeakFindingTests
 				IEnumerable<FeatureBlob> featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
 
 				Console.WriteLine(DateTime.Now + "\tBin = " + i + "\tNumPoints = " + pointList.Count() + "\tNumFeatures = " + featureList.Count());
+			}
+		}
+
+		[Test]
+		public void TestFakeSaturatedPoints()
+		{
+			List<IntensityPoint> intensityPointList = new List<IntensityPoint>();
+
+			for(int i = 0; i < 5; i++)
+			{
+				for(int j = 0; j < 5; j++)
+				{
+					IntensityPoint point = new IntensityPoint(i, j, 8925);
+					intensityPointList.Add(point);
+				}
+			}
+
+			IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityPointList);
+			IEnumerable<FeatureBlob> featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
+
+			Console.WriteLine(DateTime.Now + "\tNumPoints = " + pointList.Count() + "\tNumFeatures = " + featureList.Count());
+			foreach (FeatureBlob featureBlob in featureList)
+			{
+				Point mostIntensePoint = featureBlob.PointList.First();
+				Console.WriteLine("Num Points = " + featureBlob.PointList.Count + "\tLC = " + mostIntensePoint.ScanLc + "\tIMS = " + mostIntensePoint.ScanIms + "\tIntensity = " + mostIntensePoint.Intensity);
 			}
 		}
 	}

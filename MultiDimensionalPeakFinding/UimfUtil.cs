@@ -15,14 +15,24 @@ namespace MultiDimensionalPeakFinding
 			m_uimfReader = new DataReader(fileLocation);
 		}
 
-		public double[,] GetXic(double targetMz, double tolerance, DataReader.FrameType frameType, DataReader.ToleranceType toleranceType)
+		public double[,] GetXicAsArray(double targetMz, double tolerance, DataReader.FrameType frameType, DataReader.ToleranceType toleranceType)
 		{
-			return m_uimfReader.GetXic(targetMz, tolerance, frameType, toleranceType);
+			return m_uimfReader.GetXicAsArray(targetMz, tolerance, frameType, toleranceType);
 		}
 
-		public double[,] GetXic(double targetMz, double tolerance, DataReader.FrameType frameType, int scanLcMin, int scanLcMax, int scanImsMin, int scanImsMax, DataReader.ToleranceType toleranceType)
+		public double[,] GetXicAsArray(double targetMz, double tolerance, DataReader.FrameType frameType, int scanLcMin, int scanLcMax, int scanImsMin, int scanImsMax, DataReader.ToleranceType toleranceType)
 		{
-			return m_uimfReader.GetXic(targetMz, tolerance, scanLcMin, scanLcMax, scanImsMin, scanImsMax, frameType, toleranceType);
+			return m_uimfReader.GetXicAsArray(targetMz, tolerance, scanLcMin, scanLcMax, scanImsMin, scanImsMax, frameType, toleranceType);
+		}
+
+		public double[,] GetXicAsArray(int targetBin, DataReader.FrameType frameType)
+		{
+			return m_uimfReader.GetXicAsArray(targetBin, frameType);
+		}
+
+		public List<IntensityPoint> GetXic(double targetMz, double tolerance, DataReader.FrameType frameType, DataReader.ToleranceType toleranceType)
+		{
+			return m_uimfReader.GetXic(targetMz, tolerance, frameType, toleranceType);
 		}
 
 		public List<IntensityPoint> GetXic(int targetBin, DataReader.FrameType frameType)
