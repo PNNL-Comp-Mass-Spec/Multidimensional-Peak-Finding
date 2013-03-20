@@ -53,12 +53,14 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 		public FeatureBlobStatistics CalculateStatistics()
 		{
 			double maxIntensity = 0;
+		    double sumIntensities = 0;
 			int scanLcMin = int.MaxValue;
 			int scanLcMax = 0;
 			int scanImsMin = int.MaxValue;
 			int scanImsMax = 0;
 			int scanLcRep = 0;
 			int scanImsRep = 0;
+		    Point apex = null;
 
 			foreach (Point point in this.PointList)
 			{
@@ -71,15 +73,18 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 				if (scanLc < scanLcMin) scanLcMin = scanLc;
 				if (scanLc > scanLcMax) scanLcMax = scanLc;
 
+			    sumIntensities += intensity;
 				if (intensity > maxIntensity)
 				{
 					maxIntensity = intensity;
 					scanLcRep = scanLc;
 					scanImsRep = scanIms;
+				    apex = point;
 				}
 			}
 
-			FeatureBlobStatistics statistics = new FeatureBlobStatistics(scanLcMin, scanLcMax, scanLcRep, scanImsMin, scanImsMax, scanImsRep, maxIntensity);
+			FeatureBlobStatistics statistics = new FeatureBlobStatistics(scanLcMin, scanLcMax, scanLcRep, scanImsMin, scanImsMax, scanImsRep, maxIntensity, sumIntensities, this.PointList.Count);
+            statistics.ComputePeakProfile(apex);
 			this.Statistics = statistics;
 
 			return statistics;

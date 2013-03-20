@@ -8,7 +8,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 {
 	public class WaterShedMapUtil
 	{
-		public static IEnumerable<Point> BuildWatershedMap(double[,] inputData, int scanLcMin, int scanImsMin)
+		public static IEnumerable<Point> BuildWatershedMap(double[,] inputData, int scanLcMin = 0, int scanImsMin = 0)
 		{
 			int boundX = inputData.GetUpperBound(0);
 			int boundY = inputData.GetUpperBound(1);
