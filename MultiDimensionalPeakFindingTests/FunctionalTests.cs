@@ -409,5 +409,41 @@ namespace MultiDimensionalPeakFindingTests
 				Console.WriteLine("Num Points = " + featureBlob.PointList.Count + "\tLC = " + mostIntensePoint.ScanLc + "\tIMS = " + mostIntensePoint.ScanIms + "\tIntensity = " + mostIntensePoint.Intensity);
 			}
 		}
+
+        [Test]
+        public void TestComputingApexProfiles()
+        {
+            string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
+            UimfUtil uimfUtil = new UimfUtil(fileLocation);
+            SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
+
+            double targetMz = 964.40334;
+            double tolerance = 20;
+
+            List<IntensityPoint> intensityPointList = uimfUtil.GetXic(targetMz, tolerance, DataReader.FrameType.MS1,
+                                                                      DataReader.ToleranceType.PPM);
+            IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityPointList);
+            smoother.Smooth(ref pointList);
+            IEnumerable<FeatureBlob> featureBlobs = FeatureDetection.DoWatershedAlgorithm(pointList);
+            IEnumerable<FeatureBlobStatistics> featureBlobStatList = featureBlobs.Select(featureBlob => featureBlob.Statistics).ToList();
+            foreach(FeatureBlobStatistics f in featureBlobStatList)
+            {
+                Console.WriteLine(
+                    "LC: [{0},{1}], IMS: [{2},{3}], Apex: [{4},{5}] SumIntensities: {6}, NumPoints: {7}",
+                    f.ScanLcMin,
+                    f.ScanLcMax,
+                    f.ScanImsMin,
+                    f.ScanImsMax,
+                    f.ScanLcRep,
+                    f.ScanImsRep,
+                    f.SumIntensities,
+                    f.NumPoints
+                    );
+                Console.WriteLine("LC Apex profile");
+                Console.WriteLine(string.Join(",", f.LcApexPeakProfile));
+                Console.WriteLine("IMS Apex profile");
+                Console.WriteLine(string.Join(",", f.ImsApexPeakProfile));
+            }
+        }
 	}
 }

@@ -45,34 +45,35 @@ namespace MultiDimensionalPeakFinding.PeakDetection
             LcApexPeakProfile = new float[ScanLcMax-ScanLcMin+1];
 
             Point curPoint = apex;
-            do
+            int index;
+            while(curPoint != null && (index = curPoint.ScanLc - ScanLcMin) >= 0)
             {
-                LcApexPeakProfile[curPoint.ScanLc-ScanLcMin] = (float)curPoint.Intensity;
-                curPoint = curPoint.West;
-            } while (curPoint != null);
+                LcApexPeakProfile[index] = (float)curPoint.Intensity;
+                curPoint = curPoint.South;
+            }
 
-            curPoint = apex;
-            do
+            curPoint = apex.North;
+            while (curPoint != null && (index = curPoint.ScanLc - ScanLcMin) < LcApexPeakProfile.Length)
             {
-                LcApexPeakProfile[curPoint.ScanLc - ScanLcMin] = (float)curPoint.Intensity;
-                curPoint = curPoint.East;
-            } while (curPoint != null);
+                LcApexPeakProfile[index] = (float)curPoint.Intensity;
+                curPoint = curPoint.North;
+            } 
 
             ImsApexPeakProfile = new float[ScanImsMax-ScanImsMin+1];
 
             curPoint = apex;
-            do
+            while (curPoint != null && (index = curPoint.ScanIms - ScanImsMin) >= 0)
             {
-                ImsApexPeakProfile[curPoint.ScanIms - ScanImsMin] = (float)curPoint.Intensity;
-                curPoint = curPoint.South;
-            } while (curPoint != null);
+                ImsApexPeakProfile[index] = (float)curPoint.Intensity;
+                curPoint = curPoint.West;
+            }
 
-            curPoint = apex;
-            do
+            curPoint = apex.East;
+            while (curPoint != null && (index = curPoint.ScanIms - ScanImsMin) < ImsApexPeakProfile.Length)
             {
-                ImsApexPeakProfile[curPoint.ScanIms - ScanImsMin] = (float)curPoint.Intensity;
-                curPoint = curPoint.North;
-            } while (curPoint != null);
+                ImsApexPeakProfile[index] = (float)curPoint.Intensity;
+                curPoint = curPoint.East;
+            }
         }
 	}
 }
