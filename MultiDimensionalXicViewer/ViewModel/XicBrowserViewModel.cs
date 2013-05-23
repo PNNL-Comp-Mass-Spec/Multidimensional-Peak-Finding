@@ -36,11 +36,14 @@ namespace MultiDimensionalXicViewer.ViewModel
 		public List<FeatureBlob> FeatureList { get; set; }
 		public FeatureBlob CurrentFeature { get; set; }
 
+		private AminoAcidSet m_aminoAcidSet;
+
 		public XicBrowserViewModel()
 		{
 			//this.XicPlot = new LinesVisual3D();
 			this.XicPlotPoints = new List<Point3D>();
 			this.FeatureList = new List<FeatureBlob>();
+			m_aminoAcidSet = new AminoAcidSet(Modification.Carbamidomethylation);
 		}
 
 		public void OpenUimfFile(string fileName)
@@ -57,9 +60,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 
 		public void FindFeatures()
 		{
-			var aaSet = new AminoAcidSet(Modification.Carbamidomethylation);
-
-			var seqGraph = new SequenceGraph(aaSet, this.CurrentPeptide);
+			var seqGraph = new SequenceGraph(m_aminoAcidSet, this.CurrentPeptide);
 			var scoringGraph = seqGraph.GetScoringGraph(0);
 			double mz = scoringGraph.GetPrecursorIon(this.CurrentChargeState).GetMz();
 
@@ -71,6 +72,12 @@ namespace MultiDimensionalXicViewer.ViewModel
 
 			this.FeatureList = FeatureDetection.DoWatershedAlgorithm(watershedPointList).ToList();
 			OnPropertyChanged("FeatureList");
+
+			this.LcSlicePlot = new PlotModel();
+			OnPropertyChanged("LcSlicePlot");
+
+			this.ImsSlicePlot = new PlotModel();
+			OnPropertyChanged("ImsSlicePlot");
 		}
 
 		public void CreateLcAndImsSlicePlots(FeatureBlob feature)

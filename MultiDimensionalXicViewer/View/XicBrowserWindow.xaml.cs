@@ -61,6 +61,8 @@ namespace MultiDimensionalXicViewer.View
 			this.XicBrowserViewModel.CurrentTolerance = ppmTolerance;
 			this.XicBrowserViewModel.CurrentChargeState = chargeState;
 
+			this.FeatureDataGrid.SelectedItem = null;
+
 			this.XicBrowserViewModel.FindFeatures();
 		}
 

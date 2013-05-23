@@ -39,7 +39,7 @@
 						<Button Content="Find Features!" Height="23" HorizontalAlignment="Center" Name="findFeaturesButton" VerticalAlignment="Top" Width="100" Click="FindFeaturesButtonClick" />
 					</DockPanel>
 					<TextBlock Height="20" Name="numResultTextBlock" Width="Auto" FontWeight="Bold" Text="{Binding Path=FeatureList.Count, StringFormat=' # of Results: {0}'}" />
-					<DataGrid ItemsSource="{Binding Path=FeatureList}" SelectionChanged="FeatureSelectionChange" Height="Auto" MaxHeight="500" Width="Auto" AutoGenerateColumns="False" HeadersVisibility="Column">
+					<DataGrid Name="FeatureDataGrid" ItemsSource="{Binding Path=FeatureList}" SelectionChanged="FeatureSelectionChange" Height="Auto" MaxHeight="500" Width="Auto" AutoGenerateColumns="False" HeadersVisibility="Column" SelectionMode="Single">
 						<DataGrid.Columns>
 							<DataGridTextColumn Header="ID" Binding="{Binding Path=Id}" Width="30" />
 							<DataGridTextColumn Header="LC Scan" Binding="{Binding Path=Statistics.ScanLcRep}" Width="Auto" />
