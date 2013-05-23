@@ -49,21 +49,17 @@ namespace MultiDimensionalXicViewer.View
 
 		private void FindFeaturesButtonClick(object sender, RoutedEventArgs e)
 		{
-			double mz = -1;
-			double.TryParse(mzSelectedTextBox.Text, out mz);
+			string peptideSequence = peptideSelectedTextBox.Text;
 
-			double tolerance = 50;
+			int chargeState = 2;
+			int.TryParse(chargeSelectedTextBox.Text, out chargeState);
 
-			if (mz < 0)
-			{
-				Console.WriteLine("Error reading m/z");
-				return;
-			}
+			int ppmTolerance = 50;
+			int.TryParse(ppmToleranceSelectedTextBox.Text, out ppmTolerance);
 
-			Console.WriteLine("m/z = " + mz);
-
-			this.XicBrowserViewModel.CurrentMz = mz;
-			this.XicBrowserViewModel.CurrentTolerance = tolerance;
+			this.XicBrowserViewModel.CurrentPeptide = peptideSequence;
+			this.XicBrowserViewModel.CurrentTolerance = ppmTolerance;
+			this.XicBrowserViewModel.CurrentChargeState = chargeState;
 
 			this.XicBrowserViewModel.FindFeatures();
 		}
@@ -79,14 +75,14 @@ namespace MultiDimensionalXicViewer.View
 			}
 		}
 
-		private void MsLevelChange(object sender, SelectionChangedEventArgs e)
-		{
-			ComboBox comboBox = (ComboBox) sender;
-			ComboBoxItem selectedItem = (ComboBoxItem)comboBox.SelectedItem;
+		//private void MsLevelChange(object sender, SelectionChangedEventArgs e)
+		//{
+		//    ComboBox comboBox = (ComboBox) sender;
+		//    ComboBoxItem selectedItem = (ComboBoxItem)comboBox.SelectedItem;
 
-			string frameType = (string)selectedItem.Content;
+		//    string frameType = (string)selectedItem.Content;
 
-			this.XicBrowserViewModel.CurrentFrameType = (DataReader.FrameType)Enum.Parse(typeof(DataReader.FrameType), frameType);
-		}
+		//    this.XicBrowserViewModel.CurrentFrameType = (DataReader.FrameType)Enum.Parse(typeof(DataReader.FrameType), frameType);
+		//}
 	}
 }

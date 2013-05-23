@@ -19,8 +19,8 @@ namespace MultiDimensionalPeakFindingTests
 			string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
 			UimfUtil uimfUtil = new UimfUtil(fileLocation);
 
-			double targetMz = 643.27094937;
-			double ppmTolerance = 50;
+			double targetMz = 582.32181703760114;
+			double ppmTolerance = 25;
 
 			double[,] intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
 		}
@@ -63,12 +63,12 @@ namespace MultiDimensionalPeakFindingTests
 			string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
 			UimfUtil uimfUtil = new UimfUtil(fileLocation);
 
-			double targetMz = 643.27094937;
-			double ppmTolerance = 50;
+			double targetMz = 582.32181703760114;
+			double ppmTolerance = 25;
 
 			double[,] intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
 
-			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
+			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(11, 2);
 			smoother.Smooth(ref intensityBlock);
 
 			IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, 0, 0);

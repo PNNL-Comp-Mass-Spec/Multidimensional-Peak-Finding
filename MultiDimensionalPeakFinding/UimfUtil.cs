@@ -8,54 +8,59 @@ namespace MultiDimensionalPeakFinding
 {
 	public class UimfUtil
 	{
-		private DataReader m_uimfReader;
+		public DataReader UimfReader { get; private set; }
 
 		public UimfUtil(string fileLocation)
 		{
-			m_uimfReader = new DataReader(fileLocation);
+			UimfReader = new DataReader(fileLocation);
 		}
 
 		public double[,] GetXicAsArray(double targetMz, double tolerance, DataReader.FrameType frameType, DataReader.ToleranceType toleranceType)
 		{
-			return m_uimfReader.GetXicAsArray(targetMz, tolerance, frameType, toleranceType);
+			return UimfReader.GetXicAsArray(targetMz, tolerance, frameType, toleranceType);
 		}
 
 		public double[,] GetXicAsArray(double targetMz, double tolerance, DataReader.FrameType frameType, int scanLcMin, int scanLcMax, int scanImsMin, int scanImsMax, DataReader.ToleranceType toleranceType)
 		{
-			return m_uimfReader.GetXicAsArray(targetMz, tolerance, scanLcMin, scanLcMax, scanImsMin, scanImsMax, frameType, toleranceType);
+			return UimfReader.GetXicAsArray(targetMz, tolerance, scanLcMin, scanLcMax, scanImsMin, scanImsMax, frameType, toleranceType);
 		}
 
 		public double[,] GetXicAsArray(int targetBin, DataReader.FrameType frameType)
 		{
-			return m_uimfReader.GetXicAsArray(targetBin, frameType);
+			return UimfReader.GetXicAsArray(targetBin, frameType);
 		}
 
 		public List<IntensityPoint> GetXic(double targetMz, double tolerance, DataReader.FrameType frameType, DataReader.ToleranceType toleranceType)
 		{
-			return m_uimfReader.GetXic(targetMz, tolerance, frameType, toleranceType);
+			return UimfReader.GetXic(targetMz, tolerance, frameType, toleranceType);
+		}
+
+		public List<IntensityPoint> GetXic(double targetMz, double tolerance, DataReader.FrameType frameType, int scanLcMin, int scanLcMax, int scanImsMin, int scanImsMax, DataReader.ToleranceType toleranceType)
+		{
+			return UimfReader.GetXic(targetMz, tolerance, scanLcMin, scanLcMax, scanImsMin, scanImsMax, frameType, toleranceType);
 		}
 
 		public List<IntensityPoint> GetXic(int targetBin, DataReader.FrameType frameType)
 		{
-			return m_uimfReader.GetXic(targetBin, frameType);
+			return UimfReader.GetXic(targetBin, frameType);
 		}
 
 		public int GetNumberOfBins()
 		{
-			return m_uimfReader.GetGlobalParameters().Bins;
+			return UimfReader.GetGlobalParameters().Bins;
 		}
 
 		public double GetMzFromBin(int bin)
 		{
-			GlobalParameters globalParameters = m_uimfReader.GetGlobalParameters();
-			FrameParameters frameParameters = m_uimfReader.GetFrameParameters(1);
+			GlobalParameters globalParameters = UimfReader.GetGlobalParameters();
+			FrameParameters frameParameters = UimfReader.GetFrameParameters(1);
 			return DataReader.ConvertBinToMZ(frameParameters.CalibrationSlope, frameParameters.CalibrationIntercept, globalParameters.BinWidth, globalParameters.TOFCorrectionTime, bin);
 		}
 
 		public int GetBinFromMz(double mz)
 		{
-			GlobalParameters globalParameters = m_uimfReader.GetGlobalParameters();
-			FrameParameters frameParameters = m_uimfReader.GetFrameParameters(1);
+			GlobalParameters globalParameters = UimfReader.GetGlobalParameters();
+			FrameParameters frameParameters = UimfReader.GetFrameParameters(1);
 			return (int)Math.Round(DataReader.GetBinClosestToMZ(frameParameters.CalibrationSlope, frameParameters.CalibrationIntercept, globalParameters.BinWidth, globalParameters.TOFCorrectionTime, mz));
 		}
 	}
