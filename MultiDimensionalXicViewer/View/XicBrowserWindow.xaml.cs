@@ -86,5 +86,95 @@ namespace MultiDimensionalXicViewer.View
 
 		//    this.XicBrowserViewModel.CurrentFrameType = (DataReader.FrameType)Enum.Parse(typeof(DataReader.FrameType), frameType);
 		//}
+		private void PeptideTextChanged(object sender, TextChangedEventArgs e)
+		{
+			string peptideString = (sender as TextBox).Text;
+			int peptideLength = peptideString.Length;
+
+			ionNumbersContainer.Children.Clear();
+
+			for(int i = 1; i <= peptideLength; i++)
+			{
+				StackPanel stackPanel = new StackPanel
+				                        	{
+				                        		Name = "ionsNumber" + i + "Panel",
+				                        		FlowDirection = FlowDirection.LeftToRight,
+				                        		Orientation = Orientation.Horizontal
+				                        	};
+
+				CheckBox checkBox = new CheckBox();
+				checkBox.Content = i.ToString();
+				checkBox.Checked += CheckBoxOnChecked;
+				checkBox.Unchecked += CheckBoxOnUnchecked;
+				checkBox.Margin = i < 10 ? new Thickness(10, 2, 7, 2) : new Thickness(10, 2, 0, 2);
+
+				CheckBox bCheckBox = new CheckBox();
+				bCheckBox.Name = "b" + i + "Box";
+				bCheckBox.Margin = new Thickness(10, 2, 21, 2);
+
+				CheckBox yCheckBox = new CheckBox();
+				yCheckBox.Name = "y" + i + "Box";
+				yCheckBox.Margin = new Thickness(10, 2, 20, 2);
+
+				CheckBox aCheckBox = new CheckBox();
+				aCheckBox.Name = "a" + i + "Box";
+				aCheckBox.Margin = new Thickness(10, 2, 20, 2);
+
+				stackPanel.Children.Add(checkBox);
+				stackPanel.Children.Add(bCheckBox);
+				stackPanel.Children.Add(yCheckBox);
+				stackPanel.Children.Add(aCheckBox);
+
+				ionNumbersContainer.Children.Add(stackPanel);
+			}
+		}
+
+		private void CheckBoxOnUnchecked(object sender, RoutedEventArgs routedEventArgs)
+		{
+			throw new NotImplementedException();
+		}
+
+		private void CheckBoxOnChecked(object sender, RoutedEventArgs routedEventArgs)
+		{
+			throw new NotImplementedException();
+		}
+
+		private void AddChargeState(object sender, RoutedEventArgs e)
+		{
+			CheckBox checkbox = sender as CheckBox;
+			if(checkbox.Content.ToString().Contains('1'))
+			{
+				this.XicBrowserViewModel.FragmentChargeStateList.Add(1);
+			}
+			else if (checkbox.Content.ToString().Contains('2'))
+			{
+				this.XicBrowserViewModel.FragmentChargeStateList.Add(2);
+			}
+			else if (checkbox.Content.ToString().Contains('3'))
+			{
+				this.XicBrowserViewModel.FragmentChargeStateList.Add(3);
+			}
+
+			this.XicBrowserViewModel.CreateLcAndImsSlicePlots(this.XicBrowserViewModel.CurrentFeature);
+		}
+
+		private void RemoveChargeState(object sender, RoutedEventArgs e)
+		{
+			CheckBox checkbox = sender as CheckBox;
+			if (checkbox.Content.ToString().Contains('1'))
+			{
+				this.XicBrowserViewModel.FragmentChargeStateList.Remove(1);
+			}
+			else if (checkbox.Content.ToString().Contains('2'))
+			{
+				this.XicBrowserViewModel.FragmentChargeStateList.Remove(2);
+			}
+			else if (checkbox.Content.ToString().Contains('3'))
+			{
+				this.XicBrowserViewModel.FragmentChargeStateList.Remove(3);
+			}
+
+			this.XicBrowserViewModel.CreateLcAndImsSlicePlots(this.XicBrowserViewModel.CurrentFeature);
+		}
 	}
 }

@@ -41,6 +41,10 @@ namespace MultiDimensionalXicViewer.ViewModel
 		public FeatureBlob CurrentFeature { get; set; }
 		public Dictionary<string, List<FeatureBlob>> FragmentFeaturesDictionary { get; set; }
 
+		public List<int> FragmentChargeStateList { get; set; }
+		public List<NeutralLoss> FragmentNeutralLossList { get; set; }
+		public List<string> FragmentIonList { get; set; } 
+
 		private AminoAcidSet m_aminoAcidSet;
 		private IonTypeFactory m_ionTypeFactory;
 
@@ -50,11 +54,15 @@ namespace MultiDimensionalXicViewer.ViewModel
 			this.XicPlotPoints = new List<Point3D>();
 			this.FeatureList = new List<FeatureBlob>();
 			this.FragmentFeaturesDictionary = new Dictionary<string, List<FeatureBlob>>();
+			this.FragmentChargeStateList = new List<int>();
+			this.FragmentNeutralLossList = new List<NeutralLoss> { NeutralLoss.NoLoss };
+			this.FragmentIonList = new List<string>();
+
 			m_aminoAcidSet = new AminoAcidSet(Modification.Carbamidomethylation);
 			m_ionTypeFactory = new IonTypeFactory(
-				new[] { BaseIonType.B, BaseIonType.Y },
-				new[] { NeutralLoss.NoLoss, NeutralLoss.H2O },
-				maxCharge: 2);
+				new[] { BaseIonType.B, BaseIonType.Y, BaseIonType.A },
+				new[] { NeutralLoss.NoLoss, NeutralLoss.H2O, NeutralLoss.NH3 },
+				maxCharge: 3);
 		}
 
 		public void OpenUimfFile(string fileName)
@@ -121,12 +129,18 @@ namespace MultiDimensionalXicViewer.ViewModel
 
 		private void MatchPrecursorToFragments()
 		{
+			if (this.CurrentFeature == null) return;
+
 			Feature precursor = new Feature(this.CurrentFeature.Statistics);
 			Rectangle precursorBoundary = precursor.GetBoundary();
 
 			foreach (var kvp in this.FragmentFeaturesDictionary)
 			{
 				string fragmentName = kvp.Key;
+
+				// Skip any fragments that do not meet the UI filter criteria
+				if (!ShouldShowFragment(fragmentName)) continue;
+
 				List<FeatureBlob> fragmentFeatureList = kvp.Value;
 
 				foreach (var fragmentFeature in fragmentFeatureList)
@@ -146,6 +160,17 @@ namespace MultiDimensionalXicViewer.ViewModel
 
 			OnPropertyChanged("LcSlicePlot");
 			OnPropertyChanged("ImsSlicePlot");
+		}
+
+		private bool ShouldShowFragment(string fragmentName)
+		{
+			int charge = fragmentName.Count(x => x == '+');
+			if (charge == 0) charge = 1;
+
+			if (!this.FragmentChargeStateList.Contains(charge)) return false;
+
+			// If all filters pass, return true
+			return true;
 		}
 
 		private void AddToLcPlot(FeatureBlob feature, string title)

@@ -18,19 +18,19 @@
 					<TextBlock Height="Auto" Name="textBlock2" Width="Auto" MaxWidth="250" HorizontalAlignment="Left" FontWeight="Bold" Text="{Binding Path=CurrentUimfFileName}" Padding="2,2,0,2" TextWrapping="Wrap"/>
 				</StackPanel>
 				<StackPanel Height="Auto" Width="Auto" FlowDirection="LeftToRight" Orientation="Vertical">
-					<DockPanel Height="Auto" Width="Auto" FlowDirection="LeftToRight" Margin="0,0,0,5">
+					<DockPanel Height="Auto" Width="Auto" FlowDirection="LeftToRight" Margin="0,0,0,2">
 					<TextBlock Height="23" HorizontalAlignment="Left" Name="peptideTextBlock" Text="Peptide:" VerticalAlignment="Top" Width="50" />
-					<TextBox Height="23" HorizontalAlignment="Left" Name="peptideSelectedTextBox" VerticalAlignment="Top" Width="200" Margin="0,0,0,0" />
+					<TextBox Height="23" HorizontalAlignment="Left" Name="peptideSelectedTextBox" VerticalAlignment="Top" Width="200" Margin="0,0,0,0" TextChanged="PeptideTextChanged" />
 					</DockPanel>
-					<DockPanel Height="Auto" Width="Auto" FlowDirection="LeftToRight" Margin="0,0,0,5">
+					<DockPanel Height="Auto" Width="Auto" FlowDirection="LeftToRight" Margin="0,0,0,2">
 						<TextBlock Height="23" HorizontalAlignment="Left" Name="chargeTextBlock" Text="Charge:" VerticalAlignment="Top" Width="50" />
 						<TextBox Height="23" HorizontalAlignment="Left" Name="chargeSelectedTextBox" VerticalAlignment="Top" Width="50" Margin="0,0,0,0" />
 					</DockPanel>
-					<DockPanel Height="Auto" Width="Auto" FlowDirection="LeftToRight" Margin="0,0,0,5">
+					<DockPanel Height="Auto" Width="Auto" FlowDirection="LeftToRight" Margin="0,0,0,2">
 						<TextBlock Height="23" HorizontalAlignment="Left" Name="ppmToleranceTextBlock" Text="PPM Tolerance:" VerticalAlignment="Top" Width="100" />
 						<TextBox Height="23" HorizontalAlignment="Left" Name="ppmToleranceSelectedTextBox" VerticalAlignment="Top" Width="50" Margin="0,0,0,0" />
 					</DockPanel>
-					<DockPanel Height="Auto" Width="Auto" FlowDirection="LeftToRight" Margin="0,0,0,5">
+					<DockPanel Height="Auto" Width="Auto" FlowDirection="LeftToRight" Margin="0,0,0,2">
 						
 						<!--ComboBox SelectionChanged="MsLevelChange" Name="frameTypeComboBox">
 							<ComboBoxItem Content="MS1" Selector.IsSelected="True" />
@@ -48,6 +48,26 @@
 							<DataGridTextColumn Header="Intensity" Binding="{Binding Path=Statistics.SumIntensities, StringFormat='#,###,###,###,##0'}" Width="Auto" />
 						</DataGrid.Columns>
 					</DataGrid>
+					<StackPanel Name="fragmentIonSelectionPanel" Height="Auto" Width="Auto" FlowDirection="LeftToRight" Orientation="Vertical">
+						<StackPanel Name="chargeStatePanel" Height="Auto" Width="Auto" FlowDirection="LeftToRight" Orientation="Horizontal">
+							<TextBlock Height="23" HorizontalAlignment="Left" Text="Charge States:" VerticalAlignment="Top" Width="85" Margin="5,1,0,0" />
+							<CheckBox Content="+1" Name="charge1Box" Margin="10,2,10,2" Checked="AddChargeState" Unchecked="RemoveChargeState"></CheckBox>
+							<CheckBox Content="+2" Name="charge2Box" Margin="10,2,10,2" Checked="AddChargeState" Unchecked="RemoveChargeState"></CheckBox>
+							<CheckBox Content="+3" Name="charge3Box" Margin="10,2,10,2" Checked="AddChargeState" Unchecked="RemoveChargeState"></CheckBox>
+						</StackPanel>
+						<StackPanel Height="Auto" Width="Auto" FlowDirection="LeftToRight" Orientation="Horizontal">
+							<TextBlock Height="23" HorizontalAlignment="Left" Text="Neutral Losses:" VerticalAlignment="Top" Width="85" Margin="5,1,0,0" />
+							<CheckBox Content="-H20" Name="waterLossBox" Margin="10,2,9,2"></CheckBox>
+							<CheckBox Content="-NH3" Name="ammoniaLossBox" Margin="0,2,10,2"></CheckBox>
+						</StackPanel>
+						<StackPanel Height="Auto" Width="Auto" FlowDirection="LeftToRight" Orientation="Horizontal">
+							<CheckBox Content="b" Name="bIonBox" Margin="50,2,10,2"></CheckBox>
+							<CheckBox Content="y" Name="yIonBox" Margin="10,2,10,2"></CheckBox>
+							<CheckBox Content="a" Name="aIonBox" Margin="10,2,10,2"></CheckBox>
+						</StackPanel>
+						<StackPanel Name="ionNumbersContainer" Height="Auto" Width="Auto" FlowDirection="LeftToRight" Orientation="Vertical">
+						</StackPanel>
+					</StackPanel>
 				</StackPanel>
 			</StackPanel>
 			<StackPanel Height="Auto" Width="Auto" FlowDirection="LeftToRight" Orientation="Vertical" Margin="0,0,20,0">
