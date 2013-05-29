@@ -39,7 +39,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 		public PlotModel ImsSlicePlot { get; set; }
 		public List<FeatureBlob> FeatureList { get; set; }
 		public FeatureBlob CurrentFeature { get; set; }
-		public Dictionary<string, List<FeatureBlob>> FragmentFeaturesDictionary { get; set; }
+		public Dictionary<Tuple<IonType, int>, List<FeatureBlob>> FragmentFeaturesDictionary { get; set; }
 
 		public List<int> FragmentChargeStateList { get; set; }
 		public List<NeutralLoss> FragmentNeutralLossList { get; set; }
@@ -53,7 +53,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 			//this.XicPlot = new LinesVisual3D();
 			this.XicPlotPoints = new List<Point3D>();
 			this.FeatureList = new List<FeatureBlob>();
-			this.FragmentFeaturesDictionary = new Dictionary<string, List<FeatureBlob>>();
+			this.FragmentFeaturesDictionary = new Dictionary<Tuple<IonType, int>, List<FeatureBlob>>();
 			this.FragmentChargeStateList = new List<int>();
 			this.FragmentNeutralLossList = new List<NeutralLoss> { NeutralLoss.NoLoss };
 			this.FragmentIonList = new List<string>();
@@ -101,10 +101,11 @@ namespace MultiDimensionalXicViewer.ViewModel
 			this.FragmentFeaturesDictionary.Clear();
 			var sequence = new Sequence(this.CurrentPeptide, m_aminoAcidSet);
 			var ionTypeDictionary = sequence.GetProductIons(m_ionTypeFactory.GetAllKnownIonTypes());
-			foreach (var ionType in ionTypeDictionary)
+			foreach (var ionTypeKvp in ionTypeDictionary)
 			{
-				var name = ionType.Key;
-				var ion = ionType.Value;
+				Tuple<IonType, int> ionTypeTuple = ionTypeKvp.Key;
+
+				var ion = ionTypeKvp.Value;
 				double fragmentMz = ion.GetMz();
 
 				uimfPointList = this.UimfUtil.GetXic(fragmentMz, this.CurrentTolerance, DataReader.FrameType.MS2, DataReader.ToleranceType.PPM);
@@ -112,7 +113,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 				smoother.Smooth(ref watershedPointList);
 
 				var fragmentFeatureBlobList = FeatureDetection.DoWatershedAlgorithm(watershedPointList).ToList();
-				this.FragmentFeaturesDictionary.Add(name, fragmentFeatureBlobList);
+				this.FragmentFeaturesDictionary.Add(ionTypeTuple, fragmentFeatureBlobList);
 			}
 		}
 
@@ -121,10 +122,13 @@ namespace MultiDimensionalXicViewer.ViewModel
 			this.CurrentFeature = feature;
 			OnPropertyChanged("CurrentFeature");
 
-			CreateLcSlicePlot(feature);
-			CreateImsSlicePlot(feature);
+			if(feature != null)
+			{
+				CreateLcSlicePlot(feature);
+				CreateImsSlicePlot(feature);
 
-			MatchPrecursorToFragments();
+				MatchPrecursorToFragments();
+			}
 		}
 
 		private void MatchPrecursorToFragments()
@@ -136,11 +140,13 @@ namespace MultiDimensionalXicViewer.ViewModel
 
 			foreach (var kvp in this.FragmentFeaturesDictionary)
 			{
-				string fragmentName = kvp.Key;
+				Tuple<IonType, int> ionTypeTuple = kvp.Key;
 
 				// Skip any fragments that do not meet the UI filter criteria
-				if (!ShouldShowFragment(fragmentName)) continue;
+				if (!ShouldShowFragment(ionTypeTuple)) continue;
 
+				int residueNumber = ionTypeTuple.Item2;
+				string fragmentName = ionTypeTuple.Item1.GetName(residueNumber);
 				List<FeatureBlob> fragmentFeatureList = kvp.Value;
 
 				foreach (var fragmentFeature in fragmentFeatureList)
@@ -162,12 +168,22 @@ namespace MultiDimensionalXicViewer.ViewModel
 			OnPropertyChanged("ImsSlicePlot");
 		}
 
-		private bool ShouldShowFragment(string fragmentName)
+		private bool ShouldShowFragment(Tuple<IonType, int> ionTypeTuple)
 		{
-			int charge = fragmentName.Count(x => x == '+');
-			if (charge == 0) charge = 1;
+			IonType ionType = ionTypeTuple.Item1;
 
+			// Check charge state
+			int charge = ionType.Charge;
 			if (!this.FragmentChargeStateList.Contains(charge)) return false;
+
+			// TODO: CHeck neutral loss
+
+			// Check specific ion (e.g. b3, a7, y1)
+			int residueNumber = ionTypeTuple.Item2;
+			string ionLetter = ionType.BaseIonType.Symbol.ToLower();
+			string fragmentName = ionLetter + residueNumber;
+			if (!this.FragmentIonList.Contains(fragmentName)) return false;
+
 
 			// If all filters pass, return true
 			return true;

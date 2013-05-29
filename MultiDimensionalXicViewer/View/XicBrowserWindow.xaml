@@ -61,9 +61,9 @@
 							<CheckBox Content="-NH3" Name="ammoniaLossBox" Margin="0,2,10,2"></CheckBox>
 						</StackPanel>
 						<StackPanel Height="Auto" Width="Auto" FlowDirection="LeftToRight" Orientation="Horizontal">
-							<CheckBox Content="b" Name="bIonBox" Margin="50,2,10,2"></CheckBox>
-							<CheckBox Content="y" Name="yIonBox" Margin="10,2,10,2"></CheckBox>
-							<CheckBox Content="a" Name="aIonBox" Margin="10,2,10,2"></CheckBox>
+							<CheckBox Content="b" Name="bIonBox" Margin="50,2,10,2" Checked="AllIonLettersCheckBoxOnChecked" Unchecked="AllIonLettersCheckBoxOnUnchecked"></CheckBox>
+							<CheckBox Content="y" Name="yIonBox" Margin="10,2,10,2" Checked="AllIonLettersCheckBoxOnChecked" Unchecked="AllIonLettersCheckBoxOnUnchecked"></CheckBox>
+							<CheckBox Content="a" Name="aIonBox" Margin="10,2,10,2" Checked="AllIonLettersCheckBoxOnChecked" Unchecked="AllIonLettersCheckBoxOnUnchecked"></CheckBox>
 						</StackPanel>
 						<StackPanel Name="ionNumbersContainer" Height="Auto" Width="Auto" FlowDirection="LeftToRight" Orientation="Vertical">
 						</StackPanel>
