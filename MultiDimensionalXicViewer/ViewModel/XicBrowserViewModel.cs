@@ -184,6 +184,11 @@ namespace MultiDimensionalXicViewer.ViewModel
 			string fragmentName = ionLetter + residueNumber;
 			if (!this.FragmentIonList.Contains(fragmentName)) return false;
 
+			// Check for neutral loss
+			if(ionType.NeutralLoss != NeutralLoss.NoLoss)
+			{
+				if (!this.FragmentNeutralLossList.Contains(ionType.NeutralLoss)) return false;
+			}
 
 			// If all filters pass, return true
 			return true;

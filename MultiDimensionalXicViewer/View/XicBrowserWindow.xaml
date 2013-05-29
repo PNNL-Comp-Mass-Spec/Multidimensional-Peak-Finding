@@ -57,8 +57,8 @@
 						</StackPanel>
 						<StackPanel Height="Auto" Width="Auto" FlowDirection="LeftToRight" Orientation="Horizontal">
 							<TextBlock Height="23" HorizontalAlignment="Left" Text="Neutral Losses:" VerticalAlignment="Top" Width="85" Margin="5,1,0,0" />
-							<CheckBox Content="-H20" Name="waterLossBox" Margin="10,2,9,2"></CheckBox>
-							<CheckBox Content="-NH3" Name="ammoniaLossBox" Margin="0,2,10,2"></CheckBox>
+							<CheckBox Content="-H20" Name="waterLossBox" Margin="10,2,9,2" Checked="WaterLossChecked" Unchecked="WaterLossUnchecked"></CheckBox>
+							<CheckBox Content="-NH3" Name="ammoniaLossBox" Margin="0,2,10,2" Checked="AmmoniaLossChecked" Unchecked="AmmoniaLossUnchecked"></CheckBox>
 						</StackPanel>
 						<StackPanel Height="Auto" Width="Auto" FlowDirection="LeftToRight" Orientation="Horizontal">
 							<CheckBox Content="b" Name="bIonBox" Margin="50,2,10,2" Checked="AllIonLettersCheckBoxOnChecked" Unchecked="AllIonLettersCheckBoxOnUnchecked"></CheckBox>
