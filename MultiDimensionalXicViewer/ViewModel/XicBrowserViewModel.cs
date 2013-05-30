@@ -176,8 +176,6 @@ namespace MultiDimensionalXicViewer.ViewModel
 			int charge = ionType.Charge;
 			if (!this.FragmentChargeStateList.Contains(charge)) return false;
 
-			// TODO: CHeck neutral loss
-
 			// Check specific ion (e.g. b3, a7, y1)
 			int residueNumber = ionTypeTuple.Item2;
 			string ionLetter = ionType.BaseIonType.Symbol.ToLower();

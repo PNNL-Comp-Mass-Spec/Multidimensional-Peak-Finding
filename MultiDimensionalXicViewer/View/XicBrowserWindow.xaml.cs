@@ -126,6 +126,7 @@ namespace MultiDimensionalXicViewer.View
 				bCheckBox.Checked += IonCheckBoxOnChecked;
 				bCheckBox.Unchecked += IonCheckBoxOnUnchecked;
 				bCheckBox.Margin = i < 10 ? new Thickness(10, 3, 21, 2) : new Thickness(10, 4, 21, 2);
+				if (bIonBox.IsChecked == true) bCheckBox.IsChecked = true;
 				m_bIonCheckBoxes.Add(bCheckBox);
 
 				CheckBox yCheckBox = new CheckBox();
@@ -133,6 +134,7 @@ namespace MultiDimensionalXicViewer.View
 				yCheckBox.Checked += IonCheckBoxOnChecked;
 				yCheckBox.Unchecked += IonCheckBoxOnUnchecked;
 				yCheckBox.Margin = i < 10 ? new Thickness(10, 3, 21, 2) : new Thickness(10, 4, 21, 2);
+				if (yIonBox.IsChecked == true) yCheckBox.IsChecked = true;
 				m_yIonCheckBoxes.Add(yCheckBox);
 
 				CheckBox aCheckBox = new CheckBox();
@@ -140,6 +142,7 @@ namespace MultiDimensionalXicViewer.View
 				aCheckBox.Checked += IonCheckBoxOnChecked;
 				aCheckBox.Unchecked += IonCheckBoxOnUnchecked;
 				aCheckBox.Margin = i < 10 ? new Thickness(10, 3, 21, 2) : new Thickness(10, 4, 21, 2);
+				if (aIonBox.IsChecked == true) aCheckBox.IsChecked = true;
 				m_aIonCheckBoxes.Add(aCheckBox);
 
 				stackPanel.Children.Add(checkBox);
@@ -255,6 +258,8 @@ namespace MultiDimensionalXicViewer.View
 
 		private void AllIonLettersCheckBoxOnChecked(object sender, RoutedEventArgs e)
 		{
+			if (ionNumbersContainer == null) return;
+
 			CheckBox checkBox = sender as CheckBox;
 			string ionLetter = checkBox.Content.ToString();
 

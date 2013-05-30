@@ -51,8 +51,8 @@
 					<StackPanel Name="fragmentIonSelectionPanel" Height="Auto" Width="Auto" FlowDirection="LeftToRight" Orientation="Vertical">
 						<StackPanel Name="chargeStatePanel" Height="Auto" Width="Auto" FlowDirection="LeftToRight" Orientation="Horizontal">
 							<TextBlock Height="23" HorizontalAlignment="Left" Text="Charge States:" VerticalAlignment="Top" Width="85" Margin="5,1,0,0" />
-							<CheckBox Content="+1" Name="charge1Box" Margin="10,2,10,2" Checked="AddChargeState" Unchecked="RemoveChargeState"></CheckBox>
-							<CheckBox Content="+2" Name="charge2Box" Margin="10,2,10,2" Checked="AddChargeState" Unchecked="RemoveChargeState"></CheckBox>
+							<CheckBox Content="+1" Name="charge1Box" Margin="10,2,10,2" IsChecked="True" Checked="AddChargeState" Unchecked="RemoveChargeState"></CheckBox>
+							<CheckBox Content="+2" Name="charge2Box" Margin="10,2,10,2" IsChecked="True" Checked="AddChargeState" Unchecked="RemoveChargeState"></CheckBox>
 							<CheckBox Content="+3" Name="charge3Box" Margin="10,2,10,2" Checked="AddChargeState" Unchecked="RemoveChargeState"></CheckBox>
 						</StackPanel>
 						<StackPanel Height="Auto" Width="Auto" FlowDirection="LeftToRight" Orientation="Horizontal">
@@ -61,8 +61,8 @@
 							<CheckBox Content="-NH3" Name="ammoniaLossBox" Margin="0,2,10,2" Checked="AmmoniaLossChecked" Unchecked="AmmoniaLossUnchecked"></CheckBox>
 						</StackPanel>
 						<StackPanel Height="Auto" Width="Auto" FlowDirection="LeftToRight" Orientation="Horizontal">
-							<CheckBox Content="b" Name="bIonBox" Margin="50,2,10,2" Checked="AllIonLettersCheckBoxOnChecked" Unchecked="AllIonLettersCheckBoxOnUnchecked"></CheckBox>
-							<CheckBox Content="y" Name="yIonBox" Margin="10,2,10,2" Checked="AllIonLettersCheckBoxOnChecked" Unchecked="AllIonLettersCheckBoxOnUnchecked"></CheckBox>
+							<CheckBox Content="b" Name="bIonBox" Margin="50,2,10,2" IsChecked="True" Checked="AllIonLettersCheckBoxOnChecked" Unchecked="AllIonLettersCheckBoxOnUnchecked"></CheckBox>
+							<CheckBox Content="y" Name="yIonBox" Margin="10,2,10,2" IsChecked="True" Checked="AllIonLettersCheckBoxOnChecked" Unchecked="AllIonLettersCheckBoxOnUnchecked"></CheckBox>
 							<CheckBox Content="a" Name="aIonBox" Margin="10,2,10,2" Checked="AllIonLettersCheckBoxOnChecked" Unchecked="AllIonLettersCheckBoxOnUnchecked"></CheckBox>
 						</StackPanel>
 						<StackPanel Name="ionNumbersContainer" Height="Auto" Width="Auto" FlowDirection="LeftToRight" Orientation="Vertical">
