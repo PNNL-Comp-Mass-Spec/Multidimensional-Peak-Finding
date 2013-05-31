@@ -72,7 +72,7 @@ namespace MultiDimensionalXicViewer.View
 
 			this.FeatureDataGrid.SelectedItem = null;
 
-			this.XicBrowserViewModel.FindFeatures();
+			this.XicBrowserViewModel.OnFindFeatures();
 		}
 
 		private void FeatureSelectionChange(object sender, SelectionChangedEventArgs e)

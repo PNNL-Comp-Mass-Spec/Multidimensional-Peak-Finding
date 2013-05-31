@@ -12,6 +12,7 @@ using InformedProteomics.Backend.Data.Sequence;
 using InformedProteomics.Backend.Data.Spectrometry;
 using MultiDimensionalPeakFinding;
 using MultiDimensionalPeakFinding.PeakDetection;
+using Ookii.Dialogs;
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
@@ -43,10 +44,13 @@ namespace MultiDimensionalXicViewer.ViewModel
 
 		public List<int> FragmentChargeStateList { get; set; }
 		public List<NeutralLoss> FragmentNeutralLossList { get; set; }
-		public List<string> FragmentIonList { get; set; } 
+		public List<string> FragmentIonList { get; set; }
+
+		public ProgressDialog FeatureFindingProgressDialog { get; set; }
 
 		private AminoAcidSet m_aminoAcidSet;
 		private IonTypeFactory m_ionTypeFactory;
+		private BackgroundWorker m_backgroundWorker;
 
 		public XicBrowserViewModel()
 		{
@@ -77,44 +81,18 @@ namespace MultiDimensionalXicViewer.ViewModel
 			// TODO: Make sure that the m/z based table exists
 		}
 
-		public void FindFeatures()
+		public void OnFindFeatures()
 		{
-			var seqGraph = new SequenceGraph(m_aminoAcidSet, this.CurrentPeptide);
-			var scoringGraph = seqGraph.GetScoringGraph(0);
-			double mz = scoringGraph.GetPrecursorIon(this.CurrentChargeState).GetMz();
+			this.FeatureFindingProgressDialog = new ProgressDialog();
 
-			List<IntensityPoint> uimfPointList = this.UimfUtil.GetXic(mz, this.CurrentTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
-			IEnumerable<Point> watershedPointList = WaterShedMapUtil.BuildWatershedMap(uimfPointList);
+			this.FeatureFindingProgressDialog.WindowTitle = "Feature Finding Progress";
+			this.FeatureFindingProgressDialog.Description = "Feature Finding Progress";
+			this.FeatureFindingProgressDialog.ShowTimeRemaining = true;
+			this.FeatureFindingProgressDialog.ShowCancelButton = false;
 
-			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(11, 2);
-			smoother.Smooth(ref watershedPointList);
+			this.FeatureFindingProgressDialog.DoWork += ProgressDialogOnDoWork;
 
-			this.FeatureList = FeatureDetection.DoWatershedAlgorithm(watershedPointList).ToList();
-			OnPropertyChanged("FeatureList");
-
-			this.LcSlicePlot = new PlotModel();
-			OnPropertyChanged("LcSlicePlot");
-
-			this.ImsSlicePlot = new PlotModel();
-			OnPropertyChanged("ImsSlicePlot");
-
-			this.FragmentFeaturesDictionary.Clear();
-			var sequence = new Sequence(this.CurrentPeptide, m_aminoAcidSet);
-			var ionTypeDictionary = sequence.GetProductIons(m_ionTypeFactory.GetAllKnownIonTypes());
-			foreach (var ionTypeKvp in ionTypeDictionary)
-			{
-				Tuple<IonType, int> ionTypeTuple = ionTypeKvp.Key;
-
-				var ion = ionTypeKvp.Value;
-				double fragmentMz = ion.GetMz();
-
-				uimfPointList = this.UimfUtil.GetXic(fragmentMz, this.CurrentTolerance, DataReader.FrameType.MS2, DataReader.ToleranceType.PPM);
-				watershedPointList = WaterShedMapUtil.BuildWatershedMap(uimfPointList);
-				smoother.Smooth(ref watershedPointList);
-
-				var fragmentFeatureBlobList = FeatureDetection.DoWatershedAlgorithm(watershedPointList).ToList();
-				this.FragmentFeaturesDictionary.Add(ionTypeTuple, fragmentFeatureBlobList);
-			}
+			this.FeatureFindingProgressDialog.ShowDialog();
 		}
 
 		public void CreateLcAndImsSlicePlots(FeatureBlob feature)
@@ -409,6 +387,78 @@ namespace MultiDimensionalXicViewer.ViewModel
 			// Set the minimum to 0 and refresh the plot
 			yAxis.Zoom(0, yAxis.ActualMaximum);
 			yAxis.PlotModel.RefreshPlot(true);
+		}
+
+		private void ProgressDialogOnDoWork(object sender, DoWorkEventArgs doWorkEventArgs)
+		{
+			m_backgroundWorker = new BackgroundWorker();
+			m_backgroundWorker.WorkerReportsProgress = true;
+			m_backgroundWorker.WorkerSupportsCancellation = false;
+			m_backgroundWorker.ProgressChanged += BackgroundWorkerOnProgressChanged;
+
+			FindFeatures();
+		}
+
+		private void FindFeatures()
+		{
+			m_backgroundWorker.ReportProgress(0, "Finding 3-D Features for Precursor and Fragments");
+
+			var seqGraph = new SequenceGraph(m_aminoAcidSet, this.CurrentPeptide);
+			var scoringGraph = seqGraph.GetScoringGraph(0);
+			double mz = scoringGraph.GetPrecursorIon(this.CurrentChargeState).GetMz();
+
+			List<IntensityPoint> uimfPointList = this.UimfUtil.GetXic(mz, this.CurrentTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+			IEnumerable<Point> watershedPointList = WaterShedMapUtil.BuildWatershedMap(uimfPointList);
+
+			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(11, 2);
+			smoother.Smooth(ref watershedPointList);
+
+			this.FeatureList = FeatureDetection.DoWatershedAlgorithm(watershedPointList).ToList();
+			
+			this.LcSlicePlot = new PlotModel();
+			this.ImsSlicePlot = new PlotModel();
+
+			this.FragmentFeaturesDictionary.Clear();
+			var sequence = new Sequence(this.CurrentPeptide, m_aminoAcidSet);
+			var ionTypeDictionary = sequence.GetProductIons(m_ionTypeFactory.GetAllKnownIonTypes());
+
+			double fragmentCount = ionTypeDictionary.Count;
+			int index = 0;
+			foreach (var ionTypeKvp in ionTypeDictionary)
+			{
+				Tuple<IonType, int> ionTypeTuple = ionTypeKvp.Key;
+
+				var ion = ionTypeKvp.Value;
+				double fragmentMz = ion.GetMz();
+
+				uimfPointList = this.UimfUtil.GetXic(fragmentMz, this.CurrentTolerance, DataReader.FrameType.MS2, DataReader.ToleranceType.PPM);
+				watershedPointList = WaterShedMapUtil.BuildWatershedMap(uimfPointList);
+				smoother.Smooth(ref watershedPointList);
+
+				var fragmentFeatureBlobList = FeatureDetection.DoWatershedAlgorithm(watershedPointList).ToList();
+				this.FragmentFeaturesDictionary.Add(ionTypeTuple, fragmentFeatureBlobList);
+
+				index++;
+				int progress = (int)((index / fragmentCount) * 100);
+				m_backgroundWorker.ReportProgress(progress);
+			}
+
+			OnPropertyChanged("FeatureList");
+			OnPropertyChanged("LcSlicePlot");
+			OnPropertyChanged("ImsSlicePlot");
+		}
+
+		private void BackgroundWorkerOnProgressChanged(object sender, ProgressChangedEventArgs progressChangedEventArgs)
+		{
+			string displayString = progressChangedEventArgs.UserState != null ? progressChangedEventArgs.UserState.ToString() : "";
+			if (!displayString.Equals(""))
+			{
+				this.FeatureFindingProgressDialog.ReportProgress(progressChangedEventArgs.ProgressPercentage, displayString, "Processing: " + progressChangedEventArgs.ProgressPercentage + "%");
+			}
+			else
+			{
+				this.FeatureFindingProgressDialog.ReportProgress(progressChangedEventArgs.ProgressPercentage, null, "Processing: " + progressChangedEventArgs.ProgressPercentage + "%");
+			}
 		}
 	}
 }
