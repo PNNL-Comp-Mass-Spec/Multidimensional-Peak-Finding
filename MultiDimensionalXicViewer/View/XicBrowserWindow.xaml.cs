@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -14,7 +15,13 @@ using InformedProteomics.Backend.Data.Spectrometry;
 using MultiDimensionalPeakFinding;
 using MultiDimensionalPeakFinding.PeakDetection;
 using MultiDimensionalXicViewer.ViewModel;
+using Ookii.Dialogs;
 using UIMFLibrary;
+using CheckBox = System.Windows.Controls.CheckBox;
+using DataGrid = System.Windows.Controls.DataGrid;
+using FlowDirection = System.Windows.FlowDirection;
+using Orientation = System.Windows.Controls.Orientation;
+using TextBox = System.Windows.Controls.TextBox;
 
 namespace MultiDimensionalXicViewer.View
 {
@@ -45,13 +52,14 @@ namespace MultiDimensionalXicViewer.View
 		private void UimfOpenButtonClick(object sender, RoutedEventArgs e)
 		{
 			// Create OpenFileDialog and Set filter for file extension and default file extension
-			Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog { DefaultExt = ".uimf", Filter = "UIMF Files (*.uimf)|*.uimf" };
+			var dialog = new VistaOpenFileDialog { DefaultExt = ".uimf", Filter = "UIMF Files (*.uimf)|*.uimf" };
 
 			// Get the selected file name and display in a TextBox 
-			if (dlg.ShowDialog() == true)
+			DialogResult result = dialog.ShowDialog();
+			if (result == System.Windows.Forms.DialogResult.OK)
 			{
 				// Open file 
-				string fileName = dlg.FileName;
+				string fileName = dialog.FileName;
 				this.XicBrowserViewModel.OpenUimfFile(fileName);
 			}
 		}
