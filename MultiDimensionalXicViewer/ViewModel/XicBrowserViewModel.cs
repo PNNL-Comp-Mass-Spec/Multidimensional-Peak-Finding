@@ -15,10 +15,12 @@ using MultiDimensionalPeakFinding.PeakDetection;
 using Ookii.Dialogs;
 using OxyPlot;
 using OxyPlot.Axes;
-using OxyPlot.Series;
+using OxyPlot.Wpf;
 using UIMFLibrary;
 using Point = MultiDimensionalPeakFinding.PeakDetection.Point;
 using Feature = InformedProteomics.Backend.IMS.Feature;
+using LineSeries = OxyPlot.Series.LineSeries;
+using LinearAxis = OxyPlot.Axes.LinearAxis;
 using Rectangle = System.Drawing.Rectangle;
 
 namespace MultiDimensionalXicViewer.ViewModel
@@ -77,8 +79,6 @@ namespace MultiDimensionalXicViewer.ViewModel
 
 			this.CurrentUimfFileName = uimfFileInfo.Name;
 			OnPropertyChanged("CurrentUimfFileName");
-
-			// TODO: Make sure that the m/z based table exists
 		}
 
 		public void OnFindFeatures()
@@ -174,6 +174,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 		{
 			// TODO: Use unique colors
 			var newLcSeries = new LineSeries(OxyColors.Red, 1, title);
+			newLcSeries.MouseDown += FragmentSeriesOnSelected;
 
 			foreach (var group in feature.PointList.GroupBy(x => x.ScanLc).OrderBy(x => x.Key))
 			{
@@ -191,6 +192,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 		{
 			// TODO: Use unique colors
 			var newImsSeries = new LineSeries(OxyColors.Red, 1, title);
+			newImsSeries.MouseDown += FragmentSeriesOnSelected;
 
 			foreach (var group in feature.PointList.GroupBy(x => x.ScanIms).OrderBy(x => x.Key))
 			{
@@ -387,6 +389,62 @@ namespace MultiDimensionalXicViewer.ViewModel
 			// Set the minimum to 0 and refresh the plot
 			yAxis.Zoom(0, yAxis.ActualMaximum);
 			yAxis.PlotModel.RefreshPlot(true);
+		}
+
+		private void FragmentSeriesOnSelected(object sender, OxyMouseEventArgs eventArgs)
+		{
+			Plot plot = sender as Plot;
+			switch (eventArgs.ChangedButton)
+			{
+				case OxyMouseButton.Left:
+					var selectedSeries = plot.GetSeriesFromPoint(eventArgs.Position, 10);
+					if (selectedSeries != null)
+					{
+						string fragment = selectedSeries.Title;
+
+						foreach (LineSeries series in this.ImsSlicePlot.Series)
+						{
+							if (series.Title == null)
+							{
+								series.Color = OxyColors.Blue;
+							}
+							else if (series.Title.Equals(fragment))
+							{
+								series.Color = OxyColors.Green;
+							}
+							else
+							{
+								series.Color = OxyColors.Red;
+							}
+						}
+
+						this.ImsSlicePlot.RefreshPlot(true);
+
+						foreach (LineSeries series in this.LcSlicePlot.Series)
+						{
+							if (series.Title == null)
+							{
+								series.Color = OxyColors.Blue;
+							}
+							else if (series.Title.Equals(fragment))
+							{
+								series.Color = OxyColors.Green;
+							}
+							else
+							{
+								series.Color = OxyColors.Red;
+							}
+						}
+
+						this.LcSlicePlot.RefreshPlot(true);
+					}
+					break;
+			}
+		}
+
+		private void FragmentSeriesOnDeselected(object sender, OxyMouseEventArgs e)
+		{
+			throw new NotImplementedException();
 		}
 
 		private void ProgressDialogOnDoWork(object sender, DoWorkEventArgs doWorkEventArgs)
