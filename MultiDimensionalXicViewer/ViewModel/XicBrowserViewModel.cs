@@ -174,7 +174,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 		{
 			// TODO: Use unique colors
 			var newLcSeries = new LineSeries(OxyColors.Red, 1, title);
-			newLcSeries.MouseDown += FragmentSeriesOnSelected;
+			newLcSeries.MouseDown += SeriesOnSelected;
 
 			foreach (var group in feature.PointList.GroupBy(x => x.ScanLc).OrderBy(x => x.Key))
 			{
@@ -192,7 +192,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 		{
 			// TODO: Use unique colors
 			var newImsSeries = new LineSeries(OxyColors.Red, 1, title);
-			newImsSeries.MouseDown += FragmentSeriesOnSelected;
+			newImsSeries.MouseDown += SeriesOnSelected;
 
 			foreach (var group in feature.PointList.GroupBy(x => x.ScanIms).OrderBy(x => x.Key))
 			{
@@ -215,6 +215,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 			plotModel.IsLegendVisible = false;
 
 			var lcSeries = new LineSeries(OxyColors.Blue);
+			lcSeries.MouseDown += SeriesOnSelected;
 
 			int minScanLc = int.MaxValue;
 			int maxScanLc = int.MinValue;
@@ -268,6 +269,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 			plotModel.IsLegendVisible = false;
 
 			var imsSeries = new LineSeries(OxyColors.Blue);
+			imsSeries.MouseDown += SeriesOnSelected;
 
 			int minScanIms = int.MaxValue;
 			int maxScanIms = int.MinValue;
@@ -391,7 +393,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 			yAxis.PlotModel.RefreshPlot(true);
 		}
 
-		private void FragmentSeriesOnSelected(object sender, OxyMouseEventArgs eventArgs)
+		private void SeriesOnSelected(object sender, OxyMouseEventArgs eventArgs)
 		{
 			Plot plot = sender as Plot;
 			switch (eventArgs.ChangedButton)
@@ -402,49 +404,32 @@ namespace MultiDimensionalXicViewer.ViewModel
 					{
 						string fragment = selectedSeries.Title;
 
-						foreach (LineSeries series in this.ImsSlicePlot.Series)
+						foreach (LineSeries series in this.ImsSlicePlot.Series.Concat(this.LcSlicePlot.Series))
 						{
 							if (series.Title == null)
 							{
 								series.Color = OxyColors.Blue;
+
+								// Make thick if precursor was selected
+								series.StrokeThickness = fragment == null ? 5 : 1;
 							}
 							else if (series.Title.Equals(fragment))
 							{
 								series.Color = OxyColors.Green;
+								series.StrokeThickness = 5;
 							}
 							else
 							{
 								series.Color = OxyColors.Red;
+								series.StrokeThickness = 1;
 							}
 						}
 
 						this.ImsSlicePlot.RefreshPlot(true);
-
-						foreach (LineSeries series in this.LcSlicePlot.Series)
-						{
-							if (series.Title == null)
-							{
-								series.Color = OxyColors.Blue;
-							}
-							else if (series.Title.Equals(fragment))
-							{
-								series.Color = OxyColors.Green;
-							}
-							else
-							{
-								series.Color = OxyColors.Red;
-							}
-						}
-
 						this.LcSlicePlot.RefreshPlot(true);
 					}
 					break;
 			}
-		}
-
-		private void FragmentSeriesOnDeselected(object sender, OxyMouseEventArgs e)
-		{
-			throw new NotImplementedException();
 		}
 
 		private void ProgressDialogOnDoWork(object sender, DoWorkEventArgs doWorkEventArgs)
