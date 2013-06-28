@@ -43,6 +43,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 		public List<FeatureBlob> FeatureList { get; set; }
 		public FeatureBlob CurrentFeature { get; set; }
 		public Dictionary<Tuple<IonType, int>, List<FeatureBlob>> FragmentFeaturesDictionary { get; set; }
+		public Dictionary<string, List<FeatureBlob>> IsotopeFeaturesDictionary { get; set; }
 
 		public List<int> FragmentChargeStateList { get; set; }
 		public List<NeutralLoss> FragmentNeutralLossList { get; set; }
@@ -63,6 +64,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 			this.FragmentChargeStateList = new List<int>();
 			this.FragmentNeutralLossList = new List<NeutralLoss> { NeutralLoss.NoLoss };
 			this.FragmentIonList = new List<string>();
+			this.IsotopeFeaturesDictionary = new Dictionary<string, List<FeatureBlob>>();
 
 			m_aminoAcidSet = new AminoAcidSet(Modification.Carbamidomethylation);
 			m_ionTypeFactory = new IonTypeFactory(
@@ -106,6 +108,38 @@ namespace MultiDimensionalXicViewer.ViewModel
 				CreateImsSlicePlot(feature);
 
 				MatchPrecursorToFragments();
+
+				AddIsotopesToPlots();
+
+				OnPropertyChanged("LcSlicePlot");
+				OnPropertyChanged("ImsSlicePlot");
+			}
+		}
+		
+		private void AddIsotopesToPlots()
+		{
+			if (this.CurrentFeature == null) return;
+
+			Feature precursor = new Feature(this.CurrentFeature.Statistics);
+			Rectangle precursorBoundary = precursor.GetBoundary();
+
+			foreach (var isotopeEntry in this.IsotopeFeaturesDictionary)
+			{
+				string isotopeName = isotopeEntry.Key;
+
+				foreach (var featureBlob in isotopeEntry.Value)
+				{
+					var feature = new Feature(featureBlob.Statistics);
+
+					Rectangle boundary = feature.GetBoundary();
+					Rectangle intersection = Rectangle.Intersect(precursorBoundary, boundary);
+
+					// Ignore features that do not intersect at all
+					if (intersection.IsEmpty) continue;
+
+					AddToLcPlot(featureBlob, isotopeName, OxyColors.DeepSkyBlue);
+					AddToImsPlot(featureBlob, isotopeName, OxyColors.DeepSkyBlue);
+				}
 			}
 		}
 
@@ -137,13 +171,10 @@ namespace MultiDimensionalXicViewer.ViewModel
 					// Ignore fragment features that do not intersect at all
 					if (intersection.IsEmpty) continue;
 
-					AddToLcPlot(fragmentFeature, fragmentName);
-					AddToImsPlot(fragmentFeature, fragmentName);
+					AddToLcPlot(fragmentFeature, fragmentName, OxyColors.Red);
+					AddToImsPlot(fragmentFeature, fragmentName, OxyColors.Red);
 				}
 			}
-
-			OnPropertyChanged("LcSlicePlot");
-			OnPropertyChanged("ImsSlicePlot");
 		}
 
 		private bool ShouldShowFragment(Tuple<IonType, int> ionTypeTuple)
@@ -170,10 +201,10 @@ namespace MultiDimensionalXicViewer.ViewModel
 			return true;
 		}
 
-		private void AddToLcPlot(FeatureBlob feature, string title)
+		private void AddToLcPlot(FeatureBlob feature, string title, OxyColor color)
 		{
 			// TODO: Use unique colors
-			var newLcSeries = new LineSeries(OxyColors.Red, 1, title);
+			var newLcSeries = new LineSeries(color, 1, title);
 			newLcSeries.MouseDown += SeriesOnSelected;
 
 			foreach (var group in feature.PointList.GroupBy(x => x.ScanLc).OrderBy(x => x.Key))
@@ -188,10 +219,10 @@ namespace MultiDimensionalXicViewer.ViewModel
 			this.LcSlicePlot.Series.Add(newLcSeries);
 		}
 
-		private void AddToImsPlot(FeatureBlob feature, string title)
+		private void AddToImsPlot(FeatureBlob feature, string title, OxyColor color)
 		{
 			// TODO: Use unique colors
-			var newImsSeries = new LineSeries(OxyColors.Red, 1, title);
+			var newImsSeries = new LineSeries(color, 1, title);
 			newImsSeries.MouseDown += SeriesOnSelected;
 
 			foreach (var group in feature.PointList.GroupBy(x => x.ScanIms).OrderBy(x => x.Key))
@@ -402,18 +433,25 @@ namespace MultiDimensionalXicViewer.ViewModel
 					var selectedSeries = plot.GetSeriesFromPoint(eventArgs.Position, 10);
 					if (selectedSeries != null)
 					{
-						string fragment = selectedSeries.Title;
+						string title = selectedSeries.Title;
 
 						foreach (LineSeries series in this.ImsSlicePlot.Series.Concat(this.LcSlicePlot.Series))
 						{
+							int testInt = 0;
+
 							if (series.Title == null)
 							{
 								series.Color = OxyColors.Blue;
 
 								// Make thick if precursor was selected
-								series.StrokeThickness = fragment == null ? 5 : 1;
+								series.StrokeThickness = title == null ? 5 : 1;
 							}
-							else if (series.Title.Equals(fragment))
+							else if (int.TryParse(series.Title, out testInt))
+							{
+								series.Color = OxyColors.DeepSkyBlue;
+								series.StrokeThickness = series.Title.Equals(title) ? 5 : 1;
+							}
+							else if (series.Title.Equals(title))
 							{
 								series.Color = OxyColors.Green;
 								series.StrokeThickness = 5;
@@ -448,15 +486,29 @@ namespace MultiDimensionalXicViewer.ViewModel
 
 			var seqGraph = new SequenceGraph(m_aminoAcidSet, this.CurrentPeptide);
 			var scoringGraph = seqGraph.GetScoringGraph(0);
-			double mz = scoringGraph.GetPrecursorIon(this.CurrentChargeState).GetMz();
+			var precursorIon = scoringGraph.GetPrecursorIon(this.CurrentChargeState);
+			double monoMz = precursorIon.GetMz();
 
-			List<IntensityPoint> uimfPointList = this.UimfUtil.GetXic(mz, this.CurrentTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+			List<IntensityPoint> uimfPointList = this.UimfUtil.GetXic(monoMz, this.CurrentTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
 			IEnumerable<Point> watershedPointList = WaterShedMapUtil.BuildWatershedMap(uimfPointList);
 
 			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(11, 2);
 			smoother.Smooth(ref watershedPointList);
 
 			this.FeatureList = FeatureDetection.DoWatershedAlgorithm(watershedPointList).ToList();
+
+			this.IsotopeFeaturesDictionary.Clear();
+			List<string> precursorTargetList = this.CurrentChargeState == 2 ? new List<string> { "-1", "0.5", "1", "1.5", "2", "3" } : new List<string> { "-1", "1", "2", "3" };
+			foreach (var precursorTarget in precursorTargetList)
+			{
+				double targetMz = precursorIon.GetIsotopeMz(double.Parse(precursorTarget));
+
+				List<IntensityPoint> isotopeUimfPointList = this.UimfUtil.GetXic(targetMz, this.CurrentTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+				IEnumerable<Point> isotopeWatershedPointList = WaterShedMapUtil.BuildWatershedMap(isotopeUimfPointList);
+
+				List<FeatureBlob> isotopeFeatures = FeatureDetection.DoWatershedAlgorithm(isotopeWatershedPointList).ToList();
+				this.IsotopeFeaturesDictionary.Add(precursorTarget, isotopeFeatures);
+			}
 			
 			this.LcSlicePlot = new PlotModel();
 			this.ImsSlicePlot = new PlotModel();
