@@ -63,5 +63,10 @@ namespace MultiDimensionalPeakFinding
 			FrameParameters frameParameters = UimfReader.GetFrameParameters(1);
 			return (int)Math.Round(DataReader.GetBinClosestToMZ(frameParameters.CalibrationSlope, frameParameters.CalibrationIntercept, globalParameters.BinWidth, globalParameters.TOFCorrectionTime, mz));
 		}
+
+		public bool DoesContainBinCentricData()
+		{
+			return UimfReader.ContainsBinCentricData;
+		}
 	}
 }

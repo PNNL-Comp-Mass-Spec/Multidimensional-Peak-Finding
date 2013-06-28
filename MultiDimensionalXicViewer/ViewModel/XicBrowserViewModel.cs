@@ -79,6 +79,29 @@ namespace MultiDimensionalXicViewer.ViewModel
 
 			this.UimfUtil = new UimfUtil(fileName);
 
+			// TODO: Make sure that the m/z based table exists
+			if(!this.UimfUtil.DoesContainBinCentricData())
+			{
+				//IContainer components = new System.ComponentModel.Container();
+
+				TaskDialog taskDialog = new TaskDialog();
+				taskDialog.WindowTitle = "Bin Centric Data Creation";
+				taskDialog.Content = "Content";
+				taskDialog.MainInstruction = "Main Instruction";
+				taskDialog.AllowDialogCancellation = true;
+
+				TaskDialogButton yesButton = new TaskDialogButton();
+				yesButton.ButtonType = ButtonType.Yes;
+
+				TaskDialogButton noButton = new TaskDialogButton();
+				noButton.ButtonType = ButtonType.No;
+
+				taskDialog.Buttons.Add(noButton);
+				taskDialog.Buttons.Add(yesButton);
+
+				taskDialog.ShowDialog();
+			}
+
 			this.CurrentUimfFileName = uimfFileInfo.Name;
 			OnPropertyChanged("CurrentUimfFileName");
 		}
