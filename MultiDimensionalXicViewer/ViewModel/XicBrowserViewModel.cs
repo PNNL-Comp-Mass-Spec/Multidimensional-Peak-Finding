@@ -55,6 +55,9 @@ namespace MultiDimensionalXicViewer.ViewModel
 		private IonTypeFactory m_ionTypeFactory;
 		private BackgroundWorker m_backgroundWorker;
 
+		private double m_maxLcIntensity;
+		private double m_maxImsIntensity;
+
 		public XicBrowserViewModel()
 		{
 			//this.XicPlot = new LinesVisual3D();
@@ -235,7 +238,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 				int scanLc = group.Key;
 				double intensity = group.Sum(x => x.Intensity);
 
-				DataPoint dataPoint = new DataPoint(scanLc, intensity);
+				DataPoint dataPoint = new DataPoint(scanLc, intensity / m_maxLcIntensity);
 				newLcSeries.Points.Add(dataPoint);
 			}
 
@@ -253,7 +256,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 				int scanLc = group.Key;
 				double intensity = group.Sum(x => x.Intensity);
 
-				DataPoint dataPoint = new DataPoint(scanLc, intensity);
+				DataPoint dataPoint = new DataPoint(scanLc, intensity / m_maxImsIntensity);
 				newImsSeries.Points.Add(dataPoint);
 			}
 
@@ -288,13 +291,19 @@ namespace MultiDimensionalXicViewer.ViewModel
 				lcSeries.Points.Add(dataPoint);
 			}
 
+			// Re-scale intensities to be between 0 and 1
+			foreach (var dataPoint in lcSeries.Points)
+			{
+				dataPoint.Y = dataPoint.Y / maxIntensity;
+			}
+
 			plotModel.Series.Add(lcSeries);
 
-			var yAxis = new LinearAxis(AxisPosition.Left, "Intensity");
+			var yAxis = new LinearAxis(AxisPosition.Left, "Relative Intensity");
 			yAxis.Minimum = 0;
 			yAxis.AbsoluteMinimum = 0;
-			yAxis.Maximum = maxIntensity + (maxIntensity * .05);
-			yAxis.AbsoluteMaximum = maxIntensity + (maxIntensity * .05);
+			yAxis.Maximum = 1.01;
+			yAxis.AbsoluteMaximum = 1.01;
 			yAxis.IsPanEnabled = true;
 			yAxis.IsZoomEnabled = true;
 			yAxis.AxisChanged += OnYAxisChange;
@@ -310,6 +319,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 			plotModel.Axes.Add(xAxis);
 			plotModel.Axes.Add(yAxis);
 
+			m_maxLcIntensity = maxIntensity;
 			this.LcSlicePlot = plotModel;
 			OnPropertyChanged("LcSlicePlot");
 		}
@@ -342,13 +352,19 @@ namespace MultiDimensionalXicViewer.ViewModel
 				imsSeries.Points.Add(dataPoint);
 			}
 
+			// Re-scale intensities to be between 0 and 1
+			foreach (var dataPoint in imsSeries.Points)
+			{
+				dataPoint.Y = dataPoint.Y / maxIntensity;
+			}
+
 			plotModel.Series.Add(imsSeries);
 
-			var yAxis = new LinearAxis(AxisPosition.Left, "Intensity");
+			var yAxis = new LinearAxis(AxisPosition.Left, "Relative Intensity");
 			yAxis.Minimum = 0;
 			yAxis.AbsoluteMinimum = 0;
-			yAxis.Maximum = maxIntensity + (maxIntensity * .05);
-			yAxis.AbsoluteMaximum = maxIntensity + (maxIntensity * .05);
+			yAxis.Maximum = 1.01;
+			yAxis.AbsoluteMaximum = 1.01;
 			yAxis.IsPanEnabled = true;
 			yAxis.IsZoomEnabled = true;
 			yAxis.AxisChanged += OnYAxisChange;
@@ -364,6 +380,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 			plotModel.Axes.Add(xAxis);
 			plotModel.Axes.Add(yAxis);
 
+			m_maxImsIntensity = maxIntensity;
 			this.ImsSlicePlot = plotModel;
 			OnPropertyChanged("ImsSlicePlot");
 		}
