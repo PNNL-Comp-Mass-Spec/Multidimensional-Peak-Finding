@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -445,5 +446,35 @@ namespace MultiDimensionalPeakFindingTests
                 Console.WriteLine(string.Join(",", f.ImsApexPeakProfile));
             }
         }
+
+		[Test]
+		public void TestParallelFeatureFinding()
+		{
+			string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
+			List<double> targetMzList = new List<double> { 582.3218, 964.40334, 643.27094937 };
+
+			FeatureDetectionUtil featureUtil = new FeatureDetectionUtil(fileLocation, 11, 4);
+			IDictionary<double, IEnumerable<FeatureBlob>> targetDictionary = featureUtil.GetFeatures(targetMzList, 30, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+
+			foreach (var kvp in targetDictionary)
+			{
+				Console.WriteLine(kvp.Key + "\t" + kvp.Value.Count());
+			}
+		}
+
+		[Test]
+		public void TestParallelFeatureFindingUsingBins()
+		{
+			string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
+			List<int> targetBinList = new List<int> { 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 10000 };
+
+			FeatureDetectionUtil featureUtil = new FeatureDetectionUtil(fileLocation, 11, 4);
+			IDictionary<int, IEnumerable<FeatureBlob>> targetDictionary = featureUtil.GetFeatures(targetBinList, DataReader.FrameType.MS1);
+
+			foreach (var kvp in targetDictionary)
+			{
+				Console.WriteLine(kvp.Key + "\t" + kvp.Value.Count());
+			}
+		}
 	}
 }

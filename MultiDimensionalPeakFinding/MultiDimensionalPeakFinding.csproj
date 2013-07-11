@@ -72,6 +72,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FeatureDetectionUtil.cs" />
     <Compile Include="PeakCorrelation\FeatureCorrelator.cs" />
     <Compile Include="PeakDetection\FeatureBlob.cs" />
     <Compile Include="PeakDetection\FeatureBlobStatistics.cs" />
