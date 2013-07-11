@@ -89,5 +89,57 @@ namespace MultiDimensionalPeakFinding
 
 			return resultDictionary;
 		}
+
+		public IDictionary<double, IEnumerable<FeatureBlobStatistics>> GetFeatureStatistics(IEnumerable<double> targetMzList, double tolerance, DataReader.FrameType frameType, DataReader.ToleranceType toleranceType)
+		{
+			Dictionary<double, IEnumerable<FeatureBlobStatistics>> resultDictionary = new Dictionary<double, IEnumerable<FeatureBlobStatistics>>();
+
+			Parallel.ForEach(targetMzList, m_parallelOptions, targetMz =>
+			{
+				// Grab a UIMF Util object from the stack
+				UimfUtil uimfUtil;
+				m_uimfUtilStack.TryPop(out uimfUtil);
+
+				// Do Feature Finding
+				double[,] intensityBlock = uimfUtil.GetXicAsArray(targetMz, tolerance, frameType, toleranceType);
+				m_smoother.Smooth(ref intensityBlock);
+				IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, 0, 0);
+				IEnumerable<FeatureBlob> featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
+
+				// Add result to dictionary
+				resultDictionary.Add(targetMz, featureList.Select(featureBlob => featureBlob.CalculateStatistics()));
+
+				// Push the UIMF Util object back onto the stack when we are done with it
+				m_uimfUtilStack.Push(uimfUtil);
+			});
+
+			return resultDictionary;
+		}
+
+		public IDictionary<int, IEnumerable<FeatureBlobStatistics>> GetFeatureStatistics(IEnumerable<int> targetBinList, DataReader.FrameType frameType)
+		{
+			Dictionary<int, IEnumerable<FeatureBlobStatistics>> resultDictionary = new Dictionary<int, IEnumerable<FeatureBlobStatistics>>();
+
+			Parallel.ForEach(targetBinList, m_parallelOptions, targetBin =>
+			{
+				// Grab a UIMF Util object from the stack
+				UimfUtil uimfUtil;
+				m_uimfUtilStack.TryPop(out uimfUtil);
+
+				// Do Feature Finding
+				double[,] intensityBlock = uimfUtil.GetXicAsArray(targetBin, frameType);
+				m_smoother.Smooth(ref intensityBlock);
+				IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, 0, 0);
+				IEnumerable<FeatureBlob> featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
+
+				// Add result to dictionary
+				resultDictionary.Add(targetBin, featureList.Select(featureBlob => featureBlob.CalculateStatistics()));
+
+				// Push the UIMF Util object back onto the stack when we are done with it
+				m_uimfUtilStack.Push(uimfUtil);
+			});
+
+			return resultDictionary;
+		}
 	}
 }
