@@ -23,6 +23,8 @@ namespace MultiDimensionalPeakFinding
 		/// <param name="degreeOfParallelism">Desired degree of parallelism. Use 0 if you want to use all cores available. Defaults to all cores.</param>
 		public FeatureDetectionUtil(string uimfFileLocation, int numPointsToSmooth = 11, int degreeOfParallelism = 0)
 		{
+			if (degreeOfParallelism <= 0) degreeOfParallelism = Environment.ProcessorCount;
+
 			m_uimfUtilStack = new ConcurrentStack<UimfUtil>();
 			for(int i = 0; i < degreeOfParallelism; i++)
 			{
@@ -32,10 +34,7 @@ namespace MultiDimensionalPeakFinding
 
 			m_smoother = new SavitzkyGolaySmoother(numPointsToSmooth, 2);
 
-			m_parallelOptions = new ParallelOptions();
-
-			// Only change the max degree of parallelism if the user specified something greater than 0
-			if(degreeOfParallelism > 0) m_parallelOptions.MaxDegreeOfParallelism = degreeOfParallelism;
+			m_parallelOptions = new ParallelOptions {MaxDegreeOfParallelism = degreeOfParallelism};
 		}
 
 		public IDictionary<double, IEnumerable<FeatureBlob>> GetFeatures(IEnumerable<double> targetMzList, double tolerance, DataReader.FrameType frameType, DataReader.ToleranceType toleranceType)
