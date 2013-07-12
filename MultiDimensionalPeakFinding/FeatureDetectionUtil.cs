@@ -106,7 +106,7 @@ namespace MultiDimensionalPeakFinding
 				IEnumerable<FeatureBlob> featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
 
 				// Add result to dictionary
-				resultDictionary.Add(targetMz, featureList.Select(featureBlob => featureBlob.CalculateStatistics()));
+				resultDictionary.Add(targetMz, featureList.Select(featureBlob => featureBlob.CalculateStatistics()).ToArray());
 
 				// Push the UIMF Util object back onto the stack when we are done with it
 				m_uimfUtilStack.Push(uimfUtil);

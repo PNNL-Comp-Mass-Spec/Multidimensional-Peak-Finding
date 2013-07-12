@@ -483,7 +483,7 @@ namespace MultiDimensionalPeakFindingTests
         {
             const string uimfFilePath = @"..\..\..\TestFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
             var uimfUtil = new UimfUtil(uimfFilePath);
-            var featureDetectionUtil = new FeatureDetectionUtil(uimfFilePath);
+            var featureDetectionUtil = new FeatureDetectionUtil(uimfFilePath, 11, 4);
             int minTargetBin = uimfUtil.GetBinFromMz(500.0);
             int maxTargetBin = uimfUtil.GetBinFromMz(600.0);
             var targetMzList = Enumerable.Range(minTargetBin, maxTargetBin - minTargetBin + 1).Select(uimfUtil.GetMzFromBin).ToList();
