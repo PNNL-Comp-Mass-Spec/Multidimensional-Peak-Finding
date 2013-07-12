@@ -7,16 +7,15 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 {
 	public class FeatureBlobStatistics
 	{
-        // All boundaries are inclusive
-		public int ScanLcMin { get; private set; }
-		public int ScanLcMax { get; private set; }
-		public int ScanLcRep { get; private set; }
-		public int ScanImsMin { get; private set; }
-		public int ScanImsMax { get; private set; }
-		public int ScanImsRep { get; private set; }
-		public double IntensityMax { get; private set; }
-        public double SumIntensities { get; private set; }
-        public int NumPoints { get; private set; }
+        public ushort ScanLcStart { get; private set; }
+        public byte ScanLcLength { get; private set; }
+        public byte ScanLcRepOffset { get; private set; }
+        public ushort ScanImsStart { get; private set; }
+        public byte ScanImsLength { get; private set; }
+        public byte ScanImsRepOffset { get; private set; }
+        public float IntensityMax { get; private set; }
+        public float SumIntensities { get; private set; }
+        public ushort NumPoints { get; private set; }
 
         // Size: ScanLcMax-ScanLcMin+1
         public float[] LcApexPeakProfile { get; set; }
@@ -26,50 +25,93 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 
 		public FeatureBlobStatistics(int scanLcMin, int scanLcMax, int scanLcRep, int scanImsMin, int scanImsMax, int scanImsRep, double intensityMax, double sumIntensities, int numPoints)
 		{
-			ScanLcMin = scanLcMin;
-			ScanLcMax = scanLcMax;
-			ScanLcRep = scanLcRep;
-			ScanImsMin = scanImsMin;
-			ScanImsMax = scanImsMax;
-			ScanImsRep = scanImsRep;
-			IntensityMax = intensityMax;
-		    SumIntensities = sumIntensities;
-		    NumPoints = numPoints;
+            ScanLcStart = (ushort)scanLcMin;
+
+            var scanLcLength = scanLcMax - scanLcMin + 1;
+            if (scanLcLength > byte.MaxValue) ScanLcLength = byte.MaxValue;
+            else ScanLcLength = (byte)(scanLcLength);
+
+            var scanRepOffset = scanLcRep - scanLcMin;
+            if (scanRepOffset > byte.MaxValue) ScanLcRepOffset = byte.MaxValue;
+            else ScanLcRepOffset = (byte)(scanRepOffset);
+
+            ScanImsStart = (ushort)scanImsMin;
+            var imsLength = scanImsMax - scanImsMin + 1;
+            if (imsLength > byte.MaxValue) ScanImsLength = byte.MaxValue;
+            else ScanImsLength = (byte)(imsLength);
+
+            var imsRepOffset = scanImsRep - scanImsMin;
+            if (imsRepOffset > byte.MaxValue) ScanImsRepOffset = byte.MaxValue;
+            else ScanImsRepOffset = (byte)(imsRepOffset);
+
+            IntensityMax = (float)intensityMax;
+            SumIntensities = (float)sumIntensities;
+            NumPoints = (ushort)numPoints;
 		}
+
+        public int GetScanLcMin()
+        {
+            return ScanLcStart;
+        }
+
+        public int GetScanLcMax()
+        {
+            return ScanLcStart + ScanLcLength - 1; 
+        }
+
+        public int GetScanLcRep()
+        {
+            return ScanLcStart + ScanLcRepOffset;
+        }
+
+        public int GetScanImsMin()
+        {
+            return ScanImsStart;
+        }
+
+        public int GetScanImsMax()
+        {
+            return ScanImsStart + ScanImsLength - 1;
+        }
+
+        public int GetScanImsRep()
+        {
+            return ScanImsStart + ScanImsRepOffset;
+        }
 
         public void ComputePeakProfile(Point apex)
         {
             if (apex == null)
                 return;
 
-            LcApexPeakProfile = new float[ScanLcMax-ScanLcMin+1];
+            LcApexPeakProfile = new float[ScanLcLength];
 
             Point curPoint = apex;
             int index;
-            while(curPoint != null && (index = curPoint.ScanLc - ScanLcMin) >= 0)
+            while(curPoint != null && (index = curPoint.ScanLc - ScanLcStart) >= 0)
             {
                 LcApexPeakProfile[index] = (float)curPoint.Intensity;
                 curPoint = curPoint.South;
             }
 
             curPoint = apex.North;
-            while (curPoint != null && (index = curPoint.ScanLc - ScanLcMin) < LcApexPeakProfile.Length)
+            while (curPoint != null && (index = curPoint.ScanLc - ScanLcStart) < LcApexPeakProfile.Length)
             {
                 LcApexPeakProfile[index] = (float)curPoint.Intensity;
                 curPoint = curPoint.North;
             } 
 
-            ImsApexPeakProfile = new float[ScanImsMax-ScanImsMin+1];
+            ImsApexPeakProfile = new float[ScanImsLength];
 
             curPoint = apex;
-            while (curPoint != null && (index = curPoint.ScanIms - ScanImsMin) >= 0)
+            while (curPoint != null && (index = curPoint.ScanIms - ScanImsStart) >= 0)
             {
                 ImsApexPeakProfile[index] = (float)curPoint.Intensity;
                 curPoint = curPoint.West;
             }
 
             curPoint = apex.East;
-            while (curPoint != null && (index = curPoint.ScanIms - ScanImsMin) < ImsApexPeakProfile.Length)
+            while (curPoint != null && (index = curPoint.ScanIms - ScanImsStart) < ImsApexPeakProfile.Length)
             {
                 ImsApexPeakProfile[index] = (float)curPoint.Intensity;
                 curPoint = curPoint.East;

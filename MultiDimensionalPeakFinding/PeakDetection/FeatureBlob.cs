@@ -35,10 +35,10 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 		{
 			if (this.Statistics == null) this.CalculateStatistics();
 
-			int scanImsMin = this.Statistics.ScanImsMin;
-			int scanImsMax = this.Statistics.ScanImsMax;
-			int scanLcMin = this.Statistics.ScanLcMin;
-			int scanLcMax = this.Statistics.ScanLcMax;
+			int scanImsMin = this.Statistics.GetScanImsMin();
+			int scanImsMax = this.Statistics.GetScanImsMax();
+			int scanLcMin = this.Statistics.GetScanLcMin();
+			int scanLcMax = this.Statistics.GetScanLcMax();
 
 			double[,] returnArray = new double[scanLcMax - scanLcMin + 1, scanImsMax - scanImsMin + 1];
 

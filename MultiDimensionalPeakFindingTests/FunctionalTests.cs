@@ -172,10 +172,10 @@ namespace MultiDimensionalPeakFindingTests
 			FeatureBlob parentFeature = FeatureDetection.DoWatershedAlgorithm(parentPointList).First();
 
 			FeatureBlobStatistics statistics = parentFeature.Statistics;
-			int scanLcMin = statistics.ScanLcMin;
-			int scanLcMax = statistics.ScanLcMax;
-			int scanImsMin = statistics.ScanImsMin;
-			int scanImsMax = statistics.ScanImsMax;
+			int scanLcMin = statistics.GetScanLcMin();
+			int scanLcMax = statistics.GetScanLcMax();
+			int scanImsMin = statistics.GetScanImsMin();
+			int scanImsMax = statistics.GetScanImsMax();
 
 			using (TextReader fragmentReader = new StreamReader(@"..\..\..\testFiles\OneFragment.csv"))
 			{
@@ -431,12 +431,12 @@ namespace MultiDimensionalPeakFindingTests
             {
                 Console.WriteLine(
                     "LC: [{0},{1}], IMS: [{2},{3}], Apex: [{4},{5}] SumIntensities: {6}, NumPoints: {7}",
-                    f.ScanLcMin,
-                    f.ScanLcMax,
-                    f.ScanImsMin,
-                    f.ScanImsMax,
-                    f.ScanLcRep,
-                    f.ScanImsRep,
+                    f.GetScanLcMin(),
+                    f.GetScanLcMax(),
+                    f.GetScanImsMin(),
+                    f.GetScanImsMax(),
+                    f.GetScanLcRep(),
+                    f.GetScanImsRep(),
                     f.SumIntensities,
                     f.NumPoints
                     );
@@ -476,5 +476,18 @@ namespace MultiDimensionalPeakFindingTests
 				Console.WriteLine(kvp.Key + "\t" + kvp.Value.Count());
 			}
 		}
+
+        // Added by Sangtae
+        [Test]
+        public void TestParallelFeatureDetection()
+        {
+            const string uimfFilePath = @"..\..\..\TestFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
+            var uimfUtil = new UimfUtil(uimfFilePath);
+            var featureDetectionUtil = new FeatureDetectionUtil(uimfFilePath);
+            int minTargetBin = uimfUtil.GetBinFromMz(500.0);
+            int maxTargetBin = uimfUtil.GetBinFromMz(600.0);
+            var targetMzList = Enumerable.Range(minTargetBin, maxTargetBin - minTargetBin + 1).Select(uimfUtil.GetMzFromBin).ToList();
+            featureDetectionUtil.GetFeatureStatistics(targetMzList, 15, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+        }
 	}
 }
