@@ -48,9 +48,9 @@ namespace MultiDimensionalPeakFinding
 			    m_uimfUtilStack.TryPop(out uimfUtil);
 
 				// Do Feature Finding
-				double[,] intensityBlock = uimfUtil.GetXicAsArray(targetMz, tolerance, frameType, toleranceType);
-				m_smoother.Smooth(ref intensityBlock);
-				IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, 0, 0);
+				var intensityBlock = uimfUtil.GetXic(targetMz, tolerance, frameType, toleranceType);
+				IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock);
+				m_smoother.Smooth(ref pointList);
 				IEnumerable<FeatureBlob> featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
 
 				// Add result to dictionary
