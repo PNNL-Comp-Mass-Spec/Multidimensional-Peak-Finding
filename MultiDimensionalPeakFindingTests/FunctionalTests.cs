@@ -475,7 +475,7 @@ namespace MultiDimensionalPeakFindingTests
 			}
 
 			FeatureDetectionUtil featureUtil = new FeatureDetectionUtil(fileLocation, 11, 4);
-			IDictionary<int, IEnumerable<FeatureBlob>> targetDictionary = featureUtil.GetFeatures(targetBinList, DataReader.FrameType.MS1);
+			IDictionary<int, IEnumerable<FeatureBlob>> targetDictionary = featureUtil.GetFeatures(targetBinList, 30, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
 
 			//foreach (var kvp in targetDictionary)
 			//{

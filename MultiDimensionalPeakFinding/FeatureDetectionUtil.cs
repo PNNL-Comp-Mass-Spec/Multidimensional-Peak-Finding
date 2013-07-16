@@ -63,7 +63,7 @@ namespace MultiDimensionalPeakFinding
 			return resultDictionary;
 		}
 
-		public IDictionary<int, IEnumerable<FeatureBlob>> GetFeatures(IEnumerable<int> targetBinList, DataReader.FrameType frameType)
+		public IDictionary<int, IEnumerable<FeatureBlob>> GetFeatures(IEnumerable<int> targetBinList, double tolerance, DataReader.FrameType frameType, DataReader.ToleranceType toleranceType)
 		{
 			Dictionary<int, IEnumerable<FeatureBlob>> resultDictionary = new Dictionary<int, IEnumerable<FeatureBlob>>();
 
@@ -73,10 +73,12 @@ namespace MultiDimensionalPeakFinding
 				UimfUtil uimfUtil;
 				m_uimfUtilStack.TryPop(out uimfUtil);
 
+				double targetMz = uimfUtil.GetMzFromBin(targetBin);
+
 				// Do Feature Finding
-				double[,] intensityBlock = uimfUtil.GetXicAsArray(targetBin, frameType);
-				m_smoother.Smooth(ref intensityBlock);
-				IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, 0, 0);
+				var intensityBlock = uimfUtil.GetXic(targetMz, tolerance, frameType, toleranceType);
+				IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock);
+				m_smoother.Smooth(ref pointList);
 				IEnumerable<FeatureBlob> featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
 
 				// Add result to dictionary
@@ -100,9 +102,9 @@ namespace MultiDimensionalPeakFinding
 				m_uimfUtilStack.TryPop(out uimfUtil);
 
 				// Do Feature Finding
-				double[,] intensityBlock = uimfUtil.GetXicAsArray(targetMz, tolerance, frameType, toleranceType);
-				m_smoother.Smooth(ref intensityBlock);
-				IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, 0, 0);
+				var intensityBlock = uimfUtil.GetXic(targetMz, tolerance, frameType, toleranceType);
+				IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock);
+				m_smoother.Smooth(ref pointList);
 				IEnumerable<FeatureBlob> featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
 
 				// Add result to dictionary
@@ -115,7 +117,7 @@ namespace MultiDimensionalPeakFinding
 			return resultDictionary;
 		}
 
-		public IDictionary<int, IEnumerable<FeatureBlobStatistics>> GetFeatureStatistics(IEnumerable<int> targetBinList, DataReader.FrameType frameType)
+		public IDictionary<int, IEnumerable<FeatureBlobStatistics>> GetFeatureStatistics(IEnumerable<int> targetBinList, double tolerance, DataReader.FrameType frameType, DataReader.ToleranceType toleranceType)
 		{
 			Dictionary<int, IEnumerable<FeatureBlobStatistics>> resultDictionary = new Dictionary<int, IEnumerable<FeatureBlobStatistics>>();
 
@@ -125,10 +127,12 @@ namespace MultiDimensionalPeakFinding
 				UimfUtil uimfUtil;
 				m_uimfUtilStack.TryPop(out uimfUtil);
 
+				double targetMz = uimfUtil.GetMzFromBin(targetBin);
+
 				// Do Feature Finding
-				double[,] intensityBlock = uimfUtil.GetXicAsArray(targetBin, frameType);
-				m_smoother.Smooth(ref intensityBlock);
-				IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, 0, 0);
+				var intensityBlock = uimfUtil.GetXic(targetMz, tolerance, frameType, toleranceType);
+				IEnumerable<Point> pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock);
+				m_smoother.Smooth(ref pointList);
 				IEnumerable<FeatureBlob> featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
 
 				// Add result to dictionary
