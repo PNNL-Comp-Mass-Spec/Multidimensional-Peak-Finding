@@ -172,10 +172,10 @@ namespace MultiDimensionalPeakFindingTests
 			FeatureBlob parentFeature = FeatureDetection.DoWatershedAlgorithm(parentPointList).First();
 
 			FeatureBlobStatistics statistics = parentFeature.Statistics;
-			int scanLcMin = statistics.GetScanLcMin();
-			int scanLcMax = statistics.GetScanLcMax();
-			int scanImsMin = statistics.GetScanImsMin();
-			int scanImsMax = statistics.GetScanImsMax();
+			int scanLcMin = statistics.ScanLcMin;
+			int scanLcMax = statistics.ScanLcMax;
+			int scanImsMin = statistics.ScanImsMin;
+			int scanImsMax = statistics.ScanImsMax;
 
 			using (TextReader fragmentReader = new StreamReader(@"..\..\..\testFiles\OneFragment.csv"))
 			{
@@ -431,12 +431,12 @@ namespace MultiDimensionalPeakFindingTests
             {
                 Console.WriteLine(
                     "LC: [{0},{1}], IMS: [{2},{3}], Apex: [{4},{5}] SumIntensities: {6}, NumPoints: {7}",
-                    f.GetScanLcMin(),
-                    f.GetScanLcMax(),
-                    f.GetScanImsMin(),
-                    f.GetScanImsMax(),
-                    f.GetScanLcRep(),
-                    f.GetScanImsRep(),
+                    f.ScanLcMin,
+                    f.ScanLcMax,
+                    f.ScanImsMin,
+                    f.ScanImsMax,
+                    f.ScanLcRep,
+                    f.ScanImsRep,
                     f.SumIntensities,
                     f.NumPoints
                     );
@@ -466,15 +466,21 @@ namespace MultiDimensionalPeakFindingTests
 		public void TestParallelFeatureFindingUsingBins()
 		{
 			string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
-			List<int> targetBinList = new List<int> { 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 10000 };
+			//List<int> targetBinList = new List<int> { 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 10000 };
+			List<int> targetBinList = new List<int>();
+
+			for(int i = 10000; i < 100000; i += 1000)
+			{
+				targetBinList.Add(i);
+			}
 
 			FeatureDetectionUtil featureUtil = new FeatureDetectionUtil(fileLocation, 11, 4);
 			IDictionary<int, IEnumerable<FeatureBlob>> targetDictionary = featureUtil.GetFeatures(targetBinList, DataReader.FrameType.MS1);
 
-			foreach (var kvp in targetDictionary)
-			{
-				Console.WriteLine(kvp.Key + "\t" + kvp.Value.Count());
-			}
+			//foreach (var kvp in targetDictionary)
+			//{
+			//    Console.WriteLine(kvp.Key + "\t" + kvp.Value.Count());
+			//}
 		}
 
         // Added by Sangtae

@@ -49,34 +49,34 @@ namespace MultiDimensionalPeakFinding.PeakDetection
             NumPoints = (ushort)numPoints;
 		}
 
-        public int GetScanLcMin()
+        public int ScanLcMin
         {
-            return ScanLcStart;
+			get { return ScanLcStart; }
         }
 
-        public int GetScanLcMax()
+        public int ScanLcMax
         {
-            return ScanLcStart + ScanLcLength - 1; 
+			get { return ScanLcStart + ScanLcLength - 1; }
         }
 
-        public int GetScanLcRep()
+        public int ScanLcRep
         {
-            return ScanLcStart + ScanLcRepOffset;
+			get { return ScanLcStart + ScanLcRepOffset; }
         }
 
-        public int GetScanImsMin()
+        public int ScanImsMin
         {
-            return ScanImsStart;
+			get { return ScanImsStart; }
         }
 
-        public int GetScanImsMax()
+        public int ScanImsMax
         {
-            return ScanImsStart + ScanImsLength - 1;
+			get { return ScanImsStart + ScanImsLength - 1; }
         }
 
-        public int GetScanImsRep()
+        public int ScanImsRep
         {
-            return ScanImsStart + ScanImsRepOffset;
+			get { return ScanImsStart + ScanImsRepOffset; }
         }
 
         public void ComputePeakProfile(Point apex)
