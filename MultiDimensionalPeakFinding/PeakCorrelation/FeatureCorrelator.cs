@@ -84,38 +84,25 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
 			int index = 0;
 			double sumOfTestValues = 0;
 
-			TextWriter textWriter = new StreamWriter("output.csv");
-
 			// Get the corresponding reference:test intensity values
 			foreach (Point referencePoint in referencesFeature.PointList)
 			{
-				string values = referencePoint.Intensity + ",";
-				string output = "LC = " + referencePoint.ScanLc + "\tIMS = " + referencePoint.ScanIms + "\tRef = " + referencePoint.Intensity + "\tTest = ";
 				inputData[index, 0] = referencePoint.Intensity;
 
 				int binarySearchResult = testPointList.BinarySearch(referencePoint, pointComparer);
 				if (binarySearchResult < 0)
 				{
 					inputData[index, 1] = 0;
-					output += "0";
-					values += "0";
 				}
 				else
 				{
 					double intensity = testPointList[binarySearchResult].Intensity;
 					inputData[index, 1] = intensity;
 					sumOfTestValues += intensity;
-					output += intensity.ToString();
-					values += intensity.ToString();
 				}
-
-				Console.WriteLine(output);
-				textWriter.WriteLine(values);
 
 				index++;
 			}
-
-			textWriter.Close();
 
 			int numIndependentVariables = 1;
 			int info;
@@ -154,6 +141,113 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
 			}
 
 			return rSquared;
+		}
+
+		public static double CorrelateFeaturesUsingLc(FeatureBlob referenceFeature, FeatureBlob featureToTest)
+		{
+			FeatureBlobStatistics referenceStatistics = referenceFeature.Statistics;
+			FeatureBlobStatistics testStatistics = featureToTest.Statistics;
+
+			int referenceScanLcMin = referenceStatistics.ScanLcMin;
+			int referenceScanLcMax = referenceStatistics.ScanLcMax;
+			int testScanLcMin = testStatistics.ScanLcMin;
+			int testScanLcMax = testStatistics.ScanLcMax;
+
+			// If these features do not overlap, then just return 0
+			if (testScanLcMin > referenceScanLcMax || testScanLcMax < referenceScanLcMin) return 0;
+
+			int scanLcOffset = referenceScanLcMin - testScanLcMin;
+
+			double[] referenceLcProfile = Array.ConvertAll(referenceStatistics.LcApexPeakProfile, x => (double)x);
+			double[] testLcProfile = new double[referenceScanLcMax - referenceScanLcMin + 1];
+			float[] testLcProfileAsFloat = testStatistics.LcApexPeakProfile;
+
+			int numPointsInTestLcProfile = testLcProfileAsFloat.Length;
+
+			for (int i = 0; i < referenceLcProfile.Length; i++)
+			{
+				int testLcProfileIndex = i + scanLcOffset;
+				if (testLcProfileIndex < 0) continue;
+				if (testLcProfileIndex >= numPointsInTestLcProfile) break;
+
+				testLcProfile[i] = testLcProfileAsFloat[testLcProfileIndex];
+			}
+
+			double slope, intercept, rSquared;
+			GetLinearRegression(referenceLcProfile, testLcProfile, out slope, out intercept, out rSquared);
+
+			return rSquared;
+		}
+
+		private static void GetLinearRegression(double[] xvals, double[] yvals, out double slope, out double intercept, out double rsquaredVal)
+		{
+			double[,] inputData = new double[xvals.Length, 2];
+			double sumOfYValues = 0;
+
+			for (int i = 0; i < xvals.Length; i++)
+			{
+				double xValue = xvals[i];
+				double yValue = yvals[i];
+
+				inputData[i, 0] = xValue;
+				inputData[i, 1] = yValue;
+
+				sumOfYValues += yValue;
+			}
+
+			int numIndependentVariables = 1;
+			int numPoints = yvals.Length;
+
+			alglib.linearmodel linearModel;
+			int info;
+			alglib.lrreport regressionReport;
+			alglib.lrbuild(inputData, numPoints, numIndependentVariables, out info, out linearModel, out regressionReport);
+
+			double[] regressionLineInfo;
+
+			try
+			{
+				alglib.lrunpack(linearModel, out regressionLineInfo, out numIndependentVariables);
+
+			}
+			catch (Exception ex)
+			{
+				slope = -99999999;
+				intercept = -9999999;
+				rsquaredVal = -9999999;
+				return;
+			}
+
+			slope = regressionLineInfo[0];
+			intercept = regressionLineInfo[1];
+
+			double averageY = sumOfYValues / numPoints;
+			double sumOfSquaredMeanResiduals = 0;
+			double sumOfSquaredResiduals = 0;
+
+			for (int i = 0; i < xvals.Length; i++)
+			{
+				double xValue = xvals[i];
+				double yValue = yvals[i];
+
+				double calculatedYValue = alglib.lrprocess(linearModel, new double[] { xValue });
+
+				double residual = yValue - calculatedYValue;
+				sumOfSquaredResiduals += (residual * residual);
+
+				double meanResidual = yValue - averageY;
+				sumOfSquaredMeanResiduals += (meanResidual * meanResidual);
+			}
+
+			//check for sum=0 
+			if (sumOfSquaredMeanResiduals == 0)
+			{
+				rsquaredVal = 0;
+			}
+			else
+			{
+				rsquaredVal = 1 - (sumOfSquaredResiduals / sumOfSquaredMeanResiduals);
+			}
 		}
 	}
 }
