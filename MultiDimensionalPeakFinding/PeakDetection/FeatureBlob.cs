@@ -61,6 +61,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 			int scanLcRep = 0;
 			int scanImsRep = 0;
 		    Point apex = null;
+			bool isSaturated = false;
 
 			foreach (Point point in this.PointList)
 			{
@@ -81,9 +82,11 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 					scanImsRep = scanIms;
 				    apex = point;
 				}
+
+				if (point.IsSaturated) isSaturated = true;
 			}
 
-			FeatureBlobStatistics statistics = new FeatureBlobStatistics(scanLcMin, scanLcMax, scanLcRep, scanImsMin, scanImsMax, scanImsRep, maxIntensity, sumIntensities, this.PointList.Count);
+			FeatureBlobStatistics statistics = new FeatureBlobStatistics(scanLcMin, scanLcMax, scanLcRep, scanImsMin, scanImsMax, scanImsRep, maxIntensity, sumIntensities, this.PointList.Count, isSaturated);
             statistics.ComputePeakProfile(apex);
 			this.Statistics = statistics;
 

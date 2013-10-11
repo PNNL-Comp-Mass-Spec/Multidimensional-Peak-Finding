@@ -34,9 +34,10 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 		public Point SouthWest { get; set; }
 
 		public bool IsBackground { get; set; }
+		public bool IsSaturated { get; set; }
 		public FeatureBlob FeatureBlob { get; set; }
 
-		public Point(int scanLcIndex, int scanLcOffset, int scanImsIndex, int scanImsOffset, double intensity)
+		public Point(int scanLcIndex, int scanLcOffset, int scanImsIndex, int scanImsOffset, double intensity, bool isSaturated = false)
 		{
 			this.ScanLcIndex = scanLcIndex;
 			this.ScanLcOffset = scanLcOffset;
@@ -44,10 +45,12 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 			this.ScanImsOffset = scanImsOffset;
 			this.Intensity = intensity;
 			this.IsBackground = false;
+			this.IsSaturated = isSaturated;
 		}
 
 		public HigherNeighborResult FindMoreIntenseNeighbors(out FeatureBlob feature)
 		{
+			int featureCount = 0;
 			FeatureBlob savedFeature = null;
 			feature = null;
 
@@ -61,7 +64,15 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 				if (this.South.IsBackground) return HigherNeighborResult.Background;
 				if (savedFeature != null)
 				{
-					if (this.South.FeatureBlob != null && savedFeature != this.South.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
+					if (this.South.FeatureBlob != null && savedFeature != this.South.FeatureBlob)
+					{
+						if (this.South.FeatureBlob.PointList.Count > savedFeature.PointList.Count)
+						{
+							savedFeature = this.South.FeatureBlob;
+							featureCount++;
+						}
+						//return HigherNeighborResult.MultipleFeatures;
+					}
 				}
 				else
 				{
@@ -73,7 +84,15 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 				if (this.East.IsBackground) return HigherNeighborResult.Background;
 				if (savedFeature != null)
 				{
-					if (this.East.FeatureBlob != null && savedFeature != this.East.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
+					if (this.East.FeatureBlob != null && savedFeature != this.East.FeatureBlob)
+					{
+						if (this.East.FeatureBlob.PointList.Count > savedFeature.PointList.Count)
+						{
+							savedFeature = this.East.FeatureBlob;
+							featureCount++;
+						}
+						//return HigherNeighborResult.MultipleFeatures;
+					}
 				}
 				else
 				{
@@ -85,7 +104,15 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 				if (this.West.IsBackground) return HigherNeighborResult.Background;
 				if (savedFeature != null)
 				{
-					if (this.West.FeatureBlob != null && savedFeature != this.West.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
+					if (this.West.FeatureBlob != null && savedFeature != this.West.FeatureBlob)
+					{
+						if (this.West.FeatureBlob.PointList.Count > savedFeature.PointList.Count)
+						{
+							savedFeature = this.West.FeatureBlob;
+							featureCount++;
+						}
+						//return HigherNeighborResult.MultipleFeatures;
+					}
 				}
 				else
 				{
@@ -97,7 +124,15 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 				if (this.NorthEast.IsBackground) return HigherNeighborResult.Background;
 				if (savedFeature != null)
 				{
-					if (this.NorthEast.FeatureBlob != null && savedFeature != this.NorthEast.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
+					if (this.NorthEast.FeatureBlob != null && savedFeature != this.NorthEast.FeatureBlob)
+					{
+						if (this.NorthEast.FeatureBlob.PointList.Count > savedFeature.PointList.Count)
+						{
+							savedFeature = this.NorthEast.FeatureBlob;
+							featureCount++;
+						}
+						//return HigherNeighborResult.MultipleFeatures;
+					}
 				}
 				else
 				{
@@ -109,7 +144,15 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 				if (this.NorthWest.IsBackground) return HigherNeighborResult.Background;
 				if (savedFeature != null)
 				{
-					if (this.NorthWest.FeatureBlob != null && savedFeature != this.NorthWest.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
+					if (this.NorthWest.FeatureBlob != null && savedFeature != this.NorthWest.FeatureBlob)
+					{
+						if (this.NorthWest.FeatureBlob.PointList.Count > savedFeature.PointList.Count)
+						{
+							savedFeature = this.NorthWest.FeatureBlob;
+							featureCount++;
+						}
+						//return HigherNeighborResult.MultipleFeatures;
+					}
 				}
 				else
 				{
@@ -121,7 +164,15 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 				if (this.SouthEast.IsBackground) return HigherNeighborResult.Background;
 				if (savedFeature != null)
 				{
-					if (this.SouthEast.FeatureBlob != null && savedFeature != this.SouthEast.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
+					if (this.SouthEast.FeatureBlob != null && savedFeature != this.SouthEast.FeatureBlob)
+					{
+						if (this.SouthEast.FeatureBlob.PointList.Count > savedFeature.PointList.Count)
+						{
+							savedFeature = this.SouthEast.FeatureBlob;
+							featureCount++;
+						}
+						//return HigherNeighborResult.MultipleFeatures;
+					}
 				}
 				else
 				{
@@ -133,7 +184,15 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 				if (this.SouthWest.IsBackground) return HigherNeighborResult.Background;
 				if (savedFeature != null)
 				{
-					if (this.SouthWest.FeatureBlob != null && savedFeature != this.SouthWest.FeatureBlob) return HigherNeighborResult.MultipleFeatures;
+					if (this.SouthWest.FeatureBlob != null && savedFeature != this.SouthWest.FeatureBlob)
+					{
+						if (this.SouthWest.FeatureBlob.PointList.Count > savedFeature.PointList.Count)
+						{
+							savedFeature = this.SouthWest.FeatureBlob;
+							featureCount++;
+						}
+						//return HigherNeighborResult.MultipleFeatures;
+					}
 				}
 				else
 				{
@@ -145,8 +204,14 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 			{
 				return HigherNeighborResult.None;
 			}
-		
+
 			feature = savedFeature;
+
+			if(featureCount > 1)
+			{
+				return HigherNeighborResult.MultipleFeatures;
+			}
+			
 			return HigherNeighborResult.OneFeature;
 		}
 

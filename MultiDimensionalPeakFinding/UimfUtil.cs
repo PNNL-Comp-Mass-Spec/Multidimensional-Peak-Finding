@@ -68,5 +68,10 @@ namespace MultiDimensionalPeakFinding
 		{
 			return UimfReader.ContainsBinCentricData;
 		}
+
+		public int GetSaturationLevel()
+		{
+			return UimfReader.GetSaturationLevel();
+		}
 	}
 }

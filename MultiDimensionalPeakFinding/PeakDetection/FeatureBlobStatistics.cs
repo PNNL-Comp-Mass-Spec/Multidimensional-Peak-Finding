@@ -16,6 +16,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
         public float IntensityMax { get; private set; }
         public float SumIntensities { get; private set; }
         public ushort NumPoints { get; private set; }
+		public bool IsSaturated { get; private set; }
 
         // Size: ScanLcMax-ScanLcMin+1
         public float[] LcApexPeakProfile { get; set; }
@@ -23,7 +24,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
         // Size: ScanImsMax-ScanImsMin+1
         public float[] ImsApexPeakProfile { get; set; }
 
-		public FeatureBlobStatistics(int scanLcMin, int scanLcMax, int scanLcRep, int scanImsMin, int scanImsMax, int scanImsRep, double intensityMax, double sumIntensities, int numPoints)
+		public FeatureBlobStatistics(int scanLcMin, int scanLcMax, int scanLcRep, int scanImsMin, int scanImsMax, int scanImsRep, double intensityMax, double sumIntensities, int numPoints, bool isSaturated)
 		{
             ScanLcStart = (ushort)scanLcMin;
 
@@ -47,6 +48,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
             IntensityMax = (float)intensityMax;
             SumIntensities = (float)sumIntensities;
             NumPoints = (ushort)numPoints;
+			IsSaturated = isSaturated;
 		}
 
         public int ScanLcMin

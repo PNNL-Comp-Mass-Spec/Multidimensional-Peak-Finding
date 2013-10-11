@@ -46,7 +46,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 			int numPoints = intensityPointList.Count;
 
 			List<Point> pointList = new List<Point>(numPoints);
-			pointList.AddRange(intensityPointList.Select(intensityPoint => new Point(intensityPoint.ScanLc, 0, intensityPoint.ScanIms, 0, intensityPoint.Intensity)));
+			pointList.AddRange(intensityPointList.Select(intensityPoint => new Point(intensityPoint.ScanLc, 0, intensityPoint.ScanIms, 0, intensityPoint.Intensity, intensityPoint.IsSaturated)));
 
 			for (int i = 0; i < numPoints - 1; i++)
 			{

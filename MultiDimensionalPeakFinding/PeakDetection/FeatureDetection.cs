@@ -35,7 +35,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 				}
 
 				// Background or Multiple Features means that this Point will be Background
-				if (higherNeighborResult == HigherNeighborResult.Background || higherNeighborResult == HigherNeighborResult.MultipleFeatures)
+				if (higherNeighborResult == HigherNeighborResult.Background)
 				{
 					point.IsBackground = true;
 					continue;
@@ -46,10 +46,10 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 				point.FeatureBlob = moreIntenseFeature;
 			}
 
-			return FilterFeatureList(featureList);
+			return featureList;
 		}
 
-		private static IEnumerable<FeatureBlob> FilterFeatureList(IEnumerable<FeatureBlob> featureList)
+		public static IEnumerable<FeatureBlob> FilterFeatureList(IEnumerable<FeatureBlob> featureList, double filterLevel)
 		{
 			if (!featureList.Any()) return featureList;
 
@@ -62,13 +62,13 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 			foreach (FeatureBlob featureBlob in featureList)
 			{
 				double value = gammaDistribution.CumulativeDistribution(featureBlob.PointList.First().Intensity);
-				if (value < 0.995) break;
+				if (value < filterLevel) break;
 
 				filteredFeatureList.Add(featureBlob);
 			}
 
 			// Then filter based on number of points
-			return filteredFeatureList.Where(x => x.PointList.Count >= 9);
+			return filteredFeatureList.Where(x => x.PointList.Count >= 1);
 		}
 	}
 }
