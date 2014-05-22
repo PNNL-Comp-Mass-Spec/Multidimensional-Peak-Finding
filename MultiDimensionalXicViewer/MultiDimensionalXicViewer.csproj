@@ -66,6 +66,12 @@
     <Reference Include="InformedProteomics.Backend">
       <HintPath>..\lib\$(Platform)\InformedProteomics.Backend.dll</HintPath>
     </Reference>
+    <Reference Include="InformedProteomics.IMS">
+      <HintPath>..\lib\$(Platform)\InformedProteomics.IMS.dll</HintPath>
+    </Reference>
+    <Reference Include="MathNet.Numerics">
+      <HintPath>..\lib\MathNet.Numerics.dll</HintPath>
+    </Reference>
     <Reference Include="MultiAlignEngine">
       <HintPath>..\lib\DeconTools\$(Platform)\MultiAlignEngine.dll</HintPath>
     </Reference>
@@ -137,7 +143,6 @@
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\MultiDimensionalPeakFinding\MultiDimensionalPeakFinding.csproj">
       <Project>{0F0A60E3-F2E5-44F3-8F23-8DD848C3F41F}</Project>

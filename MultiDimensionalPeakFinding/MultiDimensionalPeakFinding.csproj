@@ -51,7 +51,8 @@
     <Reference Include="alglibnet2">
       <HintPath>..\lib\alglibnet2.dll</HintPath>
     </Reference>
-    <Reference Include="MathNet.Numerics">
+    <Reference Include="MathNet.Numerics, Version=2.5.0.27, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\MathNet.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="PNNLOmics">
