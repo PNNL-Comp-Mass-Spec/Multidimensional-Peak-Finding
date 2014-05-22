@@ -179,6 +179,42 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
 			return rSquared;
 		}
 
+		public static double CorrelateFeaturesUsingIms(FeatureBlob referenceFeature, FeatureBlob featureToTest)
+		{
+			FeatureBlobStatistics referenceStatistics = referenceFeature.Statistics;
+			FeatureBlobStatistics testStatistics = featureToTest.Statistics;
+
+			int referenceScanImsMin = referenceStatistics.ScanImsMin;
+			int referenceScanImsMax = referenceStatistics.ScanImsMax;
+			int testScanImsMin = testStatistics.ScanImsMin;
+			int testScanImsMax = testStatistics.ScanImsMax;
+
+			// If these features do not overlap, then just return 0
+			if (testScanImsMin > referenceScanImsMax || testScanImsMax < referenceScanImsMin) return 0;
+
+			int scanImsOffset = referenceScanImsMin - testScanImsMin;
+
+			double[] referenceImsProfile = Array.ConvertAll(referenceStatistics.ImsApexPeakProfile, x => (double)x);
+			double[] testImsProfile = new double[referenceScanImsMax - referenceScanImsMin + 1];
+			float[] testImsProfileAsFloat = testStatistics.ImsApexPeakProfile;
+
+			int numPointsInTestImsProfile = testImsProfileAsFloat.Length;
+
+			for (int i = 0; i < referenceImsProfile.Length; i++)
+			{
+				int testImsProfileIndex = i + scanImsOffset;
+				if (testImsProfileIndex < 0) continue;
+				if (testImsProfileIndex >= numPointsInTestImsProfile) break;
+
+				testImsProfile[i] = testImsProfileAsFloat[testImsProfileIndex];
+			}
+
+			double slope, intercept, rSquared;
+			GetLinearRegression(referenceImsProfile, testImsProfile, out slope, out intercept, out rSquared);
+
+			return rSquared;
+		}
+
 		private static void GetLinearRegression(double[] xvals, double[] yvals, out double slope, out double intercept, out double rsquaredVal)
 		{
 			double[,] inputData = new double[xvals.Length, 2];
