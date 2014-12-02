@@ -17,7 +17,7 @@ namespace MultiDimensionalPeakFindingTests
 		[Test]
 		public void TestGetXic()
 		{
-			string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
+            string fileLocation = @"\\proto-2\UnitTest_Files\MultidimensionalFeatureFinding\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
 			UimfUtil uimfUtil = new UimfUtil(fileLocation);
 
 			double targetMz = 582.32181703760114;
@@ -29,7 +29,7 @@ namespace MultiDimensionalPeakFindingTests
 		[Test]
 		public void Test3DSmooth()
 		{
-			string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
+            string fileLocation = @"\\proto-2\UnitTest_Files\MultidimensionalFeatureFinding\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
 			UimfUtil uimfUtil = new UimfUtil(fileLocation);
 
 			double targetMz = 643.27094937;
@@ -44,7 +44,7 @@ namespace MultiDimensionalPeakFindingTests
 		[Test]
 		public void TestBuildWaterShedMap()
 		{
-			string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
+            string fileLocation = @"\\proto-2\UnitTest_Files\MultidimensionalFeatureFinding\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
 			UimfUtil uimfUtil = new UimfUtil(fileLocation);
 
 			double targetMz = 643.27094937;
@@ -61,7 +61,7 @@ namespace MultiDimensionalPeakFindingTests
 		[Test]
 		public void TestDoWaterShedAlgorithm()
 		{
-			string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
+            string fileLocation = @"\\proto-2\UnitTest_Files\MultidimensionalFeatureFinding\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
 			UimfUtil uimfUtil = new UimfUtil(fileLocation);
 
 			double targetMz = 582.32181703760114;
@@ -96,7 +96,7 @@ namespace MultiDimensionalPeakFindingTests
 		[Test]
 		public void TestDoWaterShedAlgorithmOutput()
 		{
-			string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
+			string fileLocation = @"\\proto-2\UnitTest_Files\MultidimensionalFeatureFinding\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
 			UimfUtil uimfUtil = new UimfUtil(fileLocation);
 
 			double targetMz = 643.27094937;
@@ -157,7 +157,7 @@ namespace MultiDimensionalPeakFindingTests
 		[Test]
 		public void TestDoWaterShedAlgorithmPrecursorAndFragments()
 		{
-			string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
+			string fileLocation = @"\\proto-2\UnitTest_Files\MultidimensionalFeatureFinding\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
 			UimfUtil uimfUtil = new UimfUtil(fileLocation);
 
 			double parentMz = 643.27094937;
@@ -177,7 +177,7 @@ namespace MultiDimensionalPeakFindingTests
 			int scanImsMin = statistics.ScanImsMin;
 			int scanImsMax = statistics.ScanImsMax;
 
-			using (TextReader fragmentReader = new StreamReader(@"..\..\..\testFiles\OneFragment.csv"))
+            using (TextReader fragmentReader = new StreamReader(@"..\..\..\testFiles\OneFragment.csv"))
 			{
 				string line = "";
 				while ((line = fragmentReader.ReadLine()) != null)
@@ -237,7 +237,7 @@ namespace MultiDimensionalPeakFindingTests
 		[Test]
 		public void TestFragmentCorrelation()
 		{
-			string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
+			string fileLocation = @"\\proto-2\UnitTest_Files\MultidimensionalFeatureFinding\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
 			UimfUtil uimfUtil = new UimfUtil(fileLocation);
 
 			double parentMz = 643.27094937;
@@ -252,7 +252,7 @@ namespace MultiDimensionalPeakFindingTests
 			FeatureBlob parentFeature = FeatureDetection.DoWatershedAlgorithm(parentPointList).First();
 
 			using (TextReader fragmentReader = new StreamReader(@"..\..\..\testFiles\fragments.csv"))
-			//using (TextReader fragmentReader = new StreamReader(@"..\..\..\testFiles\OneFragment.csv"))
+            //using (TextReader fragmentReader = new StreamReader(@"..\..\..\testFiles\OneFragment.csv"))
 			{
 				string line = "";
 				while ((line = fragmentReader.ReadLine()) != null)
@@ -315,7 +315,7 @@ namespace MultiDimensionalPeakFindingTests
 		[Test]
 		public void TestDoWaterShedAlgorithmByBin()
 		{
-			string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
+			string fileLocation = @"\\proto-2\UnitTest_Files\MultidimensionalFeatureFinding\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
 			UimfUtil uimfUtil = new UimfUtil(fileLocation);
 			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
 
@@ -347,7 +347,7 @@ namespace MultiDimensionalPeakFindingTests
 		[Test]
 		public void TestDoWaterShedAlgorithmAllBins()
 		{
-			string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
+			string fileLocation = @"\\proto-2\UnitTest_Files\MultidimensionalFeatureFinding\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
 			UimfUtil uimfUtil = new UimfUtil(fileLocation);
 			int numberOfBins = uimfUtil.GetNumberOfBins();
 
@@ -414,7 +414,7 @@ namespace MultiDimensionalPeakFindingTests
         [Test]
         public void TestComputingApexProfiles()
         {
-            string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
+            string fileLocation = @"\\proto-2\UnitTest_Files\MultidimensionalFeatureFinding\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
             UimfUtil uimfUtil = new UimfUtil(fileLocation);
             SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(5, 2);
 
@@ -450,7 +450,7 @@ namespace MultiDimensionalPeakFindingTests
 		[Test]
 		public void TestParallelFeatureFinding()
 		{
-			string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
+			string fileLocation = @"\\proto-2\UnitTest_Files\MultidimensionalFeatureFinding\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
 			List<double> targetMzList = new List<double> { 582.3218, 964.40334, 643.27094937 };
 
 			FeatureDetectionUtil featureUtil = new FeatureDetectionUtil(fileLocation, 11, 4);
@@ -465,7 +465,7 @@ namespace MultiDimensionalPeakFindingTests
 		[Test]
 		public void TestParallelFeatureFindingUsingBins()
 		{
-			string fileLocation = @"..\..\..\testFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
+			string fileLocation = @"\\proto-2\UnitTest_Files\MultidimensionalFeatureFinding\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
 			//List<int> targetBinList = new List<int> { 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 10000 };
 			List<int> targetBinList = new List<int>();
 
@@ -487,7 +487,7 @@ namespace MultiDimensionalPeakFindingTests
         [Test]
         public void TestParallelFeatureDetection()
         {
-            const string uimfFilePath = @"..\..\..\TestFiles\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
+            const string uimfFilePath = @"\\proto-2\UnitTest_Files\MultidimensionalFeatureFinding\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
             var uimfUtil = new UimfUtil(uimfFilePath);
             var featureDetectionUtil = new FeatureDetectionUtil(uimfFilePath, 11, 4);
             int minTargetBin = uimfUtil.GetBinFromMz(500.0);
