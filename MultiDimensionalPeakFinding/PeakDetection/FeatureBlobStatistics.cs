@@ -90,14 +90,14 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 
             Point curPoint = apex;
             int index;
-            while(curPoint != null && (index = curPoint.ScanLc - ScanLcStart) >= 0)
+            while(curPoint != null && curPoint != curPoint.South && (index = curPoint.ScanLc - ScanLcStart) >= 0)
             {
                 LcApexPeakProfile[index] = (float)curPoint.Intensity;
                 curPoint = curPoint.South;
             }
 
             curPoint = apex.North;
-            while (curPoint != null && (index = curPoint.ScanLc - ScanLcStart) < LcApexPeakProfile.Length)
+            while (curPoint != null && curPoint != curPoint.North && (index = curPoint.ScanLc - ScanLcStart) < LcApexPeakProfile.Length)
             {
                 LcApexPeakProfile[index] = (float)curPoint.Intensity;
                 curPoint = curPoint.North;
@@ -106,14 +106,14 @@ namespace MultiDimensionalPeakFinding.PeakDetection
             ImsApexPeakProfile = new float[ScanImsLength];
 
             curPoint = apex;
-            while (curPoint != null && (index = curPoint.ScanIms - ScanImsStart) >= 0)
+            while (curPoint != null && curPoint != curPoint.West && (index = curPoint.ScanIms - ScanImsStart) >= 0)
             {
                 ImsApexPeakProfile[index] = (float)curPoint.Intensity;
                 curPoint = curPoint.West;
             }
 
             curPoint = apex.East;
-            while (curPoint != null && (index = curPoint.ScanIms - ScanImsStart) < ImsApexPeakProfile.Length)
+            while (curPoint != null && curPoint != curPoint.East && (index = curPoint.ScanIms - ScanImsStart) < ImsApexPeakProfile.Length)
             {
                 ImsApexPeakProfile[index] = (float)curPoint.Intensity;
                 curPoint = curPoint.East;

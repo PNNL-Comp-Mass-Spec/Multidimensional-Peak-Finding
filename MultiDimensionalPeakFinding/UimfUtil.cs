@@ -66,7 +66,7 @@ namespace MultiDimensionalPeakFinding
 
 		public bool DoesContainBinCentricData()
 		{
-			return UimfReader.ContainsBinCentricData;
+			return UimfReader.DoesContainBinCentricData();
 		}
 
 		public int GetSaturationLevel()

@@ -97,7 +97,7 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="UIMFLibrary">
-      <HintPath>..\lib\$(Platform)\UIMFLibrary.dll</HintPath>
+      <HintPath>..\lib\UIMFLibrary\UIMFLibrary.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
