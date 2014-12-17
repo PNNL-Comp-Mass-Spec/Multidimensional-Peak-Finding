@@ -57,23 +57,8 @@
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DeconTools.Backend">
-      <HintPath>..\lib\DeconTools\$(Platform)\DeconTools.Backend.dll</HintPath>
-    </Reference>
-    <Reference Include="DeconTools.Workflows">
-      <HintPath>..\lib\DeconTools\$(Platform)\DeconTools.Workflows.dll</HintPath>
-    </Reference>
     <Reference Include="InformedProteomics.Backend">
       <HintPath>..\lib\$(Platform)\InformedProteomics.Backend.dll</HintPath>
-    </Reference>
-    <Reference Include="InformedProteomics.IMS">
-      <HintPath>..\lib\$(Platform)\InformedProteomics.IMS.dll</HintPath>
-    </Reference>
-    <Reference Include="MathNet.Numerics">
-      <HintPath>..\lib\MathNet.Numerics.dll</HintPath>
-    </Reference>
-    <Reference Include="MultiAlignEngine">
-      <HintPath>..\lib\DeconTools\$(Platform)\MultiAlignEngine.dll</HintPath>
     </Reference>
     <Reference Include="Ookii.Dialogs">
       <HintPath>..\lib\Ookii.Dialogs.dll</HintPath>
@@ -85,18 +70,15 @@
       <HintPath>..\lib\Oxyplot\OxyPlot.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="UIMFLibrary">
+    <Reference Include="UIMFLibrary, Version=3.0.5452.22853, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\UIMFLibrary\UIMFLibrary.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />

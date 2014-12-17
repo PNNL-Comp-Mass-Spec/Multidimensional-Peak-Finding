@@ -47,20 +47,20 @@ namespace MultiDimensionalPeakFinding
 
 		public int GetNumberOfBins()
 		{
-			return UimfReader.GetGlobalParameters().Bins;
+			return UimfReader.GetGlobalParams().Bins;
 		}
 
 		public double GetMzFromBin(int bin)
 		{
-			GlobalParameters globalParameters = UimfReader.GetGlobalParameters();
-			FrameParameters frameParameters = UimfReader.GetFrameParameters(1);
+			GlobalParams globalParameters = UimfReader.GetGlobalParams();
+            FrameParams frameParameters = UimfReader.GetFrameParams(1);
 			return DataReader.ConvertBinToMZ(frameParameters.CalibrationSlope, frameParameters.CalibrationIntercept, globalParameters.BinWidth, globalParameters.TOFCorrectionTime, bin);
 		}
 
 		public int GetBinFromMz(double mz)
 		{
-			GlobalParameters globalParameters = UimfReader.GetGlobalParameters();
-			FrameParameters frameParameters = UimfReader.GetFrameParameters(1);
+			GlobalParams globalParameters = UimfReader.GetGlobalParams();
+			FrameParams frameParameters = UimfReader.GetFrameParams(1);
 			return (int)Math.Round(DataReader.GetBinClosestToMZ(frameParameters.CalibrationSlope, frameParameters.CalibrationIntercept, globalParameters.BinWidth, globalParameters.TOFCorrectionTime, mz));
 		}
 
@@ -71,7 +71,7 @@ namespace MultiDimensionalPeakFinding
 
 		public int GetSaturationLevel()
 		{
-			return UimfReader.GetSaturationLevel();
+			return UimfReader.GetSaturationLevel(8);
 		}
 	}
 }

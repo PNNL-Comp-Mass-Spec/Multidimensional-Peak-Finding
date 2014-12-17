@@ -246,7 +246,7 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
 				alglib.lrunpack(linearModel, out regressionLineInfo, out numIndependentVariables);
 
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				slope = -99999999;
 				intercept = -9999999;
