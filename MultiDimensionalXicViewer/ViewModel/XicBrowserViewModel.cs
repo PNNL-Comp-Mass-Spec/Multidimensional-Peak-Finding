@@ -12,8 +12,9 @@ using InformedProteomics.Backend.Data.Sequence;
 using InformedProteomics.Backend.Data.Spectrometry;
 using MultiDimensionalPeakFinding;
 using MultiDimensionalPeakFinding.PeakDetection;
-using Ookii.Dialogs;
+using Ookii.Dialogs.Wpf;
 using OxyPlot;
+using OxyPlot.Series;
 using OxyPlot.Axes;
 using OxyPlot.Wpf;
 using UIMFLibrary;
@@ -230,7 +231,12 @@ namespace MultiDimensionalXicViewer.ViewModel
 		private void AddToLcPlot(FeatureBlob feature, string title, OxyColor color)
 		{
 			// TODO: Use unique colors
-			var newLcSeries = new LineSeries(color, 1, title);
+			var newLcSeries = new LineSeries()
+			{
+				Color = color,
+				StrokeThickness = 1,
+				Title = title,
+			};
 			newLcSeries.MouseDown += SeriesOnSelected;
 
 			foreach (var group in feature.PointList.GroupBy(x => x.ScanLc).OrderBy(x => x.Key))
@@ -248,7 +254,12 @@ namespace MultiDimensionalXicViewer.ViewModel
 		private void AddToImsPlot(FeatureBlob feature, string title, OxyColor color)
 		{
 			// TODO: Use unique colors
-			var newImsSeries = new LineSeries(color, 1, title);
+			var newImsSeries = new LineSeries()
+			{
+				Color = color,
+				StrokeThickness = 1,
+				Title = title,
+			};
 			newImsSeries.MouseDown += SeriesOnSelected;
 
 			foreach (var group in feature.PointList.GroupBy(x => x.ScanIms).OrderBy(x => x.Key))
@@ -265,13 +276,17 @@ namespace MultiDimensionalXicViewer.ViewModel
 
 		private void CreateLcSlicePlot(FeatureBlob feature)
 		{
-			PlotModel plotModel = new PlotModel("LC Slice");
+			PlotModel plotModel = new PlotModel();
+			plotModel.Title = "LC Slice";
 			plotModel.TitleFontSize = 12;
 			plotModel.Padding = new OxyThickness(0);
 			plotModel.PlotMargins = new OxyThickness(0);
 			plotModel.IsLegendVisible = false;
 
-			var lcSeries = new LineSeries(OxyColors.Blue);
+			var lcSeries = new LineSeries()
+			{
+				Color = OxyColors.Blue,
+			};
 			lcSeries.MouseDown += SeriesOnSelected;
 
 			int minScanLc = int.MaxValue;
@@ -292,14 +307,18 @@ namespace MultiDimensionalXicViewer.ViewModel
 			}
 
 			// Re-scale intensities to be between 0 and 1
-			foreach (var dataPoint in lcSeries.Points)
+			//foreach (var dataPoint in lcSeries.Points)
+			for (int i = 0; i < lcSeries.Points.Count; i++)
 			{
-				dataPoint.Y = dataPoint.Y / maxIntensity;
+				//dataPoint.Y = dataPoint.Y / maxIntensity;
+				lcSeries.Points[i] = new DataPoint(lcSeries.Points[i].X, lcSeries.Points[i].Y / maxIntensity);
 			}
 
 			plotModel.Series.Add(lcSeries);
 
-			var yAxis = new LinearAxis(AxisPosition.Left, "Relative Intensity");
+			var yAxis = new LinearAxis();
+			yAxis.Position = AxisPosition.Left;
+			yAxis.Title = "Relative Intensity";
 			yAxis.Minimum = 0;
 			yAxis.AbsoluteMinimum = 0;
 			yAxis.Maximum = 1.01;
@@ -308,7 +327,9 @@ namespace MultiDimensionalXicViewer.ViewModel
 			yAxis.IsZoomEnabled = true;
 			yAxis.AxisChanged += OnYAxisChange;
 
-			var xAxis = new LinearAxis(AxisPosition.Bottom, "LC Scan #");
+			var xAxis = new LinearAxis();
+			xAxis.Position = AxisPosition.Bottom;
+			xAxis.Title = "LC Scan #";
 			xAxis.Minimum = minScanLc - 5;
 			xAxis.AbsoluteMinimum = minScanLc - 5;
 			xAxis.Maximum = maxScanLc + 5;
@@ -326,13 +347,17 @@ namespace MultiDimensionalXicViewer.ViewModel
 
 		private void CreateImsSlicePlot(FeatureBlob feature)
 		{
-			PlotModel plotModel = new PlotModel("IMS Slice");
+			PlotModel plotModel = new PlotModel();
+			plotModel.Title = "IMS Slice";
 			plotModel.TitleFontSize = 12;
 			plotModel.Padding = new OxyThickness(0);
 			plotModel.PlotMargins = new OxyThickness(0);
 			plotModel.IsLegendVisible = false;
 
-			var imsSeries = new LineSeries(OxyColors.Blue);
+			var imsSeries = new LineSeries()
+			{
+				Color = OxyColors.Blue,
+			};
 			imsSeries.MouseDown += SeriesOnSelected;
 
 			int minScanIms = int.MaxValue;
@@ -353,14 +378,21 @@ namespace MultiDimensionalXicViewer.ViewModel
 			}
 
 			// Re-scale intensities to be between 0 and 1
-			foreach (var dataPoint in imsSeries.Points)
+			//foreach (var dataPoint in imsSeries.Points)
+			// DataPoint is a struct, a value-type, so the foreach loop won't work. It was a reference type, but was changed to improve performance.
+			// Also, is there another way to do this without modifying the information directly, or must it be modified?
+			for (int i = 0; i < imsSeries.Points.Count; i++)
 			{
-				dataPoint.Y = dataPoint.Y / maxIntensity;
+				//dataPoint.Y = dataPoint.Y / maxIntensity;
+				// Structs are "Immutable", so simply changing Y is not allowed, apparently
+				imsSeries.Points[i] = new DataPoint(imsSeries.Points[i].X, imsSeries.Points[i].Y / maxIntensity);
 			}
 
 			plotModel.Series.Add(imsSeries);
 
-			var yAxis = new LinearAxis(AxisPosition.Left, "Relative Intensity");
+			var yAxis = new LinearAxis();
+			yAxis.Position = AxisPosition.Left;
+			yAxis.Title = "Relative Intensity";
 			yAxis.Minimum = 0;
 			yAxis.AbsoluteMinimum = 0;
 			yAxis.Maximum = 1.01;
@@ -369,7 +401,9 @@ namespace MultiDimensionalXicViewer.ViewModel
 			yAxis.IsZoomEnabled = true;
 			yAxis.AxisChanged += OnYAxisChange;
 
-			var xAxis = new LinearAxis(AxisPosition.Bottom, "IMS Scan #");
+			var xAxis = new LinearAxis();
+			xAxis.Position = AxisPosition.Bottom;
+			xAxis.Title = "IMS Scan #";
 			xAxis.Minimum = minScanIms - 5;
 			xAxis.AbsoluteMinimum = minScanIms - 5;
 			xAxis.Maximum = maxScanIms + 5;
@@ -461,12 +495,12 @@ namespace MultiDimensionalXicViewer.ViewModel
 
 			// Set the minimum to 0 and refresh the plot
 			yAxis.Zoom(0, yAxis.ActualMaximum);
-			yAxis.PlotModel.RefreshPlot(true);
+			yAxis.PlotModel.InvalidatePlot(true); // Force refresh the plot
 		}
 
-		private void SeriesOnSelected(object sender, OxyMouseEventArgs eventArgs)
+		private void SeriesOnSelected(object sender, OxyMouseDownEventArgs eventArgs)
 		{
-			Plot plot = sender as Plot;
+			PlotModel plot = sender as PlotModel;
 			switch (eventArgs.ChangedButton)
 			{
 				case OxyMouseButton.Left:
@@ -503,8 +537,8 @@ namespace MultiDimensionalXicViewer.ViewModel
 							}
 						}
 
-						this.ImsSlicePlot.RefreshPlot(true);
-						this.LcSlicePlot.RefreshPlot(true);
+						this.ImsSlicePlot.InvalidatePlot(true); // Force refresh the plot
+						this.LcSlicePlot.InvalidatePlot(true); // Force refresh the plot
 					}
 					break;
 			}

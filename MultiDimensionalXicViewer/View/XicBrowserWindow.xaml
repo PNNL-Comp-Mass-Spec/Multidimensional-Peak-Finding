@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:VM="clr-namespace:MultiDimensionalXicViewer.ViewModel"
-		xmlns:oxy="http://oxyplot.codeplex.com" mc:Ignorable="d" >
+		xmlns:wpf="http://oxyplot.org/wpf"
+		mc:Ignorable="d" >
 	<Window.DataContext>
 		<VM:XicBrowserViewModel />
 	</Window.DataContext>
@@ -71,8 +72,8 @@
 				</StackPanel>
 			</StackPanel>
 			<StackPanel Height="Auto" Width="Auto" FlowDirection="LeftToRight" Orientation="Vertical" Margin="0,0,20,0">
-				<oxy:Plot Model="{Binding LcSlicePlot}" MinHeight="300" MinWidth="500" Margin="0,0,0,25" />
-				<oxy:Plot Model="{Binding ImsSlicePlot}" MinHeight="300" MinWidth="500" Margin="0,0,0,0" />
+				<wpf:PlotView Model="{Binding LcSlicePlot}" MinHeight="300" MinWidth="500" Margin="0,0,0,25" />
+				<wpf:PlotView Model="{Binding ImsSlicePlot}" MinHeight="300" MinWidth="500" Margin="0,0,0,0" />
 			</StackPanel>
 		</StackPanel>
 		<!--h:HelixViewport3D Margin="245,69,-245,-69" Name="xicPlotViewPort" ZoomExtentsWhenLoaded="True" ShowFrameRate="True" InfiniteSpin="True"-->

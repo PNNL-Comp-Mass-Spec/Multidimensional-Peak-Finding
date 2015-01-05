@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using MathNet.Numerics.LinearAlgebra.Double;
-using MathNet.Numerics.LinearAlgebra.Generic;
+using MathNet.Numerics.LinearAlgebra;
 using MultiDimensionalPeakFinding.PeakDetection;
 
 namespace MultiDimensionalPeakFinding
@@ -79,7 +77,7 @@ namespace MultiDimensionalPeakFinding
 		public void Smooth(ref double[,] inputValues)
 		{
 			// TODO: Using the matrix works, but does a lot of data accesses. Can improve by working out all the data access myself? I might be able to cut down on number of data accesses, but not sure.
-			DenseMatrix inputMatrix = new DenseMatrix(inputValues);
+			DenseMatrix inputMatrix = DenseMatrix.OfArray(inputValues);
 
 			for (int i = 0; i < inputMatrix.RowCount; i++)
 			{
@@ -160,7 +158,7 @@ namespace MultiDimensionalPeakFinding
 
 			var sTranspose = (DenseMatrix)denseMatrix.ConjugateTranspose();
 			var f = sTranspose * denseMatrix;
-			var fInverse = (DenseMatrix)f.LU().Solve(DenseMatrix.Identity(f.ColumnCount));
+			var fInverse = (DenseMatrix)f.LU().Solve(DenseMatrix.CreateIdentity(f.ColumnCount));
 			var smoothingFilters = denseMatrix * fInverse * sTranspose;
 
 			return smoothingFilters;
