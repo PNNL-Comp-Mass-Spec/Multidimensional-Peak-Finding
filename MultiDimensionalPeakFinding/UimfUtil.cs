@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UIMFLibrary;
 
 namespace MultiDimensionalPeakFinding
@@ -47,31 +45,48 @@ namespace MultiDimensionalPeakFinding
 
 		public int GetNumberOfBins()
 		{
-			return UimfReader.GetGlobalParameters().Bins;
+			return UimfReader.GetGlobalParams().Bins;
 		}
 
 		public double GetMzFromBin(int bin)
 		{
-			GlobalParameters globalParameters = UimfReader.GetGlobalParameters();
-			FrameParameters frameParameters = UimfReader.GetFrameParameters(1);
+            var globalParameters = UimfReader.GetGlobalParams();
+			var frameParameters = UimfReader.GetFrameParams(1);
 			return DataReader.ConvertBinToMZ(frameParameters.CalibrationSlope, frameParameters.CalibrationIntercept, globalParameters.BinWidth, globalParameters.TOFCorrectionTime, bin);
 		}
 
 		public int GetBinFromMz(double mz)
 		{
-			GlobalParameters globalParameters = UimfReader.GetGlobalParameters();
-			FrameParameters frameParameters = UimfReader.GetFrameParameters(1);
+            var globalParameters = UimfReader.GetGlobalParams();
+            var frameParameters = UimfReader.GetFrameParams(1);
 			return (int)Math.Round(DataReader.GetBinClosestToMZ(frameParameters.CalibrationSlope, frameParameters.CalibrationIntercept, globalParameters.BinWidth, globalParameters.TOFCorrectionTime, mz));
 		}
 
 		public bool DoesContainBinCentricData()
 		{
-			return UimfReader.ContainsBinCentricData;
+		    return UimfReader.DoesContainBinCentricData();
 		}
 
-		public int GetSaturationLevel()
+        /// <summary>
+        /// Returns the saturation level (maximum intensity value) for a single unit of measurement
+        /// Instead use GetSaturationLevel(int detectorBits)
+        /// </summary>
+        /// <returns>saturation level</returns>
+        [Obsolete("This assumes the detector is 8 bits; newer detectors used in 2014 are 12 bits")]
+        public int GetSaturationLevel()
 		{
 			return UimfReader.GetSaturationLevel();
 		}
+
+         /// <summary>
+        /// Returns the saturation level (maximum intensity value) for a single unit of measurement
+        /// </summary>
+        /// <param name="detectorBits">Number of bits used by the detector (usually 8 or 12)</param>
+        /// <returns>saturation level</returns>
+        public int GetSaturationLevel(int detectorBits)
+        {
+            return UimfReader.GetSaturationLevel(detectorBits);
+        }
+
 	}
 }

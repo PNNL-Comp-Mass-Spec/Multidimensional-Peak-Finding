@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using MultiDimensionalPeakFinding.PeakDetection;
-using PNNLOmics.Generic;
 
 namespace MultiDimensionalPeakFinding.PeakCorrelation
 {
@@ -13,18 +9,18 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
 		public static double CorrelateFeatures(FeatureBlob referenceFeature, FeatureBlob featureToTest)
 		{
 			double refMaxIntensity = 0;
-			int refScanLcMin = int.MaxValue;
-			int refScanLcMax = 0;
-			int refScanImsMin = int.MaxValue;
-			int refScanImsMax = 0;
-			int refScanLcRep = 0;
-			int refScanImsRep = 0;
+			var refScanLcMin = int.MaxValue;
+			var refScanLcMax = 0;
+			var refScanImsMin = int.MaxValue;
+			var refScanImsMax = 0;
+			var refScanLcRep = 0;
+			var refScanImsRep = 0;
 
-			foreach (Point point in referenceFeature.PointList)
+			foreach (var point in referenceFeature.PointList)
 			{
-				int scanIms = point.ScanIms;
-				int scanLc = point.ScanLc;
-				double intensity = point.Intensity;
+				var scanIms = point.ScanIms;
+				var scanLc = point.ScanLc;
+				var intensity = point.Intensity;
 
 				if (scanIms < refScanImsMin) refScanImsMin = scanIms;
 				if (scanIms > refScanImsMax) refScanImsMax = scanIms;
@@ -40,18 +36,18 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
 			}
 
 			double testMaxIntensity = 0;
-			int testScanLcMin = int.MaxValue;
-			int testScanLcMax = 0;
-			int testScanImsMin = int.MaxValue;
-			int testScanImsMax = 0;
-			int testScanLcRep = 0;
-			int testScanImsRep = 0;
+			var testScanLcMin = int.MaxValue;
+			var testScanLcMax = 0;
+			var testScanImsMin = int.MaxValue;
+			var testScanImsMax = 0;
+			var testScanLcRep = 0;
+			var testScanImsRep = 0;
 
-			foreach (Point point in featureToTest.PointList)
+			foreach (var point in featureToTest.PointList)
 			{
-				int scanIms = point.ScanIms;
-				int scanLc = point.ScanLc;
-				double intensity = point.Intensity;
+				var scanIms = point.ScanIms;
+				var scanLc = point.ScanLc;
+				var intensity = point.Intensity;
 
 				if (scanIms < testScanImsMin) testScanImsMin = scanIms;
 				if (scanIms > testScanImsMax) testScanImsMax = scanIms;
@@ -73,30 +69,30 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
 
 		public static double CorrelateFeaturesLinearRegression(FeatureBlob referencesFeature, FeatureBlob featureToTest)
 		{
-			AnonymousComparer<Point> pointComparer = new AnonymousComparer<Point>((x, y) => x.ScanLc != y.ScanLc ? x.ScanLc.CompareTo(y.ScanLc) : x.ScanIms.CompareTo(y.ScanIms));
+			var pointComparer = new AnonymousComparer<Point>((x, y) => x.ScanLc != y.ScanLc ? x.ScanLc.CompareTo(y.ScanLc) : x.ScanIms.CompareTo(y.ScanIms));
 
-			int numPoints = referencesFeature.PointList.Count;
+			var numPoints = referencesFeature.PointList.Count;
 
-			double[,] inputData = new double[numPoints, 2];
-			List<Point> testPointList = featureToTest.PointList;
+			var inputData = new double[numPoints, 2];
+			var testPointList = featureToTest.PointList;
 			testPointList.Sort(pointComparer);
 
-			int index = 0;
+			var index = 0;
 			double sumOfTestValues = 0;
 
 			// Get the corresponding reference:test intensity values
-			foreach (Point referencePoint in referencesFeature.PointList)
+			foreach (var referencePoint in referencesFeature.PointList)
 			{
 				inputData[index, 0] = referencePoint.Intensity;
 
-				int binarySearchResult = testPointList.BinarySearch(referencePoint, pointComparer);
+				var binarySearchResult = testPointList.BinarySearch(referencePoint, pointComparer);
 				if (binarySearchResult < 0)
 				{
 					inputData[index, 1] = 0;
 				}
 				else
 				{
-					double intensity = testPointList[binarySearchResult].Intensity;
+					var intensity = testPointList[binarySearchResult].Intensity;
 					inputData[index, 1] = intensity;
 					sumOfTestValues += intensity;
 				}
@@ -104,7 +100,7 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
 				index++;
 			}
 
-			int numIndependentVariables = 1;
+			var numIndependentVariables = 1;
 			int info;
 			alglib.linearmodel linearModel;
 			alglib.lrreport regressionReport;
@@ -113,25 +109,25 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
 			double[] regressionLineInfo;
 			alglib.lrunpack(linearModel, out regressionLineInfo, out numIndependentVariables);
 
-			double slope = regressionLineInfo[0];
-			double intercept = regressionLineInfo[1];
+			var slope = regressionLineInfo[0];
+			var intercept = regressionLineInfo[1];
 			double rSquared = 0;
 
-			double averageOfTestValues = sumOfTestValues / numPoints;
+			var averageOfTestValues = sumOfTestValues / numPoints;
 			double sumOfSquaredMeanResiduals = 0;
 			double sumOfSquaredResiduals = 0;
 
-			for(int i = 0; i < numPoints; i++)
+			for(var i = 0; i < numPoints; i++)
 			{
-				double referenceValue = inputData[i, 0];
-				double testValue = inputData[i, 1];
+				var referenceValue = inputData[i, 0];
+				var testValue = inputData[i, 1];
 
-				double calculatedTestValue = alglib.lrprocess(linearModel, new double[] { referenceValue });
+				var calculatedTestValue = alglib.lrprocess(linearModel, new double[] { referenceValue });
 				
-				double residual = testValue - calculatedTestValue;
+				var residual = testValue - calculatedTestValue;
 				sumOfSquaredResiduals += (residual * residual);
 
-				double meanResidual = testValue - averageOfTestValues;
+				var meanResidual = testValue - averageOfTestValues;
 				sumOfSquaredMeanResiduals += (meanResidual * meanResidual);
 			}
 
@@ -145,28 +141,28 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
 
 		public static double CorrelateFeaturesUsingLc(FeatureBlob referenceFeature, FeatureBlob featureToTest)
 		{
-			FeatureBlobStatistics referenceStatistics = referenceFeature.Statistics;
-			FeatureBlobStatistics testStatistics = featureToTest.Statistics;
+			var referenceStatistics = referenceFeature.Statistics;
+			var testStatistics = featureToTest.Statistics;
 
-			int referenceScanLcMin = referenceStatistics.ScanLcMin;
-			int referenceScanLcMax = referenceStatistics.ScanLcMax;
-			int testScanLcMin = testStatistics.ScanLcMin;
-			int testScanLcMax = testStatistics.ScanLcMax;
+			var referenceScanLcMin = referenceStatistics.ScanLcMin;
+			var referenceScanLcMax = referenceStatistics.ScanLcMax;
+			var testScanLcMin = testStatistics.ScanLcMin;
+			var testScanLcMax = testStatistics.ScanLcMax;
 
 			// If these features do not overlap, then just return 0
 			if (testScanLcMin > referenceScanLcMax || testScanLcMax < referenceScanLcMin) return 0;
 
-			int scanLcOffset = referenceScanLcMin - testScanLcMin;
+			var scanLcOffset = referenceScanLcMin - testScanLcMin;
 
-			double[] referenceLcProfile = Array.ConvertAll(referenceStatistics.LcApexPeakProfile, x => (double)x);
-			double[] testLcProfile = new double[referenceScanLcMax - referenceScanLcMin + 1];
-			float[] testLcProfileAsFloat = testStatistics.LcApexPeakProfile;
+			var referenceLcProfile = Array.ConvertAll(referenceStatistics.LcApexPeakProfile, x => (double)x);
+			var testLcProfile = new double[referenceScanLcMax - referenceScanLcMin + 1];
+			var testLcProfileAsFloat = testStatistics.LcApexPeakProfile;
 
-			int numPointsInTestLcProfile = testLcProfileAsFloat.Length;
+			var numPointsInTestLcProfile = testLcProfileAsFloat.Length;
 
-			for (int i = 0; i < referenceLcProfile.Length; i++)
+			for (var i = 0; i < referenceLcProfile.Length; i++)
 			{
-				int testLcProfileIndex = i + scanLcOffset;
+				var testLcProfileIndex = i + scanLcOffset;
 				if (testLcProfileIndex < 0) continue;
 				if (testLcProfileIndex >= numPointsInTestLcProfile) break;
 
@@ -181,28 +177,28 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
 
 		public static double CorrelateFeaturesUsingIms(FeatureBlob referenceFeature, FeatureBlob featureToTest)
 		{
-			FeatureBlobStatistics referenceStatistics = referenceFeature.Statistics;
-			FeatureBlobStatistics testStatistics = featureToTest.Statistics;
+			var referenceStatistics = referenceFeature.Statistics;
+			var testStatistics = featureToTest.Statistics;
 
-			int referenceScanImsMin = referenceStatistics.ScanImsMin;
-			int referenceScanImsMax = referenceStatistics.ScanImsMax;
-			int testScanImsMin = testStatistics.ScanImsMin;
-			int testScanImsMax = testStatistics.ScanImsMax;
+			var referenceScanImsMin = referenceStatistics.ScanImsMin;
+			var referenceScanImsMax = referenceStatistics.ScanImsMax;
+			var testScanImsMin = testStatistics.ScanImsMin;
+			var testScanImsMax = testStatistics.ScanImsMax;
 
 			// If these features do not overlap, then just return 0
 			if (testScanImsMin > referenceScanImsMax || testScanImsMax < referenceScanImsMin) return 0;
 
-			int scanImsOffset = referenceScanImsMin - testScanImsMin;
+			var scanImsOffset = referenceScanImsMin - testScanImsMin;
 
-			double[] referenceImsProfile = Array.ConvertAll(referenceStatistics.ImsApexPeakProfile, x => (double)x);
-			double[] testImsProfile = new double[referenceScanImsMax - referenceScanImsMin + 1];
-			float[] testImsProfileAsFloat = testStatistics.ImsApexPeakProfile;
+			var referenceImsProfile = Array.ConvertAll(referenceStatistics.ImsApexPeakProfile, x => (double)x);
+			var testImsProfile = new double[referenceScanImsMax - referenceScanImsMin + 1];
+			var testImsProfileAsFloat = testStatistics.ImsApexPeakProfile;
 
-			int numPointsInTestImsProfile = testImsProfileAsFloat.Length;
+			var numPointsInTestImsProfile = testImsProfileAsFloat.Length;
 
-			for (int i = 0; i < referenceImsProfile.Length; i++)
+			for (var i = 0; i < referenceImsProfile.Length; i++)
 			{
-				int testImsProfileIndex = i + scanImsOffset;
+				var testImsProfileIndex = i + scanImsOffset;
 				if (testImsProfileIndex < 0) continue;
 				if (testImsProfileIndex >= numPointsInTestImsProfile) break;
 
@@ -217,13 +213,13 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
 
 		private static void GetLinearRegression(double[] xvals, double[] yvals, out double slope, out double intercept, out double rsquaredVal)
 		{
-			double[,] inputData = new double[xvals.Length, 2];
+			var inputData = new double[xvals.Length, 2];
 			double sumOfYValues = 0;
 
-			for (int i = 0; i < xvals.Length; i++)
+			for (var i = 0; i < xvals.Length; i++)
 			{
-				double xValue = xvals[i];
-				double yValue = yvals[i];
+				var xValue = xvals[i];
+				var yValue = yvals[i];
 
 				inputData[i, 0] = xValue;
 				inputData[i, 1] = yValue;
@@ -231,8 +227,8 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
 				sumOfYValues += yValue;
 			}
 
-			int numIndependentVariables = 1;
-			int numPoints = yvals.Length;
+			var numIndependentVariables = 1;
+			var numPoints = yvals.Length;
 
 			alglib.linearmodel linearModel;
 			int info;
@@ -246,7 +242,7 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
 				alglib.lrunpack(linearModel, out regressionLineInfo, out numIndependentVariables);
 
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				slope = -99999999;
 				intercept = -9999999;
@@ -257,21 +253,21 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
 			slope = regressionLineInfo[0];
 			intercept = regressionLineInfo[1];
 
-			double averageY = sumOfYValues / numPoints;
+			var averageY = sumOfYValues / numPoints;
 			double sumOfSquaredMeanResiduals = 0;
 			double sumOfSquaredResiduals = 0;
 
-			for (int i = 0; i < xvals.Length; i++)
+			for (var i = 0; i < xvals.Length; i++)
 			{
-				double xValue = xvals[i];
-				double yValue = yvals[i];
+				var xValue = xvals[i];
+				var yValue = yvals[i];
 
-				double calculatedYValue = alglib.lrprocess(linearModel, new double[] { xValue });
+				var calculatedYValue = alglib.lrprocess(linearModel, new double[] { xValue });
 
-				double residual = yValue - calculatedYValue;
+				var residual = yValue - calculatedYValue;
 				sumOfSquaredResiduals += (residual * residual);
 
-				double meanResidual = yValue - averageY;
+				var meanResidual = yValue - averageY;
 				sumOfSquaredMeanResiduals += (meanResidual * meanResidual);
 			}
 
