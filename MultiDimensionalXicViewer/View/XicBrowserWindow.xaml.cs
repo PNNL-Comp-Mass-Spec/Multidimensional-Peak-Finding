@@ -16,6 +16,7 @@ using MultiDimensionalPeakFinding;
 using MultiDimensionalPeakFinding.PeakDetection;
 using MultiDimensionalXicViewer.ViewModel;
 using Ookii.Dialogs;
+using Ookii.Dialogs.Wpf;
 using UIMFLibrary;
 using CheckBox = System.Windows.Controls.CheckBox;
 using DataGrid = System.Windows.Controls.DataGrid;
@@ -55,8 +56,8 @@ namespace MultiDimensionalXicViewer.View
 			var dialog = new VistaOpenFileDialog { DefaultExt = ".uimf", Filter = "UIMF Files (*.uimf)|*.uimf" };
 
 			// Get the selected file name and display in a TextBox 
-			DialogResult result = dialog.ShowDialog();
-			if (result == System.Windows.Forms.DialogResult.OK)
+			var result = dialog.ShowDialog();
+			if (result == true)
 			{
 				// Open file 
 				string fileName = dialog.FileName;

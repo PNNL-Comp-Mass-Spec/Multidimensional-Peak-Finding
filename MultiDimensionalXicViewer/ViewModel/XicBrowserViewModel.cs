@@ -13,6 +13,7 @@ using InformedProteomics.Backend.Data.Spectrometry;
 using MultiDimensionalPeakFinding;
 using MultiDimensionalPeakFinding.PeakDetection;
 using Ookii.Dialogs;
+using Ookii.Dialogs.Wpf;
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Wpf;
@@ -78,7 +79,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 
 		public void OpenUimfFile(string fileName)
 		{
-			FileInfo uimfFileInfo = new FileInfo(fileName);
+			var uimfFileInfo = new FileInfo(fileName);
 
 			this.UimfUtil = new UimfUtil(fileName);
 
@@ -87,16 +88,16 @@ namespace MultiDimensionalXicViewer.ViewModel
 			{
 				//IContainer components = new System.ComponentModel.Container();
 
-				TaskDialog taskDialog = new TaskDialog();
+				var taskDialog = new TaskDialog();
 				taskDialog.WindowTitle = "Bin Centric Data Creation";
 				taskDialog.Content = "Content";
 				taskDialog.MainInstruction = "Main Instruction";
 				taskDialog.AllowDialogCancellation = true;
 
-				TaskDialogButton yesButton = new TaskDialogButton();
+				var yesButton = new TaskDialogButton();
 				yesButton.ButtonType = ButtonType.Yes;
 
-				TaskDialogButton noButton = new TaskDialogButton();
+				var noButton = new TaskDialogButton();
 				noButton.ButtonType = ButtonType.No;
 
 				taskDialog.Buttons.Add(noButton);
@@ -146,19 +147,19 @@ namespace MultiDimensionalXicViewer.ViewModel
 		{
 			if (this.CurrentFeature == null) return;
 
-			Feature precursor = new Feature(this.CurrentFeature.Statistics);
-			Rectangle precursorBoundary = precursor.GetBoundary();
+			var precursor = new Feature(this.CurrentFeature.Statistics);
+			var precursorBoundary = precursor.GetBoundary();
 
 			foreach (var isotopeEntry in this.IsotopeFeaturesDictionary)
 			{
-				string isotopeName = isotopeEntry.Key;
+				var isotopeName = isotopeEntry.Key;
 
 				foreach (var featureBlob in isotopeEntry.Value)
 				{
 					var feature = new Feature(featureBlob.Statistics);
 
-					Rectangle boundary = feature.GetBoundary();
-					Rectangle intersection = Rectangle.Intersect(precursorBoundary, boundary);
+					var boundary = feature.GetBoundary();
+					var intersection = Rectangle.Intersect(precursorBoundary, boundary);
 
 					// Ignore features that do not intersect at all
 					if (intersection.IsEmpty) continue;
@@ -173,26 +174,26 @@ namespace MultiDimensionalXicViewer.ViewModel
 		{
 			if (this.CurrentFeature == null) return;
 
-			Feature precursor = new Feature(this.CurrentFeature.Statistics);
-			Rectangle precursorBoundary = precursor.GetBoundary();
+			var precursor = new Feature(this.CurrentFeature.Statistics);
+			var precursorBoundary = precursor.GetBoundary();
 
 			foreach (var kvp in this.FragmentFeaturesDictionary)
 			{
-				Tuple<IonType, int> ionTypeTuple = kvp.Key;
+				var ionTypeTuple = kvp.Key;
 
 				// Skip any fragments that do not meet the UI filter criteria
 				if (!ShouldShowFragment(ionTypeTuple)) continue;
 
-				int residueNumber = ionTypeTuple.Item2;
-				string fragmentName = ionTypeTuple.Item1.GetName(residueNumber);
-				List<FeatureBlob> fragmentFeatureList = kvp.Value;
+				var residueNumber = ionTypeTuple.Item2;
+				var fragmentName = ionTypeTuple.Item1.GetName(residueNumber);
+				var fragmentFeatureList = kvp.Value;
 
 				foreach (var fragmentFeature in fragmentFeatureList)
 				{
 					var feature = new Feature(fragmentFeature.Statistics);
 
-					Rectangle fragmentBoundary = feature.GetBoundary();
-					Rectangle intersection = Rectangle.Intersect(precursorBoundary, fragmentBoundary);
+					var fragmentBoundary = feature.GetBoundary();
+					var intersection = Rectangle.Intersect(precursorBoundary, fragmentBoundary);
 
 					// Ignore fragment features that do not intersect at all
 					if (intersection.IsEmpty) continue;
@@ -205,16 +206,16 @@ namespace MultiDimensionalXicViewer.ViewModel
 
 		private bool ShouldShowFragment(Tuple<IonType, int> ionTypeTuple)
 		{
-			IonType ionType = ionTypeTuple.Item1;
+			var ionType = ionTypeTuple.Item1;
 
 			// Check charge state
-			int charge = ionType.Charge;
+			var charge = ionType.Charge;
 			if (!this.FragmentChargeStateList.Contains(charge)) return false;
 
 			// Check specific ion (e.g. b3, a7, y1)
-			int residueNumber = ionTypeTuple.Item2;
-			string ionLetter = ionType.BaseIonType.Symbol.ToLower();
-			string fragmentName = ionLetter + residueNumber;
+			var residueNumber = ionTypeTuple.Item2;
+			var ionLetter = ionType.BaseIonType.Symbol.ToLower();
+			var fragmentName = ionLetter + residueNumber;
 			if (!this.FragmentIonList.Contains(fragmentName)) return false;
 
 			// Check for neutral loss
@@ -230,15 +231,21 @@ namespace MultiDimensionalXicViewer.ViewModel
 		private void AddToLcPlot(FeatureBlob feature, string title, OxyColor color)
 		{
 			// TODO: Use unique colors
-			var newLcSeries = new LineSeries(color, 1, title);
-			newLcSeries.MouseDown += SeriesOnSelected;
+		    var newLcSeries = new LineSeries
+		    {
+		        Color = color,
+		        StrokeThickness = 1,
+		        Title = title
+		    };
+
+		    newLcSeries.MouseDown += SeriesOnSelected;
 
 			foreach (var group in feature.PointList.GroupBy(x => x.ScanLc).OrderBy(x => x.Key))
 			{
-				int scanLc = group.Key;
-				double intensity = group.Sum(x => x.Intensity);
+				var scanLc = group.Key;
+				var intensity = group.Sum(x => x.Intensity);
 
-				DataPoint dataPoint = new DataPoint(scanLc, intensity / m_maxLcIntensity);
+				var dataPoint = new DataPoint(scanLc, intensity / m_maxLcIntensity);
 				newLcSeries.Points.Add(dataPoint);
 			}
 
@@ -248,15 +255,20 @@ namespace MultiDimensionalXicViewer.ViewModel
 		private void AddToImsPlot(FeatureBlob feature, string title, OxyColor color)
 		{
 			// TODO: Use unique colors
-			var newImsSeries = new LineSeries(color, 1, title);
+		    var newImsSeries = new LineSeries()
+            {
+		        Color = color,
+		        StrokeThickness = 1,
+		        Title = title
+		    };
 			newImsSeries.MouseDown += SeriesOnSelected;
 
 			foreach (var group in feature.PointList.GroupBy(x => x.ScanIms).OrderBy(x => x.Key))
 			{
-				int scanLc = group.Key;
-				double intensity = group.Sum(x => x.Intensity);
+				var scanLc = group.Key;
+				var intensity = group.Sum(x => x.Intensity);
 
-				DataPoint dataPoint = new DataPoint(scanLc, intensity / m_maxImsIntensity);
+				var dataPoint = new DataPoint(scanLc, intensity / m_maxImsIntensity);
 				newImsSeries.Points.Add(dataPoint);
 			}
 
@@ -265,58 +277,69 @@ namespace MultiDimensionalXicViewer.ViewModel
 
 		private void CreateLcSlicePlot(FeatureBlob feature)
 		{
-			PlotModel plotModel = new PlotModel("LC Slice");
-			plotModel.TitleFontSize = 12;
-			plotModel.Padding = new OxyThickness(0);
-			plotModel.PlotMargins = new OxyThickness(0);
-			plotModel.IsLegendVisible = false;
+		    var plotModel = new PlotModel
+		    {
+		        Title = "LC Slice",
+		        TitleFontSize = 12,
+		        Padding = new OxyThickness(0),
+		        PlotMargins = new OxyThickness(0),
+		        IsLegendVisible = false
+		    };
 
-			var lcSeries = new LineSeries(OxyColors.Blue);
-			lcSeries.MouseDown += SeriesOnSelected;
+		    var lcSeries = new LineSeries {Color = OxyColors.Blue};
+		    lcSeries.MouseDown += SeriesOnSelected;
 
-			int minScanLc = int.MaxValue;
-			int maxScanLc = int.MinValue;
-			double maxIntensity = double.MinValue;
+			var minScanLc = int.MaxValue;
+			var maxScanLc = int.MinValue;
+			var maxIntensity = double.MinValue;
+
+            // Find the maximum intensity so that we can scale the Y values to be between 0 and 1
+            foreach (var group in feature.PointList.GroupBy(x => x.ScanLc).OrderBy(x => x.Key))
+            {
+                var intensity = group.Sum(x => x.Intensity);
+                if (intensity > maxIntensity) maxIntensity = intensity;
+            }
 
 			foreach (var group in feature.PointList.GroupBy(x => x.ScanLc).OrderBy(x => x.Key))
 			{
-				int scanLc = group.Key;
-				double intensity = group.Sum(x => x.Intensity);
+				var scanLc = group.Key;
+				var intensity = group.Sum(x => x.Intensity);
 
 				if (scanLc < minScanLc) minScanLc = scanLc;
 				if (scanLc > maxScanLc) maxScanLc = scanLc;
-				if (intensity > maxIntensity) maxIntensity = intensity;
 
-				DataPoint dataPoint = new DataPoint(scanLc, intensity);
+                var dataPoint = new DataPoint(scanLc, intensity / maxIntensity);
 				lcSeries.Points.Add(dataPoint);
-			}
-
-			// Re-scale intensities to be between 0 and 1
-			foreach (var dataPoint in lcSeries.Points)
-			{
-				dataPoint.Y = dataPoint.Y / maxIntensity;
 			}
 
 			plotModel.Series.Add(lcSeries);
 
-			var yAxis = new LinearAxis(AxisPosition.Left, "Relative Intensity");
-			yAxis.Minimum = 0;
-			yAxis.AbsoluteMinimum = 0;
-			yAxis.Maximum = 1.01;
-			yAxis.AbsoluteMaximum = 1.01;
-			yAxis.IsPanEnabled = true;
-			yAxis.IsZoomEnabled = true;
-			yAxis.AxisChanged += OnYAxisChange;
+		    var yAxis = new LinearAxis
+		    {
+		        Position = AxisPosition.Left,
+		        Title = "Relative Intensity",
+		        Minimum = 0,
+		        AbsoluteMinimum = 0,
+		        Maximum = 1.01,
+		        AbsoluteMaximum = 1.01,
+		        IsPanEnabled = true,
+		        IsZoomEnabled = true
+		    };
+		    yAxis.AxisChanged += OnYAxisChange;
 
-			var xAxis = new LinearAxis(AxisPosition.Bottom, "LC Scan #");
-			xAxis.Minimum = minScanLc - 5;
-			xAxis.AbsoluteMinimum = minScanLc - 5;
-			xAxis.Maximum = maxScanLc + 5;
-			xAxis.AbsoluteMaximum = maxScanLc + 5;
-			xAxis.IsPanEnabled = true;
-			xAxis.IsZoomEnabled = true;
+		    var xAxis = new LinearAxis
+		    {
+		        Position = AxisPosition.Bottom,
+		        Title = "LC Scan #",
+		        Minimum = minScanLc - 5,
+		        AbsoluteMinimum = minScanLc - 5,
+		        Maximum = maxScanLc + 5,
+		        AbsoluteMaximum = maxScanLc + 5,
+		        IsPanEnabled = true,
+		        IsZoomEnabled = true
+		    };
 
-			plotModel.Axes.Add(xAxis);
+		    plotModel.Axes.Add(xAxis);
 			plotModel.Axes.Add(yAxis);
 
 			m_maxLcIntensity = maxIntensity;
@@ -326,58 +349,69 @@ namespace MultiDimensionalXicViewer.ViewModel
 
 		private void CreateImsSlicePlot(FeatureBlob feature)
 		{
-			PlotModel plotModel = new PlotModel("IMS Slice");
-			plotModel.TitleFontSize = 12;
-			plotModel.Padding = new OxyThickness(0);
-			plotModel.PlotMargins = new OxyThickness(0);
-			plotModel.IsLegendVisible = false;
+		    var plotModel = new PlotModel
+		    {
+		        Title = "IMS Slice",
+		        TitleFontSize = 12,
+		        Padding = new OxyThickness(0),
+		        PlotMargins = new OxyThickness(0),
+		        IsLegendVisible = false
+		    };
 
-			var imsSeries = new LineSeries(OxyColors.Blue);
-			imsSeries.MouseDown += SeriesOnSelected;
+		    var imsSeries = new LineSeries {Color = OxyColors.Blue};
+		    imsSeries.MouseDown += SeriesOnSelected;
 
-			int minScanIms = int.MaxValue;
-			int maxScanIms = int.MinValue;
-			double maxIntensity = double.MinValue;
+			var minScanIms = int.MaxValue;
+			var maxScanIms = int.MinValue;
+			var maxIntensity = double.MinValue;
+
+            // Find the maximum intensity so that we can scale the Y values to be between 0 and 1
+            foreach (var group in feature.PointList.GroupBy(x => x.ScanIms).OrderBy(x => x.Key))
+            {
+                var intensity = group.Sum(x => x.Intensity);
+                if (intensity > maxIntensity) maxIntensity = intensity;
+            }
 
 			foreach (var group in feature.PointList.GroupBy(x => x.ScanIms).OrderBy(x => x.Key))
 			{
-				int scanIms = group.Key;
-				double intensity = group.Sum(x => x.Intensity);
+				var scanIms = group.Key;
+				var intensity = group.Sum(x => x.Intensity);
 
 				if (scanIms < minScanIms) minScanIms = scanIms;
 				if (scanIms > maxScanIms) maxScanIms = scanIms;
-				if (intensity > maxIntensity) maxIntensity = intensity;
 
-				DataPoint dataPoint = new DataPoint(scanIms, intensity);
+				var dataPoint = new DataPoint(scanIms, intensity / maxIntensity);
 				imsSeries.Points.Add(dataPoint);
-			}
-
-			// Re-scale intensities to be between 0 and 1
-			foreach (var dataPoint in imsSeries.Points)
-			{
-				dataPoint.Y = dataPoint.Y / maxIntensity;
 			}
 
 			plotModel.Series.Add(imsSeries);
 
-			var yAxis = new LinearAxis(AxisPosition.Left, "Relative Intensity");
-			yAxis.Minimum = 0;
-			yAxis.AbsoluteMinimum = 0;
-			yAxis.Maximum = 1.01;
-			yAxis.AbsoluteMaximum = 1.01;
-			yAxis.IsPanEnabled = true;
-			yAxis.IsZoomEnabled = true;
-			yAxis.AxisChanged += OnYAxisChange;
+		    var yAxis = new LinearAxis
+		    {
+		        Position = AxisPosition.Left,
+		        Title = "Relative Intensity",
+		        Minimum = 0,
+		        AbsoluteMinimum = 0,
+		        Maximum = 1.01,
+		        AbsoluteMaximum = 1.01,
+		        IsPanEnabled = true,
+		        IsZoomEnabled = true
+		    };
+		    yAxis.AxisChanged += OnYAxisChange;
 
-			var xAxis = new LinearAxis(AxisPosition.Bottom, "IMS Scan #");
-			xAxis.Minimum = minScanIms - 5;
-			xAxis.AbsoluteMinimum = minScanIms - 5;
-			xAxis.Maximum = maxScanIms + 5;
-			xAxis.AbsoluteMaximum = maxScanIms + 5;
-			xAxis.IsPanEnabled = true;
-			xAxis.IsZoomEnabled = true;
+		    var xAxis = new LinearAxis
+		    {
+		        Position = AxisPosition.Bottom,
+		        Title = "IMS Scan #",
+		        Minimum = minScanIms - 5,
+		        AbsoluteMinimum = minScanIms - 5,
+		        Maximum = maxScanIms + 5,
+		        AbsoluteMaximum = maxScanIms + 5,
+		        IsPanEnabled = true,
+		        IsZoomEnabled = true
+		    };
 
-			plotModel.Axes.Add(xAxis);
+		    plotModel.Axes.Add(xAxis);
 			plotModel.Axes.Add(yAxis);
 
 			m_maxImsIntensity = maxIntensity;
@@ -454,60 +488,65 @@ namespace MultiDimensionalXicViewer.ViewModel
 
 		private void OnYAxisChange(object sender, AxisChangedEventArgs e)
 		{
-			LinearAxis yAxis = sender as LinearAxis;
+			var yAxis = sender as LinearAxis;
+
+		    if (yAxis == null)
+		        return;
 
 			// No need to update anything if the minimum is already <= 0
 			if (yAxis.ActualMinimum <= 0) return;
 
 			// Set the minimum to 0 and refresh the plot
 			yAxis.Zoom(0, yAxis.ActualMaximum);
-			yAxis.PlotModel.RefreshPlot(true);
+            yAxis.PlotModel.InvalidatePlot(true);
 		}
 
 		private void SeriesOnSelected(object sender, OxyMouseEventArgs eventArgs)
 		{
-			Plot plot = sender as Plot;
-			switch (eventArgs.ChangedButton)
+			var plot = sender as Plot;
+
+            // The following now longer works with the newest OxyPlot
+            /*
+            if (eventArgs.ChangedButton == OxyMouseButton.Left)
 			{
-				case OxyMouseButton.Left:
-					var selectedSeries = plot.GetSeriesFromPoint(eventArgs.Position, 10);
-					if (selectedSeries != null)
+				var selectedSeries = GetSeriesFromPoint(eventArgs.Position, 10);
+				if (selectedSeries != null)
+				{
+					string title = selectedSeries.Title;
+
+					foreach (LineSeries series in this.ImsSlicePlot.Series.Concat(this.LcSlicePlot.Series))
 					{
-						string title = selectedSeries.Title;
+						var testInt = 0;
 
-						foreach (LineSeries series in this.ImsSlicePlot.Series.Concat(this.LcSlicePlot.Series))
+						if (series.Title == null)
 						{
-							int testInt = 0;
+							series.Color = OxyColors.Blue;
 
-							if (series.Title == null)
-							{
-								series.Color = OxyColors.Blue;
-
-								// Make thick if precursor was selected
-								series.StrokeThickness = title == null ? 5 : 1;
-							}
-							else if (int.TryParse(series.Title, out testInt))
-							{
-								series.Color = OxyColors.DeepSkyBlue;
-								series.StrokeThickness = series.Title.Equals(title) ? 5 : 1;
-							}
-							else if (series.Title.Equals(title))
-							{
-								series.Color = OxyColors.Green;
-								series.StrokeThickness = 5;
-							}
-							else
-							{
-								series.Color = OxyColors.Red;
-								series.StrokeThickness = 1;
-							}
+							// Make thick if precursor was selected
+							series.StrokeThickness = title == null ? 5 : 1;
 						}
-
-						this.ImsSlicePlot.RefreshPlot(true);
-						this.LcSlicePlot.RefreshPlot(true);
+						else if (int.TryParse(series.Title, out testInt))
+						{
+							series.Color = OxyColors.DeepSkyBlue;
+							series.StrokeThickness = series.Title.Equals(title) ? 5 : 1;
+						}
+						else if (series.Title.Equals(title))
+						{
+							series.Color = OxyColors.Green;
+							series.StrokeThickness = 5;
+						}
+						else
+						{
+							series.Color = OxyColors.Red;
+							series.StrokeThickness = 1;
+						}
 					}
-					break;
+
+                    this.ImsSlicePlot.InvalidatePlot(true);
+                    this.LcSlicePlot.InvalidatePlot(true);
+				}
 			}
+            */
 		}
 
 		private void ProgressDialogOnDoWork(object sender, DoWorkEventArgs doWorkEventArgs)
@@ -527,26 +566,26 @@ namespace MultiDimensionalXicViewer.ViewModel
 			var seqGraph = new SequenceGraph(m_aminoAcidSet, this.CurrentPeptide);
 			var scoringGraph = seqGraph.GetScoringGraph(0);
 			var precursorIon = scoringGraph.GetPrecursorIon(this.CurrentChargeState);
-			double monoMz = precursorIon.GetMz();
+			var monoMz = precursorIon.GetMz();
 
-			List<IntensityPoint> uimfPointList = this.UimfUtil.GetXic(monoMz, this.CurrentTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
-			IEnumerable<Point> watershedPointList = WaterShedMapUtil.BuildWatershedMap(uimfPointList);
+			var uimfPointList = this.UimfUtil.GetXic(monoMz, this.CurrentTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+			var watershedPointList = WaterShedMapUtil.BuildWatershedMap(uimfPointList);
 
-			SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(11, 2);
+			var smoother = new SavitzkyGolaySmoother(11, 2);
 			smoother.Smooth(ref watershedPointList);
 
 			this.FeatureList = FeatureDetection.DoWatershedAlgorithm(watershedPointList).ToList();
 
 			this.IsotopeFeaturesDictionary.Clear();
-			List<string> precursorTargetList = this.CurrentChargeState == 2 ? new List<string> { "-1", "0.5", "1", "1.5", "2", "3" } : new List<string> { "-1", "1", "2", "3" };
+			var precursorTargetList = this.CurrentChargeState == 2 ? new List<string> { "-1", "0.5", "1", "1.5", "2", "3" } : new List<string> { "-1", "1", "2", "3" };
 			foreach (var precursorTarget in precursorTargetList)
 			{
-				double targetMz = precursorIon.GetIsotopeMz(double.Parse(precursorTarget));
+				var targetMz = precursorIon.GetIsotopeMz(double.Parse(precursorTarget));
 
-				List<IntensityPoint> isotopeUimfPointList = this.UimfUtil.GetXic(targetMz, this.CurrentTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
-				IEnumerable<Point> isotopeWatershedPointList = WaterShedMapUtil.BuildWatershedMap(isotopeUimfPointList);
+				var isotopeUimfPointList = this.UimfUtil.GetXic(targetMz, this.CurrentTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+				var isotopeWatershedPointList = WaterShedMapUtil.BuildWatershedMap(isotopeUimfPointList);
 
-				List<FeatureBlob> isotopeFeatures = FeatureDetection.DoWatershedAlgorithm(isotopeWatershedPointList).ToList();
+				var isotopeFeatures = FeatureDetection.DoWatershedAlgorithm(isotopeWatershedPointList).ToList();
 				this.IsotopeFeaturesDictionary.Add(precursorTarget, isotopeFeatures);
 			}
 			
@@ -558,13 +597,13 @@ namespace MultiDimensionalXicViewer.ViewModel
 			var ionTypeDictionary = sequence.GetProductIons(m_ionTypeFactory.GetAllKnownIonTypes());
 
 			double fragmentCount = ionTypeDictionary.Count;
-			int index = 0;
+			var index = 0;
 			foreach (var ionTypeKvp in ionTypeDictionary)
 			{
-				Tuple<IonType, int> ionTypeTuple = ionTypeKvp.Key;
+				var ionTypeTuple = ionTypeKvp.Key;
 
 				var ion = ionTypeKvp.Value;
-				double fragmentMz = ion.GetMz();
+				var fragmentMz = ion.GetMz();
 
 				uimfPointList = this.UimfUtil.GetXic(fragmentMz, this.CurrentTolerance, DataReader.FrameType.MS2, DataReader.ToleranceType.PPM);
 				watershedPointList = WaterShedMapUtil.BuildWatershedMap(uimfPointList);
@@ -574,7 +613,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 				this.FragmentFeaturesDictionary.Add(ionTypeTuple, fragmentFeatureBlobList);
 
 				index++;
-				int progress = (int)((index / fragmentCount) * 100);
+				var progress = (int)((index / fragmentCount) * 100);
 				m_backgroundWorker.ReportProgress(progress);
 			}
 
@@ -585,7 +624,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 
 		private void BackgroundWorkerOnProgressChanged(object sender, ProgressChangedEventArgs progressChangedEventArgs)
 		{
-			string displayString = progressChangedEventArgs.UserState != null ? progressChangedEventArgs.UserState.ToString() : "";
+			var displayString = progressChangedEventArgs.UserState != null ? progressChangedEventArgs.UserState.ToString() : "";
 			if (!displayString.Equals(""))
 			{
 				this.FeatureFindingProgressDialog.ReportProgress(progressChangedEventArgs.ProgressPercentage, displayString, "Processing: " + progressChangedEventArgs.ProgressPercentage + "%");
