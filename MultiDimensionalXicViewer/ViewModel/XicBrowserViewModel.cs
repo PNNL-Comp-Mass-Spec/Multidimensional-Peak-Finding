@@ -3,23 +3,20 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Media.Media3D;
-using System.Windows.Shapes;
 using InformedProteomics.Backend.Data.Sequence;
 using InformedProteomics.Backend.Data.Spectrometry;
 using MultiDimensionalPeakFinding;
 using MultiDimensionalPeakFinding.PeakDetection;
-using Ookii.Dialogs;
 using Ookii.Dialogs.Wpf;
 using OxyPlot;
 using OxyPlot.Axes;
-using OxyPlot.Wpf;
 using UIMFLibrary;
-using Point = MultiDimensionalPeakFinding.PeakDetection.Point;
-using Feature = InformedProteomics.Backend.IMS.Feature;
+
+using Feature = InformedProteomics.IMS.IMS.Feature;
+
 using LineSeries = OxyPlot.Series.LineSeries;
 using LinearAxis = OxyPlot.Axes.LinearAxis;
 using Rectangle = System.Drawing.Rectangle;
@@ -28,6 +25,8 @@ namespace MultiDimensionalXicViewer.ViewModel
 {
 	public sealed class XicBrowserViewModel : ViewModelBase
 	{
+	    protected double BIN_CENTRIC_PROGRESS_START = 0.0001;
+
 		public string CurrentPeptide { get; set; }
 		public int CurrentChargeState { get; set; }
 		public double CurrentTolerance { get; set; }
@@ -50,11 +49,32 @@ namespace MultiDimensionalXicViewer.ViewModel
 		public List<NeutralLoss> FragmentNeutralLossList { get; set; }
 		public List<string> FragmentIonList { get; set; }
 
-		public ProgressDialog FeatureFindingProgressDialog { get; set; }
+	    private double mBinCentricTableProgress;
+	    public string BinCentricTableProgress
+	    {
+	        get
+	        {
+                if (mBinCentricTableProgress < BIN_CENTRIC_PROGRESS_START)
+	                return string.Empty;
 
-		private AminoAcidSet m_aminoAcidSet;
-		private IonTypeFactory m_ionTypeFactory;
-		private BackgroundWorker m_backgroundWorker;
+                if (Math.Abs(mBinCentricTableProgress - BIN_CENTRIC_PROGRESS_START) < float.Epsilon)
+	                return "Adding bin-centrid data: duplicating original .UIMF file";
+
+	            if (mBinCentricTableProgress > 99.999)
+	            {
+	                return "Data loaded";
+	            }
+
+                return "Adding bin-centric data: " + mBinCentricTableProgress.ToString("0.0") + "% complete";
+	        }
+	    }
+
+	    public ProgressDialog FeatureFindingProgressDialog { get; set; }
+
+		private readonly AminoAcidSet m_aminoAcidSet;
+		private readonly IonTypeFactory m_ionTypeFactory;
+
+        private BackgroundWorker m_FeatureFinderBackgroundWorker;
 
 		private double m_maxLcIntensity;
 		private double m_maxImsIntensity;
@@ -77,49 +97,114 @@ namespace MultiDimensionalXicViewer.ViewModel
 				maxCharge: 3);
 		}
 
-		public void OpenUimfFile(string fileName)
+        public async void OpenUimfFile(string filePath)
 		{
-			var uimfFileInfo = new FileInfo(fileName);
+			var uimfFileInfo = new FileInfo(filePath);
+		    UpdateBinCentricTableProgress(0);
 
-			this.UimfUtil = new UimfUtil(fileName);
+			this.UimfUtil = new UimfUtil(filePath);
 
-			// TODO: Make sure that the m/z based table exists
 			if(!this.UimfUtil.DoesContainBinCentricData())
 			{
 				//IContainer components = new System.ComponentModel.Container();
 
-				var taskDialog = new TaskDialog();
-				taskDialog.WindowTitle = "Bin Centric Data Creation";
-				taskDialog.Content = "Content";
-				taskDialog.MainInstruction = "Main Instruction";
-				taskDialog.AllowDialogCancellation = true;
+			    var taskDialog = new TaskDialog
+			    {
+			        WindowTitle = @"Bin Centric Data Creation",
+			        Content = @"Add the bin-centric data table now?",
+			        MainInstruction = @"Bin-centric data is required for this software to work",
+			        AllowDialogCancellation = true
+			    };
 
-				var yesButton = new TaskDialogButton();
-				yesButton.ButtonType = ButtonType.Yes;
+			    var yesButton = new TaskDialogButton
+			    {
+			        ButtonType = ButtonType.Yes,
+			        Default = true
+			    };
 
-				var noButton = new TaskDialogButton();
-				noButton.ButtonType = ButtonType.No;
+			    var noButton = new TaskDialogButton
+			    {
+			        ButtonType = ButtonType.No,
+			        Default = true
+			    };
 
-				taskDialog.Buttons.Add(noButton);
+			    taskDialog.Buttons.Add(noButton);
 				taskDialog.Buttons.Add(yesButton);
 
-				taskDialog.ShowDialog();
+				var eResult = taskDialog.ShowDialog();
+
+			    if (eResult != yesButton)
+			        return;
+
+                var result = await InsertBinCentricAsync(filePath);
+
+			    MessageBox.Show("Bin centric tables added", "Process Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+
 			}
 
 			this.CurrentUimfFileName = uimfFileInfo.Name;
 			OnPropertyChanged("CurrentUimfFileName");
 		}
 
-		public void OnFindFeatures()
+        private async Task<int> InsertBinCentricAsync(string filePath)
+        {
+            try
+            {
+                UpdateBinCentricTableProgress(BIN_CENTRIC_PROGRESS_START);
+
+                await Task.Run(() => AddBinCentricTables(filePath));
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error in InsertBinCentricAsync: " + ex.Message);
+                return 1;
+            }
+        }
+
+        private void AddBinCentricTables(string filePath)
+	    {
+            using (var uimfWriter = new DataReader(filePath))
+            {
+                var sourceFile = new FileInfo(filePath);
+                var workingDirectory = sourceFile.DirectoryName;
+
+                var binCentricTableCreator = new BinCentricTableCreation();
+                binCentricTableCreator.OnProgress += binCentricTableCreator_OnProgress;
+
+                binCentricTableCreator.CreateBinCentricTable(uimfWriter.DBConnection, this.UimfUtil.UimfReader, workingDirectory);
+            }
+
+            UpdateBinCentricTableProgress(100);
+	    }
+
+	    private void binCentricTableCreator_OnProgress(object sender, ProgressEventArgs e)
+        {
+            UpdateBinCentricTableProgress(e.PercentComplete);          
+        }
+
+        /// <summary>
+        /// Percent complete; value between 0 and 100
+        /// </summary>
+        /// <param name="newProgress"></param>
+	    private void UpdateBinCentricTableProgress(double newProgress)
+	    {
+            mBinCentricTableProgress = newProgress;
+            OnPropertyChanged("BinCentricTableProgress");
+	    }
+
+	    public void OnFindFeatures()
 		{
-			this.FeatureFindingProgressDialog = new ProgressDialog();
+		    this.FeatureFindingProgressDialog = new ProgressDialog
+		    {
+		        WindowTitle = @"Feature Finding Progress",
+		        Description = @"Feature Finding Progress",
+		        ShowTimeRemaining = true,
+		        ShowCancelButton = false
+		    };
 
-			this.FeatureFindingProgressDialog.WindowTitle = "Feature Finding Progress";
-			this.FeatureFindingProgressDialog.Description = "Feature Finding Progress";
-			this.FeatureFindingProgressDialog.ShowTimeRemaining = true;
-			this.FeatureFindingProgressDialog.ShowCancelButton = false;
 
-			this.FeatureFindingProgressDialog.DoWork += ProgressDialogOnDoWork;
+		    this.FeatureFindingProgressDialog.DoWork += ProgressDialogOnDoWork;
 
 			this.FeatureFindingProgressDialog.ShowDialog();
 		}
@@ -147,7 +232,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 		{
 			if (this.CurrentFeature == null) return;
 
-			var precursor = new Feature(this.CurrentFeature.Statistics);
+            var precursor = new Feature(this.CurrentFeature.Statistics);
 			var precursorBoundary = precursor.GetBoundary();
 
 			foreach (var isotopeEntry in this.IsotopeFeaturesDictionary)
@@ -503,68 +588,78 @@ namespace MultiDimensionalXicViewer.ViewModel
 
 		private void SeriesOnSelected(object sender, OxyMouseDownEventArgs eventArgs)
 		{
-			var plot = sender as PlotModel;
+            // Note: OxyMouseDownEventArgs replaces OxyMouseEventArgs
+            
+            var plot = sender as PlotModel;
 
-            // The following now longer works with the newest OxyPlot
-            if (eventArgs.ChangedButton == OxyMouseButton.Left)
-			{
-				var selectedSeries = plot.GetSeriesFromPoint(eventArgs.Position, 10);
-				if (selectedSeries != null)
-				{
-					string title = selectedSeries.Title;
+            if (eventArgs.ChangedButton != OxyMouseButton.Left || plot == null)
+		    {
+		        return;
+		    }
 
-					foreach (LineSeries series in this.ImsSlicePlot.Series.Concat(this.LcSlicePlot.Series))
-					{
-						var testInt = 0;
+		    var selectedSeries = plot.GetSeriesFromPoint(eventArgs.Position, 10);
+		    if (selectedSeries != null)
+		    {
+		        var title = selectedSeries.Title;
 
-						if (series.Title == null)
-						{
-							series.Color = OxyColors.Blue;
+		        foreach (var seriesItem in this.ImsSlicePlot.Series.Concat(this.LcSlicePlot.Series))
+		        {
+                    var series = (LineSeries)seriesItem;
+		            var testInt = 0;
 
-							 // Make thick if precursor was selected
-							series.StrokeThickness = title == null ? 5 : 1;
-						}
-						else if (int.TryParse(series.Title, out testInt))
-						{
-							series.Color = OxyColors.DeepSkyBlue;
-							series.StrokeThickness = series.Title.Equals(title) ? 5 : 1;
-						}
-						else if (series.Title.Equals(title))
-						{
-							series.Color = OxyColors.Green;
-							series.StrokeThickness = 5;
-						}
-						else
-						{
-							series.Color = OxyColors.Red;
-							series.StrokeThickness = 1;
-						}
-					}
+		            if (series.Title == null)
+		            {
+		                series.Color = OxyColors.Blue;
 
-                    this.ImsSlicePlot.InvalidatePlot(true);
-                    this.LcSlicePlot.InvalidatePlot(true);
-				}
-			}
+		                // Make thick if precursor was selected
+		                series.StrokeThickness = title == null ? 5 : 1;
+		            }
+		            else if (int.TryParse(series.Title, out testInt))
+		            {
+		                series.Color = OxyColors.DeepSkyBlue;
+		                series.StrokeThickness = series.Title.Equals(title) ? 5 : 1;
+		            }
+		            else if (series.Title.Equals(title))
+		            {
+		                series.Color = OxyColors.Green;
+		                series.StrokeThickness = 5;
+		            }
+		            else
+		            {
+		                series.Color = OxyColors.Red;
+		                series.StrokeThickness = 1;
+		            }
+		        }
+
+		        this.ImsSlicePlot.InvalidatePlot(true);
+		        this.LcSlicePlot.InvalidatePlot(true);
+		    }
 		}
 
 		private void ProgressDialogOnDoWork(object sender, DoWorkEventArgs doWorkEventArgs)
 		{
-			m_backgroundWorker = new BackgroundWorker();
-			m_backgroundWorker.WorkerReportsProgress = true;
-			m_backgroundWorker.WorkerSupportsCancellation = false;
-			m_backgroundWorker.ProgressChanged += BackgroundWorkerOnProgressChanged;
+		    m_FeatureFinderBackgroundWorker = new BackgroundWorker
+		    {
+		        WorkerReportsProgress = true,
+		        WorkerSupportsCancellation = false
+		    };
+		    m_FeatureFinderBackgroundWorker.ProgressChanged += BackgroundWorkerOnProgressChanged;
 
 			FindFeatures();
 		}
 
 		private void FindFeatures()
 		{
-			m_backgroundWorker.ReportProgress(0, "Finding 3-D Features for Precursor and Fragments");
+			m_FeatureFinderBackgroundWorker.ReportProgress(0, "Finding 3-D Features for Precursor and Fragments");
 
-			var seqGraph = new SequenceGraph(m_aminoAcidSet, this.CurrentPeptide);
-			var scoringGraph = seqGraph.GetScoringGraph(0);
-			var precursorIon = scoringGraph.GetPrecursorIon(this.CurrentChargeState);
-			var monoMz = precursorIon.GetMz();
+            var seqGraph = SequenceGraph.CreateGraph(m_aminoAcidSet, this.CurrentPeptide);
+			// var scoringGraph = seqGraph.GetScoringGraph(0);
+			// var precursorIon = scoringGraph.GetPrecursorIon(this.CurrentChargeState);
+            // var monoMz = precursorIon.GetMz();
+
+            var sequence = new Sequence(this.CurrentPeptide, m_aminoAcidSet);
+		    var precursorIon = sequence.GetPrecursorIon(this.CurrentChargeState);
+		    var monoMz = precursorIon.GetMonoIsotopicMz();
 
 			var uimfPointList = this.UimfUtil.GetXic(monoMz, this.CurrentTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
 			var watershedPointList = WaterShedMapUtil.BuildWatershedMap(uimfPointList);
@@ -591,7 +686,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 			this.ImsSlicePlot = new PlotModel();
 
 			this.FragmentFeaturesDictionary.Clear();
-			var sequence = new Sequence(this.CurrentPeptide, m_aminoAcidSet);
+			// var sequence = new Sequence(this.CurrentPeptide, m_aminoAcidSet);
 			var ionTypeDictionary = sequence.GetProductIons(m_ionTypeFactory.GetAllKnownIonTypes());
 
 			double fragmentCount = ionTypeDictionary.Count;
@@ -601,7 +696,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 				var ionTypeTuple = ionTypeKvp.Key;
 
 				var ion = ionTypeKvp.Value;
-				var fragmentMz = ion.GetMz();
+			    var fragmentMz = ion.GetMonoIsotopicMz();
 
 				uimfPointList = this.UimfUtil.GetXic(fragmentMz, this.CurrentTolerance, DataReader.FrameType.MS2, DataReader.ToleranceType.PPM);
 				watershedPointList = WaterShedMapUtil.BuildWatershedMap(uimfPointList);
@@ -612,7 +707,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 
 				index++;
 				var progress = (int)((index / fragmentCount) * 100);
-				m_backgroundWorker.ReportProgress(progress);
+				m_FeatureFinderBackgroundWorker.ReportProgress(progress);
 			}
 
 			OnPropertyChanged("FeatureList");

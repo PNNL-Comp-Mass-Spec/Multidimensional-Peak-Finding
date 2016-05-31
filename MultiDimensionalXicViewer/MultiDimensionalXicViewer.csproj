@@ -70,6 +70,9 @@
     <Reference Include="InformedProteomics.Backend">
       <HintPath>..\lib\$(Platform)\InformedProteomics.Backend.dll</HintPath>
     </Reference>
+    <Reference Include="InformedProteomics.IMS">
+      <HintPath>..\lib\x64\InformedProteomics.IMS.dll</HintPath>
+    </Reference>
     <Reference Include="MathNet.Numerics">
       <HintPath>..\lib\MathNet.Numerics.dll</HintPath>
     </Reference>
@@ -94,6 +97,10 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite, Version=1.0.97.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\System.Data.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />

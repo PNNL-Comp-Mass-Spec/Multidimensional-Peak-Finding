@@ -1,28 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using InformedProteomics.Backend.Data.Spectrometry;
-using MultiDimensionalPeakFinding;
 using MultiDimensionalPeakFinding.PeakDetection;
 using MultiDimensionalXicViewer.ViewModel;
-using Ookii.Dialogs;
 using Ookii.Dialogs.Wpf;
-using UIMFLibrary;
-using CheckBox = System.Windows.Controls.CheckBox;
-using DataGrid = System.Windows.Controls.DataGrid;
-using FlowDirection = System.Windows.FlowDirection;
-using Orientation = System.Windows.Controls.Orientation;
-using TextBox = System.Windows.Controls.TextBox;
 
 namespace MultiDimensionalXicViewer.View
 {
