@@ -501,15 +501,14 @@ namespace MultiDimensionalXicViewer.ViewModel
             yAxis.PlotModel.InvalidatePlot(true);
 		}
 
-		private void SeriesOnSelected(object sender, OxyMouseEventArgs eventArgs)
+		private void SeriesOnSelected(object sender, OxyMouseDownEventArgs eventArgs)
 		{
-			var plot = sender as Plot;
+			var plot = sender as PlotModel;
 
             // The following now longer works with the newest OxyPlot
-            /*
             if (eventArgs.ChangedButton == OxyMouseButton.Left)
 			{
-				var selectedSeries = GetSeriesFromPoint(eventArgs.Position, 10);
+				var selectedSeries = plot.GetSeriesFromPoint(eventArgs.Position, 10);
 				if (selectedSeries != null)
 				{
 					string title = selectedSeries.Title;
@@ -522,7 +521,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 						{
 							series.Color = OxyColors.Blue;
 
-							// Make thick if precursor was selected
+							 // Make thick if precursor was selected
 							series.StrokeThickness = title == null ? 5 : 1;
 						}
 						else if (int.TryParse(series.Title, out testInt))
@@ -546,7 +545,6 @@ namespace MultiDimensionalXicViewer.ViewModel
                     this.LcSlicePlot.InvalidatePlot(true);
 				}
 			}
-            */
 		}
 
 		private void ProgressDialogOnDoWork(object sender, DoWorkEventArgs doWorkEventArgs)
