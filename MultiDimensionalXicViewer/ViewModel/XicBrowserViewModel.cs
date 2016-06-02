@@ -25,7 +25,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 {
     public sealed class XicBrowserViewModel : ViewModelBase
     {
-        protected double BIN_CENTRIC_PROGRESS_START = 0.0001;
+        private double BIN_CENTRIC_PROGRESS_START = 0.0001;
 
         public string CurrentPeptide { get; set; }
         public int CurrentChargeState { get; set; }
