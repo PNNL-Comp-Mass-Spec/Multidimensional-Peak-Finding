@@ -4,282 +4,282 @@ using MultiDimensionalPeakFinding.PeakDetection;
 
 namespace MultiDimensionalPeakFinding.PeakCorrelation
 {
-	public class FeatureCorrelator
-	{
-		public static double CorrelateFeatures(FeatureBlob referenceFeature, FeatureBlob featureToTest)
-		{
-			double refMaxIntensity = 0;
-			var refScanLcMin = int.MaxValue;
-			var refScanLcMax = 0;
-			var refScanImsMin = int.MaxValue;
-			var refScanImsMax = 0;
-			var refScanLcRep = 0;
-			var refScanImsRep = 0;
+    public class FeatureCorrelator
+    {
+        public static double CorrelateFeatures(FeatureBlob referenceFeature, FeatureBlob featureToTest)
+        {
+            double refMaxIntensity = 0;
+            var refScanLcMin = int.MaxValue;
+            var refScanLcMax = 0;
+            var refScanImsMin = int.MaxValue;
+            var refScanImsMax = 0;
+            var refScanLcRep = 0;
+            var refScanImsRep = 0;
 
-			foreach (var point in referenceFeature.PointList)
-			{
-				var scanIms = point.ScanIms;
-				var scanLc = point.ScanLc;
-				var intensity = point.Intensity;
+            foreach (var point in referenceFeature.PointList)
+            {
+                var scanIms = point.ScanIms;
+                var scanLc = point.ScanLc;
+                var intensity = point.Intensity;
 
-				if (scanIms < refScanImsMin) refScanImsMin = scanIms;
-				if (scanIms > refScanImsMax) refScanImsMax = scanIms;
-				if (scanLc < refScanLcMin) refScanLcMin = scanLc;
-				if (scanLc > refScanLcMax) refScanLcMax = scanLc;
+                if (scanIms < refScanImsMin) refScanImsMin = scanIms;
+                if (scanIms > refScanImsMax) refScanImsMax = scanIms;
+                if (scanLc < refScanLcMin) refScanLcMin = scanLc;
+                if (scanLc > refScanLcMax) refScanLcMax = scanLc;
 
-				if(intensity > refMaxIntensity)
-				{
-					refMaxIntensity = intensity;
-					refScanLcRep = scanLc;
-					refScanImsRep = scanIms;
-				}
-			}
+                if(intensity > refMaxIntensity)
+                {
+                    refMaxIntensity = intensity;
+                    refScanLcRep = scanLc;
+                    refScanImsRep = scanIms;
+                }
+            }
 
-			double testMaxIntensity = 0;
-			var testScanLcMin = int.MaxValue;
-			var testScanLcMax = 0;
-			var testScanImsMin = int.MaxValue;
-			var testScanImsMax = 0;
-			var testScanLcRep = 0;
-			var testScanImsRep = 0;
+            double testMaxIntensity = 0;
+            var testScanLcMin = int.MaxValue;
+            var testScanLcMax = 0;
+            var testScanImsMin = int.MaxValue;
+            var testScanImsMax = 0;
+            var testScanLcRep = 0;
+            var testScanImsRep = 0;
 
-			foreach (var point in featureToTest.PointList)
-			{
-				var scanIms = point.ScanIms;
-				var scanLc = point.ScanLc;
-				var intensity = point.Intensity;
+            foreach (var point in featureToTest.PointList)
+            {
+                var scanIms = point.ScanIms;
+                var scanLc = point.ScanLc;
+                var intensity = point.Intensity;
 
-				if (scanIms < testScanImsMin) testScanImsMin = scanIms;
-				if (scanIms > testScanImsMax) testScanImsMax = scanIms;
-				if (scanLc < testScanLcMin) testScanLcMin = scanLc;
-				if (scanLc > testScanLcMax) testScanLcMax = scanLc;
+                if (scanIms < testScanImsMin) testScanImsMin = scanIms;
+                if (scanIms > testScanImsMax) testScanImsMax = scanIms;
+                if (scanLc < testScanLcMin) testScanLcMin = scanLc;
+                if (scanLc > testScanLcMax) testScanLcMax = scanLc;
 
-				if (intensity > testMaxIntensity)
-				{
-					testMaxIntensity = intensity;
-					testScanLcRep = scanLc;
-					testScanImsRep = scanIms;
-				}
-			}
+                if (intensity > testMaxIntensity)
+                {
+                    testMaxIntensity = intensity;
+                    testScanLcRep = scanLc;
+                    testScanImsRep = scanIms;
+                }
+            }
 
-			Console.WriteLine("RefLcRep = " + refScanLcRep + "\tTestLcRep = " + testScanLcRep + "\tRefImsRep = " + refScanImsRep + "\tTestImsRep = " + testScanImsRep + "\tRefLc = " + refScanLcMin + " - " + refScanLcMax + "\tTestLc = " + testScanLcMin + " - " + testScanLcMax + "\tRefIms = " + refScanImsMin + " - " + refScanImsMax + "\tTestIms = " + testScanImsMin + " - " + testScanImsMax + "\tRefIntensity = " + refMaxIntensity + "\tTestIntensity = " + testMaxIntensity);
+            Console.WriteLine("RefLcRep = " + refScanLcRep + "\tTestLcRep = " + testScanLcRep + "\tRefImsRep = " + refScanImsRep + "\tTestImsRep = " + testScanImsRep + "\tRefLc = " + refScanLcMin + " - " + refScanLcMax + "\tTestLc = " + testScanLcMin + " - " + testScanLcMax + "\tRefIms = " + refScanImsMin + " - " + refScanImsMax + "\tTestIms = " + testScanImsMin + " - " + testScanImsMax + "\tRefIntensity = " + refMaxIntensity + "\tTestIntensity = " + testMaxIntensity);
 
-			return 0;
-		}
+            return 0;
+        }
 
-		public static double CorrelateFeaturesLinearRegression(FeatureBlob referencesFeature, FeatureBlob featureToTest)
-		{
-			var pointComparer = new AnonymousComparer<Point>((x, y) => x.ScanLc != y.ScanLc ? x.ScanLc.CompareTo(y.ScanLc) : x.ScanIms.CompareTo(y.ScanIms));
+        public static double CorrelateFeaturesLinearRegression(FeatureBlob referencesFeature, FeatureBlob featureToTest)
+        {
+            var pointComparer = new AnonymousComparer<Point>((x, y) => x.ScanLc != y.ScanLc ? x.ScanLc.CompareTo(y.ScanLc) : x.ScanIms.CompareTo(y.ScanIms));
 
-			var numPoints = referencesFeature.PointList.Count;
+            var numPoints = referencesFeature.PointList.Count;
 
-			var inputData = new double[numPoints, 2];
-			var testPointList = featureToTest.PointList;
-			testPointList.Sort(pointComparer);
+            var inputData = new double[numPoints, 2];
+            var testPointList = featureToTest.PointList;
+            testPointList.Sort(pointComparer);
 
-			var index = 0;
-			double sumOfTestValues = 0;
+            var index = 0;
+            double sumOfTestValues = 0;
 
-			// Get the corresponding reference:test intensity values
-			foreach (var referencePoint in referencesFeature.PointList)
-			{
-				inputData[index, 0] = referencePoint.Intensity;
+            // Get the corresponding reference:test intensity values
+            foreach (var referencePoint in referencesFeature.PointList)
+            {
+                inputData[index, 0] = referencePoint.Intensity;
 
-				var binarySearchResult = testPointList.BinarySearch(referencePoint, pointComparer);
-				if (binarySearchResult < 0)
-				{
-					inputData[index, 1] = 0;
-				}
-				else
-				{
-					var intensity = testPointList[binarySearchResult].Intensity;
-					inputData[index, 1] = intensity;
-					sumOfTestValues += intensity;
-				}
+                var binarySearchResult = testPointList.BinarySearch(referencePoint, pointComparer);
+                if (binarySearchResult < 0)
+                {
+                    inputData[index, 1] = 0;
+                }
+                else
+                {
+                    var intensity = testPointList[binarySearchResult].Intensity;
+                    inputData[index, 1] = intensity;
+                    sumOfTestValues += intensity;
+                }
 
-				index++;
-			}
+                index++;
+            }
 
-			var numIndependentVariables = 1;
-			int info;
-			alglib.linearmodel linearModel;
-			alglib.lrreport regressionReport;
-			alglib.lrbuild(inputData, numPoints, numIndependentVariables, out info, out linearModel, out regressionReport);
+            var numIndependentVariables = 1;
+            int info;
+            alglib.linearmodel linearModel;
+            alglib.lrreport regressionReport;
+            alglib.lrbuild(inputData, numPoints, numIndependentVariables, out info, out linearModel, out regressionReport);
 
-			double[] regressionLineInfo;
-			alglib.lrunpack(linearModel, out regressionLineInfo, out numIndependentVariables);
+            double[] regressionLineInfo;
+            alglib.lrunpack(linearModel, out regressionLineInfo, out numIndependentVariables);
 
-			var slope = regressionLineInfo[0];
-			var intercept = regressionLineInfo[1];
-			double rSquared = 0;
+            var slope = regressionLineInfo[0];
+            var intercept = regressionLineInfo[1];
+            double rSquared = 0;
 
-			var averageOfTestValues = sumOfTestValues / numPoints;
-			double sumOfSquaredMeanResiduals = 0;
-			double sumOfSquaredResiduals = 0;
+            var averageOfTestValues = sumOfTestValues / numPoints;
+            double sumOfSquaredMeanResiduals = 0;
+            double sumOfSquaredResiduals = 0;
 
-			for(var i = 0; i < numPoints; i++)
-			{
-				var referenceValue = inputData[i, 0];
-				var testValue = inputData[i, 1];
+            for(var i = 0; i < numPoints; i++)
+            {
+                var referenceValue = inputData[i, 0];
+                var testValue = inputData[i, 1];
 
-				var calculatedTestValue = alglib.lrprocess(linearModel, new double[] { referenceValue });
-				
-				var residual = testValue - calculatedTestValue;
-				sumOfSquaredResiduals += (residual * residual);
+                var calculatedTestValue = alglib.lrprocess(linearModel, new double[] { referenceValue });
 
-				var meanResidual = testValue - averageOfTestValues;
-				sumOfSquaredMeanResiduals += (meanResidual * meanResidual);
-			}
+                var residual = testValue - calculatedTestValue;
+                sumOfSquaredResiduals += (residual * residual);
 
-			if(sumOfSquaredMeanResiduals > 0)
-			{
-				rSquared = 1 - (sumOfSquaredResiduals / sumOfSquaredMeanResiduals);
-			}
+                var meanResidual = testValue - averageOfTestValues;
+                sumOfSquaredMeanResiduals += (meanResidual * meanResidual);
+            }
 
-			return rSquared;
-		}
+            if(sumOfSquaredMeanResiduals > 0)
+            {
+                rSquared = 1 - (sumOfSquaredResiduals / sumOfSquaredMeanResiduals);
+            }
 
-		public static double CorrelateFeaturesUsingLc(FeatureBlob referenceFeature, FeatureBlob featureToTest)
-		{
-			var referenceStatistics = referenceFeature.Statistics;
-			var testStatistics = featureToTest.Statistics;
+            return rSquared;
+        }
 
-			var referenceScanLcMin = referenceStatistics.ScanLcMin;
-			var referenceScanLcMax = referenceStatistics.ScanLcMax;
-			var testScanLcMin = testStatistics.ScanLcMin;
-			var testScanLcMax = testStatistics.ScanLcMax;
+        public static double CorrelateFeaturesUsingLc(FeatureBlob referenceFeature, FeatureBlob featureToTest)
+        {
+            var referenceStatistics = referenceFeature.Statistics;
+            var testStatistics = featureToTest.Statistics;
 
-			// If these features do not overlap, then just return 0
-			if (testScanLcMin > referenceScanLcMax || testScanLcMax < referenceScanLcMin) return 0;
+            var referenceScanLcMin = referenceStatistics.ScanLcMin;
+            var referenceScanLcMax = referenceStatistics.ScanLcMax;
+            var testScanLcMin = testStatistics.ScanLcMin;
+            var testScanLcMax = testStatistics.ScanLcMax;
 
-			var scanLcOffset = referenceScanLcMin - testScanLcMin;
+            // If these features do not overlap, then just return 0
+            if (testScanLcMin > referenceScanLcMax || testScanLcMax < referenceScanLcMin) return 0;
 
-			var referenceLcProfile = Array.ConvertAll(referenceStatistics.LcApexPeakProfile, x => (double)x);
-			var testLcProfile = new double[referenceScanLcMax - referenceScanLcMin + 1];
-			var testLcProfileAsFloat = testStatistics.LcApexPeakProfile;
+            var scanLcOffset = referenceScanLcMin - testScanLcMin;
 
-			var numPointsInTestLcProfile = testLcProfileAsFloat.Length;
+            var referenceLcProfile = Array.ConvertAll(referenceStatistics.LcApexPeakProfile, x => (double)x);
+            var testLcProfile = new double[referenceScanLcMax - referenceScanLcMin + 1];
+            var testLcProfileAsFloat = testStatistics.LcApexPeakProfile;
 
-			for (var i = 0; i < referenceLcProfile.Length; i++)
-			{
-				var testLcProfileIndex = i + scanLcOffset;
-				if (testLcProfileIndex < 0) continue;
-				if (testLcProfileIndex >= numPointsInTestLcProfile) break;
+            var numPointsInTestLcProfile = testLcProfileAsFloat.Length;
 
-				testLcProfile[i] = testLcProfileAsFloat[testLcProfileIndex];
-			}
+            for (var i = 0; i < referenceLcProfile.Length; i++)
+            {
+                var testLcProfileIndex = i + scanLcOffset;
+                if (testLcProfileIndex < 0) continue;
+                if (testLcProfileIndex >= numPointsInTestLcProfile) break;
 
-			double slope, intercept, rSquared;
-			GetLinearRegression(referenceLcProfile, testLcProfile, out slope, out intercept, out rSquared);
+                testLcProfile[i] = testLcProfileAsFloat[testLcProfileIndex];
+            }
 
-			return rSquared;
-		}
+            double slope, intercept, rSquared;
+            GetLinearRegression(referenceLcProfile, testLcProfile, out slope, out intercept, out rSquared);
 
-		public static double CorrelateFeaturesUsingIms(FeatureBlob referenceFeature, FeatureBlob featureToTest)
-		{
-			var referenceStatistics = referenceFeature.Statistics;
-			var testStatistics = featureToTest.Statistics;
+            return rSquared;
+        }
 
-			var referenceScanImsMin = referenceStatistics.ScanImsMin;
-			var referenceScanImsMax = referenceStatistics.ScanImsMax;
-			var testScanImsMin = testStatistics.ScanImsMin;
-			var testScanImsMax = testStatistics.ScanImsMax;
+        public static double CorrelateFeaturesUsingIms(FeatureBlob referenceFeature, FeatureBlob featureToTest)
+        {
+            var referenceStatistics = referenceFeature.Statistics;
+            var testStatistics = featureToTest.Statistics;
 
-			// If these features do not overlap, then just return 0
-			if (testScanImsMin > referenceScanImsMax || testScanImsMax < referenceScanImsMin) return 0;
+            var referenceScanImsMin = referenceStatistics.ScanImsMin;
+            var referenceScanImsMax = referenceStatistics.ScanImsMax;
+            var testScanImsMin = testStatistics.ScanImsMin;
+            var testScanImsMax = testStatistics.ScanImsMax;
 
-			var scanImsOffset = referenceScanImsMin - testScanImsMin;
+            // If these features do not overlap, then just return 0
+            if (testScanImsMin > referenceScanImsMax || testScanImsMax < referenceScanImsMin) return 0;
 
-			var referenceImsProfile = Array.ConvertAll(referenceStatistics.ImsApexPeakProfile, x => (double)x);
-			var testImsProfile = new double[referenceScanImsMax - referenceScanImsMin + 1];
-			var testImsProfileAsFloat = testStatistics.ImsApexPeakProfile;
+            var scanImsOffset = referenceScanImsMin - testScanImsMin;
 
-			var numPointsInTestImsProfile = testImsProfileAsFloat.Length;
+            var referenceImsProfile = Array.ConvertAll(referenceStatistics.ImsApexPeakProfile, x => (double)x);
+            var testImsProfile = new double[referenceScanImsMax - referenceScanImsMin + 1];
+            var testImsProfileAsFloat = testStatistics.ImsApexPeakProfile;
 
-			for (var i = 0; i < referenceImsProfile.Length; i++)
-			{
-				var testImsProfileIndex = i + scanImsOffset;
-				if (testImsProfileIndex < 0) continue;
-				if (testImsProfileIndex >= numPointsInTestImsProfile) break;
+            var numPointsInTestImsProfile = testImsProfileAsFloat.Length;
 
-				testImsProfile[i] = testImsProfileAsFloat[testImsProfileIndex];
-			}
+            for (var i = 0; i < referenceImsProfile.Length; i++)
+            {
+                var testImsProfileIndex = i + scanImsOffset;
+                if (testImsProfileIndex < 0) continue;
+                if (testImsProfileIndex >= numPointsInTestImsProfile) break;
 
-			double slope, intercept, rSquared;
-			GetLinearRegression(referenceImsProfile, testImsProfile, out slope, out intercept, out rSquared);
+                testImsProfile[i] = testImsProfileAsFloat[testImsProfileIndex];
+            }
 
-			return rSquared;
-		}
+            double slope, intercept, rSquared;
+            GetLinearRegression(referenceImsProfile, testImsProfile, out slope, out intercept, out rSquared);
 
-		private static void GetLinearRegression(double[] xvals, double[] yvals, out double slope, out double intercept, out double rsquaredVal)
-		{
-			var inputData = new double[xvals.Length, 2];
-			double sumOfYValues = 0;
+            return rSquared;
+        }
 
-			for (var i = 0; i < xvals.Length; i++)
-			{
-				var xValue = xvals[i];
-				var yValue = yvals[i];
+        private static void GetLinearRegression(double[] xvals, double[] yvals, out double slope, out double intercept, out double rsquaredVal)
+        {
+            var inputData = new double[xvals.Length, 2];
+            double sumOfYValues = 0;
 
-				inputData[i, 0] = xValue;
-				inputData[i, 1] = yValue;
+            for (var i = 0; i < xvals.Length; i++)
+            {
+                var xValue = xvals[i];
+                var yValue = yvals[i];
 
-				sumOfYValues += yValue;
-			}
+                inputData[i, 0] = xValue;
+                inputData[i, 1] = yValue;
 
-			var numIndependentVariables = 1;
-			var numPoints = yvals.Length;
+                sumOfYValues += yValue;
+            }
 
-			alglib.linearmodel linearModel;
-			int info;
-			alglib.lrreport regressionReport;
-			alglib.lrbuild(inputData, numPoints, numIndependentVariables, out info, out linearModel, out regressionReport);
+            var numIndependentVariables = 1;
+            var numPoints = yvals.Length;
 
-			double[] regressionLineInfo;
+            alglib.linearmodel linearModel;
+            int info;
+            alglib.lrreport regressionReport;
+            alglib.lrbuild(inputData, numPoints, numIndependentVariables, out info, out linearModel, out regressionReport);
 
-			try
-			{
-				alglib.lrunpack(linearModel, out regressionLineInfo, out numIndependentVariables);
+            double[] regressionLineInfo;
 
-			}
-			catch (Exception)
-			{
-				slope = -99999999;
-				intercept = -9999999;
-				rsquaredVal = -9999999;
-				return;
-			}
+            try
+            {
+                alglib.lrunpack(linearModel, out regressionLineInfo, out numIndependentVariables);
 
-			slope = regressionLineInfo[0];
-			intercept = regressionLineInfo[1];
+            }
+            catch (Exception)
+            {
+                slope = -99999999;
+                intercept = -9999999;
+                rsquaredVal = -9999999;
+                return;
+            }
 
-			var averageY = sumOfYValues / numPoints;
-			double sumOfSquaredMeanResiduals = 0;
-			double sumOfSquaredResiduals = 0;
+            slope = regressionLineInfo[0];
+            intercept = regressionLineInfo[1];
 
-			for (var i = 0; i < xvals.Length; i++)
-			{
-				var xValue = xvals[i];
-				var yValue = yvals[i];
+            var averageY = sumOfYValues / numPoints;
+            double sumOfSquaredMeanResiduals = 0;
+            double sumOfSquaredResiduals = 0;
 
-				var calculatedYValue = alglib.lrprocess(linearModel, new double[] { xValue });
+            for (var i = 0; i < xvals.Length; i++)
+            {
+                var xValue = xvals[i];
+                var yValue = yvals[i];
 
-				var residual = yValue - calculatedYValue;
-				sumOfSquaredResiduals += (residual * residual);
+                var calculatedYValue = alglib.lrprocess(linearModel, new double[] { xValue });
 
-				var meanResidual = yValue - averageY;
-				sumOfSquaredMeanResiduals += (meanResidual * meanResidual);
-			}
+                var residual = yValue - calculatedYValue;
+                sumOfSquaredResiduals += (residual * residual);
 
-			//check for sum=0 
-			if (sumOfSquaredMeanResiduals == 0)
-			{
-				rsquaredVal = 0;
-			}
-			else
-			{
-				rsquaredVal = 1 - (sumOfSquaredResiduals / sumOfSquaredMeanResiduals);
-			}
-		}
-	}
+                var meanResidual = yValue - averageY;
+                sumOfSquaredMeanResiduals += (meanResidual * meanResidual);
+            }
+
+            //check for sum=0
+            if (sumOfSquaredMeanResiduals == 0)
+            {
+                rsquaredVal = 0;
+            }
+            else
+            {
+                rsquaredVal = 1 - (sumOfSquaredResiduals / sumOfSquaredMeanResiduals);
+            }
+        }
+    }
 }

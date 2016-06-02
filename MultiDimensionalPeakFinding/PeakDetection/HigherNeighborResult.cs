@@ -5,11 +5,11 @@ using System.Text;
 
 namespace MultiDimensionalPeakFinding.PeakDetection
 {
-	public enum HigherNeighborResult
-	{
-		None,
-		Background,
-		OneFeature,
-		MultipleFeatures
-	}
+    public enum HigherNeighborResult
+    {
+        None,
+        Background,
+        OneFeature,
+        MultipleFeatures
+    }
 }

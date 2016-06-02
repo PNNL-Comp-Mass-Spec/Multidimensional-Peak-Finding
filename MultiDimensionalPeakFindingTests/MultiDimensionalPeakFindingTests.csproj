@@ -58,16 +58,17 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.framework">
-      <HintPath>..\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="UIMFLibrary, Version=2.0.5221.17363, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="UIMFLibrary, Version=3.0.5988.26269, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\UIMFLibrary.dll</HintPath>
     </Reference>
@@ -82,6 +83,9 @@
       <Name>MultiDimensionalPeakFinding</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if exist pwiz_bindings_cli.dll del pwiz_bindings_cli.dll
@@ -92,7 +96,7 @@ xcopy "$(ProjectDir)..\Lib\x86\SQLite.Interop.dll" "$(TargetDir)x86" /D /Y
 xcopy "$(ProjectDir)..\Lib\x64\SQLite.Interop.dll" "$(TargetDir)x64" /D /Y
 </PostBuildEvent>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
