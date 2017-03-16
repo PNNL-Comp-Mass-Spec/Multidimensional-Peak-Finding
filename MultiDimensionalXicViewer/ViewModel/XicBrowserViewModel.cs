@@ -15,7 +15,7 @@ using OxyPlot;
 using OxyPlot.Axes;
 using UIMFLibrary;
 
-using Feature = InformedProteomics.IMS.IMS.Feature;
+using Feature = MultiDimensionalXicViewer.Feature;
 
 using LineSeries = OxyPlot.Series.LineSeries;
 using LinearAxis = OxyPlot.Axes.LinearAxis;
