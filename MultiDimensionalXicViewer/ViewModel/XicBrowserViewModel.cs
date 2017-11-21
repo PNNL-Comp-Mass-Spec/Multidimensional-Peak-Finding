@@ -58,7 +58,7 @@ namespace MultiDimensionalXicViewer.ViewModel
                     return string.Empty;
 
                 if (Math.Abs(mBinCentricTableProgress - BIN_CENTRIC_PROGRESS_START) < float.Epsilon)
-                    return "Adding bin-centrid data: duplicating original .UIMF file";
+                    return "Adding bin-centric data: duplicating original .UIMF file";
 
                 if (mBinCentricTableProgress > 99.999)
                 {
@@ -164,18 +164,56 @@ namespace MultiDimensionalXicViewer.ViewModel
 
         private void AddBinCentricTables(string filePath)
         {
-            using (var uimfWriter = new DataReader(filePath))
+            var sourceFile = new FileInfo(filePath);
+
+            using (var uimfReader = new DataReader(sourceFile.FullName))
             {
-                var sourceFile = new FileInfo(filePath);
-                var workingDirectory = sourceFile.DirectoryName;
+                // Note: providing true for parseViaFramework as a workaround for reading SqLite files located on a remote UNC share or in readonly folders
+                var connectionString = "Data Source = " + sourceFile.FullName;
+                using (var dbConnection = new System.Data.SQLite.SQLiteConnection(connectionString, true))
+                {
+                    dbConnection.Open();
 
-                var binCentricTableCreator = new BinCentricTableCreation();
-                binCentricTableCreator.OnProgress += binCentricTableCreator_OnProgress;
+                    /*
+                    // Start a transaction
+                    using (var dbCommand = dbConnection.CreateCommand())
+                    {
+                        dbCommand.CommandText = "PRAGMA synchronous=0;BEGIN TRANSACTION;";
+                        dbCommand.ExecuteNonQuery();
+                    }
+                    */
 
-                binCentricTableCreator.CreateBinCentricTable(uimfWriter.DBConnection, this.UimfUtil.UimfReader, workingDirectory);
+                    var binCentricTableCreator = new BinCentricTableCreation();
+
+                    var workingDirectory = sourceFile.DirectoryName;
+
+                    // Attach the events
+                    binCentricTableCreator.Message += binCentricTableCreator_OnMessage;
+                    binCentricTableCreator.OnProgress += binCentricTableCreator_OnProgress;
+
+                    binCentricTableCreator.CreateBinCentricTable(dbConnection, uimfReader, workingDirectory);
+
+                    /*
+                    // Finalize the transaction
+                    using (var dbCommand = dbConnection.CreateCommand())
+                    {
+                        dbCommand.CommandText = "END TRANSACTION;PRAGMA synchronous=1;";
+                        dbCommand.ExecuteNonQuery();
+                    }
+                    */
+
+                    dbConnection.Close();
+                }
             }
 
             UpdateBinCentricTableProgress(100);
+        }
+
+        private void binCentricTableCreator_OnMessage(object sender, MessageEventArgs e)
+        {
+            Console.WriteLine(e.Message);
+            //mBinCentricCreationMessage = e.Message;
+            //OnPropertyChanged("BinCentricCreationMessage");
         }
 
         private void binCentricTableCreator_OnProgress(object sender, ProgressEventArgs e)
