@@ -40,17 +40,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DeconTools.Backend">
-      <HintPath>..\lib\DeconTools\$(Platform)\DeconTools.Backend.dll</HintPath>
-    </Reference>
-    <Reference Include="DeconTools.Workflows">
-      <HintPath>..\lib\DeconTools\$(Platform)\DeconTools.Workflows.dll</HintPath>
-    </Reference>
     <Reference Include="InformedProteomics.Backend">
       <HintPath>..\lib\InformedProteomics.Backend.dll</HintPath>
-    </Reference>
-    <Reference Include="MultiAlignEngine">
-      <HintPath>..\lib\DeconTools\$(Platform)\MultiAlignEngine.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
