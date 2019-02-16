@@ -643,7 +643,6 @@ namespace MultiDimensionalXicViewer.ViewModel
                 foreach (var seriesItem in this.ImsSlicePlot.Series.Concat(this.LcSlicePlot.Series))
                 {
                     var series = (LineSeries)seriesItem;
-                    var testInt = 0;
 
                     if (series.Title == null)
                     {
@@ -652,7 +651,7 @@ namespace MultiDimensionalXicViewer.ViewModel
                         // Make thick if precursor was selected
                         series.StrokeThickness = title == null ? 5 : 1;
                     }
-                    else if (int.TryParse(series.Title, out testInt))
+                    else if (int.TryParse(series.Title, out _))
                     {
                         series.Color = OxyColors.DeepSkyBlue;
                         series.StrokeThickness = series.Title.Equals(title) ? 5 : 1;

@@ -43,8 +43,7 @@ namespace MultiDimensionalPeakFinding
             Parallel.ForEach(targetMzList, m_parallelOptions, targetMz =>
             {
                 // Grab a UIMF Util object from the stack
-                UimfUtil uimfUtil;
-                m_uimfUtilStack.TryPop(out uimfUtil);
+                m_uimfUtilStack.TryPop(out var uimfUtil);
 
                 // Do Feature Finding
                 var intensityBlock = uimfUtil.GetXic(targetMz, tolerance, frameType, toleranceType);
@@ -69,8 +68,7 @@ namespace MultiDimensionalPeakFinding
             Parallel.ForEach(targetBinList, m_parallelOptions, targetBin =>
             {
                 // Grab a UIMF Util object from the stack
-                UimfUtil uimfUtil;
-                m_uimfUtilStack.TryPop(out uimfUtil);
+                m_uimfUtilStack.TryPop(out var uimfUtil);
 
                 var targetMz = uimfUtil.GetMzFromBin(targetBin);
 
@@ -97,8 +95,7 @@ namespace MultiDimensionalPeakFinding
             Parallel.ForEach(targetMzList, m_parallelOptions, targetMz =>
             {
                 // Grab a UIMF Util object from the stack
-                UimfUtil uimfUtil;
-                m_uimfUtilStack.TryPop(out uimfUtil);
+                m_uimfUtilStack.TryPop(out var uimfUtil);
 
                 // Do Feature Finding
                 var intensityBlock = uimfUtil.GetXic(targetMz, tolerance, frameType, toleranceType);
@@ -123,8 +120,7 @@ namespace MultiDimensionalPeakFinding
             Parallel.ForEach(targetBinList, m_parallelOptions, targetBin =>
             {
                 // Grab a UIMF Util object from the stack
-                UimfUtil uimfUtil;
-                m_uimfUtilStack.TryPop(out uimfUtil);
+                m_uimfUtilStack.TryPop(out var uimfUtil);
 
                 var targetMz = uimfUtil.GetMzFromBin(targetBin);
 

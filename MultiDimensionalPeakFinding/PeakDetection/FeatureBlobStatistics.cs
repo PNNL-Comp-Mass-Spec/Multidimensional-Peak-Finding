@@ -88,7 +88,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 
             LcApexPeakProfile = new float[ScanLcLength];
 
-            Point curPoint = apex;
+            var curPoint = apex;
             int index;
             while(curPoint != null && curPoint != curPoint.South && (index = curPoint.ScanLc - ScanLcStart) >= 0)
             {

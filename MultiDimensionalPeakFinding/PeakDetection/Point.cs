@@ -50,7 +50,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 
         public HigherNeighborResult FindMoreIntenseNeighbors(out FeatureBlob feature)
         {
-            int featureCount = 0;
+            var featureCount = 0;
             FeatureBlob savedFeature = null;
             feature = null;
 

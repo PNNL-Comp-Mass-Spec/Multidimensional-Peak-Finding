@@ -40,7 +40,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
             var scanLcMin = Statistics.ScanLcMin;
             var scanLcMax = Statistics.ScanLcMax;
 
-            double[,] returnArray = new double[scanLcMax - scanLcMin + 1, scanImsMax - scanImsMin + 1];
+            var returnArray = new double[scanLcMax - scanLcMin + 1, scanImsMax - scanImsMin + 1];
 
             foreach (var point in PointList)
             {
@@ -54,20 +54,20 @@ namespace MultiDimensionalPeakFinding.PeakDetection
         {
             double maxIntensity = 0;
             double sumIntensities = 0;
-            int scanLcMin = int.MaxValue;
-            int scanLcMax = 0;
-            int scanImsMin = int.MaxValue;
-            int scanImsMax = 0;
-            int scanLcRep = 0;
-            int scanImsRep = 0;
+            var scanLcMin = int.MaxValue;
+            var scanLcMax = 0;
+            var scanImsMin = int.MaxValue;
+            var scanImsMax = 0;
+            var scanLcRep = 0;
+            var scanImsRep = 0;
             Point apex = null;
-            bool isSaturated = false;
+            var isSaturated = false;
 
             foreach (var point in PointList)
             {
-                int scanIms = point.ScanIms;
-                int scanLc = point.ScanLc;
-                double intensity = point.Intensity;
+                var scanIms = point.ScanIms;
+                var scanLc = point.ScanLc;
+                var intensity = point.Intensity;
 
                 if (scanIms < scanImsMin) scanImsMin = scanIms;
                 if (scanIms > scanImsMax) scanImsMax = scanIms;

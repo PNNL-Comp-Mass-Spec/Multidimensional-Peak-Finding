@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using MathNet.Numerics.Distributions;
 
 namespace MultiDimensionalPeakFinding.PeakDetection
@@ -13,19 +11,18 @@ namespace MultiDimensionalPeakFinding.PeakDetection
             // First make sure we are ordered by intensity
             pointList = pointList.Where(x => x.Intensity > 0).OrderByDescending(x => x.Intensity);
 
-            List<FeatureBlob> featureList = new List<FeatureBlob>();
-            int featureIndex = 0;
+            var featureList = new List<FeatureBlob>();
+            var featureIndex = 0;
 
-            foreach (Point point in pointList)
+            foreach (var point in pointList)
             {
-                FeatureBlob moreIntenseFeature = null;
-                HigherNeighborResult higherNeighborResult = point.FindMoreIntenseNeighbors(out moreIntenseFeature);
+                var higherNeighborResult = point.FindMoreIntenseNeighbors(out var moreIntenseFeature);
 
                 // If no higher features are found, then seed a new Feature
                 if (higherNeighborResult == HigherNeighborResult.None)
                 {
                     // Local maximum and will be the seed of a new blob
-                    FeatureBlob newFeature = new FeatureBlob(featureIndex);
+                    var newFeature = new FeatureBlob(featureIndex);
                     newFeature.PointList.Add(point);
                     point.FeatureBlob = newFeature;
                     featureList.Add(newFeature);
@@ -49,19 +46,19 @@ namespace MultiDimensionalPeakFinding.PeakDetection
             return featureList;
         }
 
-        public static IEnumerable<FeatureBlob> FilterFeatureList(IEnumerable<FeatureBlob> featureList, double filterLevel)
+        public static IEnumerable<FeatureBlob> FilterFeatureList(IList<FeatureBlob> featureList, double filterLevel)
         {
             if (!featureList.Any()) return featureList;
 
-            double meanOfMaxIntensities = featureList.Average(x => x.PointList.First().Intensity);
-            Gamma gammaDistribution = new Gamma(1, 1 / meanOfMaxIntensities);
+            var meanOfMaxIntensities = featureList.Average(x => x.PointList.First().Intensity);
+            var gammaDistribution = new Gamma(1, 1 / meanOfMaxIntensities);
 
-            List<FeatureBlob> filteredFeatureList = new List<FeatureBlob>();
+            var filteredFeatureList = new List<FeatureBlob>();
 
             // First filter based on intensity p-value
-            foreach (FeatureBlob featureBlob in featureList)
+            foreach (var featureBlob in featureList)
             {
-                double value = gammaDistribution.CumulativeDistribution(featureBlob.PointList.First().Intensity);
+                var value = gammaDistribution.CumulativeDistribution(featureBlob.PointList.First().Intensity);
                 if (value < filterLevel) break;
 
                 filteredFeatureList.Add(featureBlob);

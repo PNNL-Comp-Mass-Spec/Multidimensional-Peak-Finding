@@ -40,23 +40,21 @@ namespace MultiDimensionalXicViewer.View
 
             // Get the selected file name and display in a TextBox
             var result = dialog.ShowDialog();
-            if (result.HasValue && result.Value == true)
+            if (result.HasValue && result.Value)
             {
                 // Open file
-                string fileName = dialog.FileName;
+                var fileName = dialog.FileName;
                 XicBrowserViewModel.OpenUimfFile(fileName);
             }
         }
 
         private void FindFeaturesButtonClick(object sender, RoutedEventArgs e)
         {
-            string peptideSequence = peptideSelectedTextBox.Text;
+            var peptideSequence = peptideSelectedTextBox.Text;
 
-            int chargeState = 2;
-            int.TryParse(chargeSelectedTextBox.Text, out chargeState);
+            int.TryParse(chargeSelectedTextBox.Text, out var chargeState);
 
-            int ppmTolerance = 50;
-            int.TryParse(ppmToleranceSelectedTextBox.Text, out ppmTolerance);
+            int.TryParse(ppmToleranceSelectedTextBox.Text, out var ppmTolerance);
 
             XicBrowserViewModel.CurrentPeptide = peptideSequence;
             XicBrowserViewModel.CurrentTolerance = ppmTolerance;
@@ -69,12 +67,12 @@ namespace MultiDimensionalXicViewer.View
 
         private void FeatureSelectionChange(object sender, SelectionChangedEventArgs e)
         {
-            var selectedItem = (sender as DataGrid).SelectedItem;
+            var selectedItem = (sender as DataGrid)?.SelectedItem;
 
             if (selectedItem != null && ReferenceEquals(selectedItem.GetType(), typeof(FeatureBlob)))
             {
-                FeatureBlob featureBlob = (FeatureBlob) selectedItem;
-                this.XicBrowserViewModel.CreateLcAndImsSlicePlots(featureBlob);
+                var featureBlob = (FeatureBlob) selectedItem;
+                XicBrowserViewModel.CreateLcAndImsSlicePlots(featureBlob);
             }
         }
 
@@ -89,48 +87,47 @@ namespace MultiDimensionalXicViewer.View
         //}
         private void PeptideTextChanged(object sender, TextChangedEventArgs e)
         {
-            string peptideString = (sender as TextBox).Text;
-            int peptideLength = peptideString.Length;
+            var peptideString = (sender as TextBox)?.Text;
+
+            if (peptideString == null)
+                return;
+
+            var peptideLength = peptideString.Length;
 
             ionNumbersContainer.Children.Clear();
             m_bIonCheckBoxes.Clear();
             m_yIonCheckBoxes.Clear();
             m_aIonCheckBoxes.Clear();
 
-            for(int i = 1; i <= peptideLength; i++)
+            for(var i = 1; i <= peptideLength; i++)
             {
-                StackPanel stackPanel = new StackPanel
-                                            {
-                                                Name = "ionsNumber" + i + "Panel",
-                                                FlowDirection = FlowDirection.LeftToRight,
-                                                Orientation = Orientation.Horizontal
-                                            };
+                var stackPanel = new StackPanel
+                {
+                    Name = "ionsNumber" + i + "Panel",
+                    FlowDirection = FlowDirection.LeftToRight,
+                    Orientation = Orientation.Horizontal
+                };
 
-                CheckBox checkBox = new CheckBox();
-                checkBox.Name = "AllBox" + i;
-                checkBox.Content = i.ToString();
+                var checkBox = new CheckBox {Name = "AllBox" + i, Content = i.ToString()};
                 checkBox.Checked += AllIonNumbersCheckBoxOnChecked;
                 checkBox.Unchecked += AllIonNumbersCheckBoxOnUnchecked;
                 checkBox.Margin = i < 10 ? new Thickness(10, 2, 7, 2) : new Thickness(10, 2, 0, 2);
 
-                CheckBox bCheckBox = new CheckBox();
-                bCheckBox.Name = "b" + i + "_Box";
+                var bCheckBox = new CheckBox {Name = "b" + i + "_Box"};
                 bCheckBox.Checked += IonCheckBoxOnChecked;
                 bCheckBox.Unchecked += IonCheckBoxOnUnchecked;
                 bCheckBox.Margin = i < 10 ? new Thickness(10, 3, 21, 2) : new Thickness(10, 4, 21, 2);
                 if (bIonBox.IsChecked == true) bCheckBox.IsChecked = true;
                 m_bIonCheckBoxes.Add(bCheckBox);
 
-                CheckBox yCheckBox = new CheckBox();
-                yCheckBox.Name = "y" + i + "_Box";
+                var yCheckBox = new CheckBox {Name = "y" + i + "_Box"};
                 yCheckBox.Checked += IonCheckBoxOnChecked;
                 yCheckBox.Unchecked += IonCheckBoxOnUnchecked;
                 yCheckBox.Margin = i < 10 ? new Thickness(10, 3, 21, 2) : new Thickness(10, 4, 21, 2);
                 if (yIonBox.IsChecked == true) yCheckBox.IsChecked = true;
                 m_yIonCheckBoxes.Add(yCheckBox);
 
-                CheckBox aCheckBox = new CheckBox();
-                aCheckBox.Name = "a" + i + "_Box";
+                var aCheckBox = new CheckBox {Name = "a" + i + "_Box"};
                 aCheckBox.Checked += IonCheckBoxOnChecked;
                 aCheckBox.Unchecked += IonCheckBoxOnUnchecked;
                 aCheckBox.Margin = i < 10 ? new Thickness(10, 3, 21, 2) : new Thickness(10, 4, 21, 2);
@@ -148,10 +145,12 @@ namespace MultiDimensionalXicViewer.View
 
         private void IonCheckBoxOnChecked(object sender, RoutedEventArgs e)
         {
-            CheckBox checkBox = sender as CheckBox;
-            string fragmentIon = checkBox.Name.Split('_')[0];
+            if (!(sender is CheckBox checkBox))
+                return;
 
-            List<string> fragmentIonList = this.XicBrowserViewModel.FragmentIonList;
+            var fragmentIon = checkBox.Name.Split('_')[0];
+
+            var fragmentIonList = XicBrowserViewModel.FragmentIonList;
 
             if (!fragmentIonList.Contains(fragmentIon))
             {
@@ -163,10 +162,12 @@ namespace MultiDimensionalXicViewer.View
 
         private void IonCheckBoxOnUnchecked(object sender, RoutedEventArgs e)
         {
-            CheckBox checkBox = sender as CheckBox;
-            string fragmentIon = checkBox.Name.Split('_')[0];
+            if (!(sender is CheckBox checkBox))
+                return;
 
-            List<string> fragmentIonList = this.XicBrowserViewModel.FragmentIonList;
+            var fragmentIon = checkBox.Name.Split('_')[0];
+
+            var fragmentIonList = XicBrowserViewModel.FragmentIonList;
 
             if (fragmentIonList.Remove(fragmentIon))
             {
@@ -176,15 +177,17 @@ namespace MultiDimensionalXicViewer.View
 
         private void AllIonNumbersCheckBoxOnChecked(object sender, RoutedEventArgs routedEventArgs)
         {
-            CheckBox checkBox = sender as CheckBox;
-            int ionNumber = int.Parse(checkBox.Content.ToString());
+            if (!(sender is CheckBox checkBox))
+                return;
 
-            List<string> fragmentIonList = this.XicBrowserViewModel.FragmentIonList;
+            var ionNumber = int.Parse(checkBox.Content.ToString());
 
-            List<string> possibleIonTypes = new List<string> { "b", "y", "a" };
+            var fragmentIonList = XicBrowserViewModel.FragmentIonList;
+
+            var possibleIonTypes = new List<string> { "b", "y", "a" };
             foreach (var ionType in possibleIonTypes)
             {
-                string fragmentIon = ionType + ionNumber;
+                var fragmentIon = ionType + ionNumber;
                 if(!fragmentIonList.Contains(fragmentIon))
                 {
                     fragmentIonList.Add(fragmentIon);
@@ -227,15 +230,17 @@ namespace MultiDimensionalXicViewer.View
 
         private void AllIonNumbersCheckBoxOnUnchecked(object sender, RoutedEventArgs routedEventArgs)
         {
-            CheckBox checkBox = sender as CheckBox;
-            int ionNumber = int.Parse(checkBox.Content.ToString());
+            if (!(sender is CheckBox checkBox))
+                return;
 
-            List<string> fragmentIonList = this.XicBrowserViewModel.FragmentIonList;
+            var ionNumber = int.Parse(checkBox.Content.ToString());
 
-            List<string> possibleIonTypes = new List<string> { "b", "y", "a" };
+            var fragmentIonList = XicBrowserViewModel.FragmentIonList;
+
+            var possibleIonTypes = new List<string> { "b", "y", "a" };
             foreach (var ionType in possibleIonTypes)
             {
-                string fragmentIon = ionType + ionNumber;
+                var fragmentIon = ionType + ionNumber;
                 fragmentIonList.Remove(fragmentIon);
             }
 
@@ -252,20 +257,22 @@ namespace MultiDimensionalXicViewer.View
         {
             if (ionNumbersContainer == null) return;
 
-            CheckBox checkBox = sender as CheckBox;
-            string ionLetter = checkBox.Content.ToString();
+            if (!(sender is CheckBox checkBox))
+                return;
 
-            List<string> fragmentIonList = this.XicBrowserViewModel.FragmentIonList;
+            var ionLetter = checkBox.Content.ToString();
 
-            List<int> possibleResidueNumbers = new List<int>();
-            for (int i = 1; i <= ionNumbersContainer.Children.Count; i++)
+            var fragmentIonList = XicBrowserViewModel.FragmentIonList;
+
+            var possibleResidueNumbers = new List<int>();
+            for (var i = 1; i <= ionNumbersContainer.Children.Count; i++)
             {
                 possibleResidueNumbers.Add(i);
             }
 
-            foreach (int possibleResidueNumber in possibleResidueNumbers)
+            foreach (var possibleResidueNumber in possibleResidueNumbers)
             {
-                string fragmentIon = ionLetter + possibleResidueNumber;
+                var fragmentIon = ionLetter + possibleResidueNumber;
                 if (!fragmentIonList.Contains(fragmentIon))
                 {
                     fragmentIonList.Add(fragmentIon);
@@ -273,7 +280,7 @@ namespace MultiDimensionalXicViewer.View
             }
 
             // Check all appropriate checkboxes
-            List<CheckBox> ionCheckBoxList = new List<CheckBox>();
+            var ionCheckBoxList = new List<CheckBox>();
             if (ionLetter.Equals("b")) ionCheckBoxList = m_bIonCheckBoxes;
             if (ionLetter.Equals("y")) ionCheckBoxList = m_yIonCheckBoxes;
             if (ionLetter.Equals("a")) ionCheckBoxList = m_aIonCheckBoxes;
@@ -288,25 +295,27 @@ namespace MultiDimensionalXicViewer.View
 
         private void AllIonLettersCheckBoxOnUnchecked(object sender, RoutedEventArgs e)
         {
-            CheckBox checkBox = sender as CheckBox;
-            string ionLetter = checkBox.Content.ToString();
+            if (!(sender is CheckBox checkBox))
+                return;
 
-            List<string> fragmentIonList = this.XicBrowserViewModel.FragmentIonList;
+            var ionLetter = checkBox.Content.ToString();
 
-            List<int> possibleResidueNumbers = new List<int>();
-            for (int i = 1; i <= ionNumbersContainer.Children.Count; i++)
+            var fragmentIonList = XicBrowserViewModel.FragmentIonList;
+
+            var possibleResidueNumbers = new List<int>();
+            for (var i = 1; i <= ionNumbersContainer.Children.Count; i++)
             {
                 possibleResidueNumbers.Add(i);
             }
 
-            foreach (int possibleResidueNumber in possibleResidueNumbers)
+            foreach (var possibleResidueNumber in possibleResidueNumbers)
             {
-                string fragmentIon = ionLetter + possibleResidueNumber;
+                var fragmentIon = ionLetter + possibleResidueNumber;
                 fragmentIonList.Remove(fragmentIon);
             }
 
             // Check all appropriate checkboxes
-            List<CheckBox> ionCheckBoxList = new List<CheckBox>();
+            var ionCheckBoxList = new List<CheckBox>();
             if (ionLetter.Equals("b")) ionCheckBoxList = m_bIonCheckBoxes;
             if (ionLetter.Equals("y")) ionCheckBoxList = m_yIonCheckBoxes;
             if (ionLetter.Equals("a")) ionCheckBoxList = m_aIonCheckBoxes;
@@ -321,18 +330,20 @@ namespace MultiDimensionalXicViewer.View
 
         private void AddChargeState(object sender, RoutedEventArgs e)
         {
-            CheckBox checkbox = sender as CheckBox;
-            if(checkbox.Content.ToString().Contains('1'))
+            if (!(sender is CheckBox checkBox))
+                return;
+
+            if (checkBox.Content.ToString().Contains('1'))
             {
-                this.XicBrowserViewModel.FragmentChargeStateList.Add(1);
+                XicBrowserViewModel.FragmentChargeStateList.Add(1);
             }
-            else if (checkbox.Content.ToString().Contains('2'))
+            else if (checkBox.Content.ToString().Contains('2'))
             {
-                this.XicBrowserViewModel.FragmentChargeStateList.Add(2);
+                XicBrowserViewModel.FragmentChargeStateList.Add(2);
             }
-            else if (checkbox.Content.ToString().Contains('3'))
+            else if (checkBox.Content.ToString().Contains('3'))
             {
-                this.XicBrowserViewModel.FragmentChargeStateList.Add(3);
+                XicBrowserViewModel.FragmentChargeStateList.Add(3);
             }
 
             RefreshPlots();
@@ -340,8 +351,9 @@ namespace MultiDimensionalXicViewer.View
 
         private void RemoveChargeState(object sender, RoutedEventArgs e)
         {
-            CheckBox checkbox = sender as CheckBox;
-            if (checkbox.Content.ToString().Contains('1'))
+            if (!(sender is CheckBox checkBox))
+                return;
+
             {
                 this.XicBrowserViewModel.FragmentChargeStateList.Remove(1);
             }
