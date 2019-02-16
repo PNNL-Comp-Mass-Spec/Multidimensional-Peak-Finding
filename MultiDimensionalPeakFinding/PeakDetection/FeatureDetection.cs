@@ -46,6 +46,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
             return featureList;
         }
 
+        // ReSharper disable once UnusedMember.Global
         public static IEnumerable<FeatureBlob> FilterFeatureList(IList<FeatureBlob> featureList, double filterLevel)
         {
             if (!featureList.Any()) return featureList;

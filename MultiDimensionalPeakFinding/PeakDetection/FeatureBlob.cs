@@ -26,6 +26,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
             Statistics = null;
         }
 
+        // ReSharper disable once UnusedMember.Global
         public double[,] ToArray()
         {
             if (Statistics == null) CalculateStatistics();

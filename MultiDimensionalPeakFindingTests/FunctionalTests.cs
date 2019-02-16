@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -169,7 +170,7 @@ namespace MultiDimensionalPeakFindingTests
             {
                 var mostIntensePoint = featureBlob.PointList.First();
                 Console.WriteLine("Num Points = " + featureBlob.PointList.Count + "\tLC = " + mostIntensePoint.ScanLc + "\tIMS = " + mostIntensePoint.ScanIms + "\tIntensity = " + mostIntensePoint.Intensity);
-                intensityWriter.WriteLine(mostIntensePoint.Intensity.ToString());
+                intensityWriter.WriteLine(mostIntensePoint.Intensity.ToString(CultureInfo.InvariantCulture));
             }
         }
 
@@ -187,7 +188,10 @@ namespace MultiDimensionalPeakFindingTests
             var smoother = new SavitzkyGolaySmoother(5, 2);
             smoother.Smooth(ref parentIntensityBlock);
 
+            // ReSharper disable RedundantArgumentDefaultValue
             var parentPointList = WaterShedMapUtil.BuildWatershedMap(parentIntensityBlock, 0, 0);
+            // ReSharper restore RedundantArgumentDefaultValue
+
             var parentFeature = FeatureDetection.DoWatershedAlgorithm(parentPointList).First();
 
             var statistics = parentFeature.Statistics;
@@ -282,7 +286,10 @@ namespace MultiDimensionalPeakFindingTests
             var smoother = new SavitzkyGolaySmoother(5, 2);
             smoother.Smooth(ref parentIntensityBlock);
 
+            // ReSharper disable RedundantArgumentDefaultValue
             var parentPointList = WaterShedMapUtil.BuildWatershedMap(parentIntensityBlock, 0, 0);
+            // ReSharper restore RedundantArgumentDefaultValue
+
             var parentFeature = FeatureDetection.DoWatershedAlgorithm(parentPointList).First();
 
             using (var fragmentReader = new StreamReader(@"\\proto-2\UnitTest_Files\MultidimensionalFeatureFinding\testFiles\fragments.csv"))
@@ -330,7 +337,10 @@ namespace MultiDimensionalPeakFindingTests
 
                     smoothedWriter.Close();
 
+                    // ReSharper disable RedundantArgumentDefaultValue
                     var pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, 0, 0);
+                    // ReSharper restore RedundantArgumentDefaultValue
+
                     var featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
 
                     featureList = featureList.Where(x => x.PointList.Count > 50).OrderByDescending(x => x.PointList.Count);
@@ -340,7 +350,10 @@ namespace MultiDimensionalPeakFindingTests
 
                     foreach (var featureBlob in featureList)
                     {
+
+                        // ReSharper disable once UnusedVariable
                         var rSquared = FeatureCorrelator.CorrelateFeatures(parentFeature, featureBlob);
+
                         //Point mostIntensePoint = featureBlob.PointList.OrderByDescending(x => x.Intensity).First();
                         //Console.WriteLine("Num Points = " + featureBlob.PointList.Count + "\tLC = " + mostIntensePoint.ScanLc + "\tIMS = " + mostIntensePoint.ScanIms + "\tIntensity = " + mostIntensePoint.Intensity + "\tRSquared = " + rSquared);
                     }
@@ -385,6 +398,8 @@ namespace MultiDimensionalPeakFindingTests
         {
             var fileLocation = @"\\proto-2\UnitTest_Files\MultidimensionalFeatureFinding\BSA_10ugml_IMS6_TOF03_CID_27Aug12_Frodo_Collision_Energy_Collapsed.UIMF";
             var uimfUtil = new UimfUtil(fileLocation);
+
+            // ReSharper disable once UnusedVariable
             var numberOfBins = uimfUtil.GetNumberOfBins();
 
             var smoother = new SavitzkyGolaySmoother(5, 2);

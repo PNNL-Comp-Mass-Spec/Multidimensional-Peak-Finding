@@ -67,6 +67,7 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
             return 0;
         }
 
+        // ReSharper disable once UnusedMember.Global
         public static double CorrelateFeaturesLinearRegression(FeatureBlob referencesFeature, FeatureBlob featureToTest)
         {
             var pointComparer = new AnonymousComparer<Point>((x, y) => x.ScanLc != y.ScanLc ? x.ScanLc.CompareTo(y.ScanLc) : x.ScanIms.CompareTo(y.ScanIms));
@@ -138,6 +139,7 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
             return rSquared;
         }
 
+        // ReSharper disable once UnusedMember.Global
         public static double CorrelateFeaturesUsingLc(FeatureBlob referenceFeature, FeatureBlob featureToTest)
         {
             var referenceStatistics = referenceFeature.Statistics;
@@ -168,11 +170,12 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
                 testLcProfile[i] = testLcProfileAsFloat[testLcProfileIndex];
             }
 
-            GetLinearRegression(referenceLcProfile, testLcProfile, out var slope, out var intercept, out var rSquared);
+            GetLinearRegression(referenceLcProfile, testLcProfile, out _, out _, out var rSquared);
 
             return rSquared;
         }
 
+        // ReSharper disable once UnusedMember.Global
         public static double CorrelateFeaturesUsingIms(FeatureBlob referenceFeature, FeatureBlob featureToTest)
         {
             var referenceStatistics = referenceFeature.Statistics;
@@ -203,7 +206,7 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
                 testImsProfile[i] = testImsProfileAsFloat[testImsProfileIndex];
             }
 
-            GetLinearRegression(referenceImsProfile, testImsProfile, out var slope, out var intercept, out var rSquared);
+            GetLinearRegression(referenceImsProfile, testImsProfile, out _, out _, out var rSquared);
 
             return rSquared;
         }

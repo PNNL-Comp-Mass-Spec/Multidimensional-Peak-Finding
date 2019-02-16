@@ -23,6 +23,7 @@ namespace MultiDimensionalPeakFinding
             return UimfReader.GetXicAsArray(targetMz, tolerance, scanLcMin, scanLcMax, scanImsMin, scanImsMax, frameType, toleranceType);
         }
 
+        // ReSharper disable once UnusedMember.Global
         public double[,] GetXicAsArray(int targetBin, UIMFData.FrameType frameType)
         {
             return UimfReader.GetXicAsArray(targetBin, frameType);
@@ -33,6 +34,7 @@ namespace MultiDimensionalPeakFinding
             return UimfReader.GetXic(targetMz, tolerance, frameType, toleranceType);
         }
 
+        // ReSharper disable once UnusedMember.Global
         public List<IntensityPoint> GetXic(double targetMz, double tolerance, UIMFData.FrameType frameType, int scanLcMin, int scanLcMax, int scanImsMin, int scanImsMax, DataReader.ToleranceType toleranceType)
         {
             return UimfReader.GetXic(targetMz, tolerance, scanLcMin, scanLcMax, scanImsMin, scanImsMax, frameType, toleranceType);
@@ -73,6 +75,7 @@ namespace MultiDimensionalPeakFinding
         /// </summary>
         /// <returns>saturation level</returns>
         [Obsolete("This assumes the detector is 8 bits; newer detectors used in 2014 are 12 bits")]
+        // ReSharper disable once UnusedMember.Global
         public int GetSaturationLevel()
         {
             return UimfReader.GetSaturationLevel(8);
@@ -83,7 +86,8 @@ namespace MultiDimensionalPeakFinding
         /// </summary>
         /// <param name="detectorBits">Number of bits used by the detector (usually 8 or 12)</param>
         /// <returns>saturation level</returns>
-        public int GetSaturationLevel(int detectorBits)
+        // ReSharper disable once UnusedMember.Global
+         public int GetSaturationLevel(int detectorBits)
         {
             return UimfReader.GetSaturationLevel(detectorBits);
         }

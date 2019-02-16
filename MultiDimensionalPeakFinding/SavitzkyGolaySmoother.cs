@@ -13,8 +13,8 @@ namespace MultiDimensionalPeakFinding
 
         public SavitzkyGolaySmoother(int pointsForSmoothing, int polynomialOrder)
         {
-            if (pointsForSmoothing < 3) throw new ArgumentOutOfRangeException("pointsForSmoothing", "SavitzkyGolay pointsForSmoothing must be an odd number 3 or higher");
-            if (pointsForSmoothing % 2 == 0) throw new ArgumentOutOfRangeException("pointsForSmoothing", "SavitzkyGolay pointsForSmoothing must be an odd number 3 or higher");
+            if (pointsForSmoothing < 3) throw new ArgumentOutOfRangeException(nameof(pointsForSmoothing), "SavitzkyGolay pointsForSmoothing must be an odd number 3 or higher");
+            if (pointsForSmoothing % 2 == 0) throw new ArgumentOutOfRangeException(nameof(pointsForSmoothing), "SavitzkyGolay pointsForSmoothing must be an odd number 3 or higher");
 
             m_numPointsForSmoothing = pointsForSmoothing;
             var smoothingFilters = CalculateSmoothingFilters(polynomialOrder, pointsForSmoothing);

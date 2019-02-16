@@ -113,6 +113,7 @@ namespace MultiDimensionalPeakFinding
             return resultDictionary;
         }
 
+        // ReSharper disable once UnusedMember.Global
         public IDictionary<int, IEnumerable<FeatureBlobStatistics>> GetFeatureStatistics(IEnumerable<int> targetBinList, double tolerance, UIMFData.FrameType frameType, DataReader.ToleranceType toleranceType)
         {
             var resultDictionary = new Dictionary<int, IEnumerable<FeatureBlobStatistics>>();
