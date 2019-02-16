@@ -158,15 +158,15 @@ namespace MultiDimensionalPeakFindingTests
             smoothedWriter.Close();
 
             var pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, 0, 0);
-            var featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
+            var featureList = FeatureDetection.DoWatershedAlgorithm(pointList).ToList();
 
-            Console.WriteLine(featureList.Count());
+            Console.WriteLine(featureList.Count);
 
-            featureList = featureList.OrderByDescending(x => x.PointList.Count);
+            var sortedFeatureList = featureList.OrderByDescending(x => x.PointList.Count);
 
             TextWriter intensityWriter = new StreamWriter("intensities.csv");
 
-            foreach (var featureBlob in featureList)
+            foreach (var featureBlob in sortedFeatureList)
             {
                 var mostIntensePoint = featureBlob.PointList.First();
                 Console.WriteLine("Num Points = " + featureBlob.PointList.Count + "\tLC = " + mostIntensePoint.ScanLc + "\tIMS = " + mostIntensePoint.ScanIms + "\tIntensity = " + mostIntensePoint.Intensity);
@@ -371,10 +371,11 @@ namespace MultiDimensionalPeakFindingTests
             var bin = 73009;
             var intensityPointList = uimfUtil.GetXic(bin, UIMFData.FrameType.MS1);
 
-            var pointList = WaterShedMapUtil.BuildWatershedMap(intensityPointList);
+            var pointList = WaterShedMapUtil.BuildWatershedMap(intensityPointList).ToList();
 
-            var preSmoothedFeatureList = FeatureDetection.DoWatershedAlgorithm(pointList);
-            Console.WriteLine(DateTime.Now + "\tBefore Smoothing:\tNumPoints = " + pointList.Count() + "\tNumFeatures = " + preSmoothedFeatureList.Count());
+            var preSmoothedFeatureList = FeatureDetection.DoWatershedAlgorithm(pointList).ToList();
+            Console.WriteLine(DateTime.Now + "\tBefore Smoothing:\tNumPoints = " + pointList.Count + "\tNumFeatures = " + preSmoothedFeatureList.Count);
+
             foreach (var featureBlob in preSmoothedFeatureList)
             {
                 var mostIntensePoint = featureBlob.PointList.First();
@@ -384,8 +385,8 @@ namespace MultiDimensionalPeakFindingTests
 
             var newPointList = WaterShedMapUtil.BuildWatershedMap(intensityPointList);
             smoother.Smooth(ref newPointList);
-            var smoothedFeatureList = FeatureDetection.DoWatershedAlgorithm(newPointList);
-            Console.WriteLine(DateTime.Now + "\tAfter Smoothing:\tNumPoints = " + newPointList.Count() + "\tNumFeatures = " + smoothedFeatureList.Count());
+            var smoothedFeatureList = FeatureDetection.DoWatershedAlgorithm(newPointList).ToList();
+            Console.WriteLine(DateTime.Now + "\tAfter Smoothing:\tNumPoints = " + newPointList.Count() + "\tNumFeatures = " + smoothedFeatureList.Count);
             foreach (var featureBlob in smoothedFeatureList)
             {
                 var mostIntensePoint = featureBlob.PointList.First();
@@ -451,10 +452,10 @@ namespace MultiDimensionalPeakFindingTests
                 }
             }
 
-            var pointList = WaterShedMapUtil.BuildWatershedMap(intensityPointList);
-            var featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
+            var pointList = WaterShedMapUtil.BuildWatershedMap(intensityPointList).ToList();
+            var featureList = FeatureDetection.DoWatershedAlgorithm(pointList).ToList();
 
-            Console.WriteLine(DateTime.Now + "\tNumPoints = " + pointList.Count() + "\tNumFeatures = " + featureList.Count());
+            Console.WriteLine(DateTime.Now + "\tNumPoints = " + pointList.Count + "\tNumFeatures = " + featureList.Count);
             foreach (var featureBlob in featureList)
             {
                 var mostIntensePoint = featureBlob.PointList.First();
