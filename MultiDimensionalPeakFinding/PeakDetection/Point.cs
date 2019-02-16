@@ -1,21 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace MultiDimensionalPeakFinding.PeakDetection
 {
     public class Point : IComparable<Point>
     {
-        public int ScanLc
-        {
-            get { return this.ScanLcIndex + this.ScanLcOffset; }
-        }
+        public int ScanLc => ScanLcIndex + ScanLcOffset;
 
-        public int ScanIms
-        {
-            get { return this.ScanImsIndex + this.ScanImsOffset; }
-        }
+        public int ScanIms => ScanImsIndex + ScanImsOffset;
 
         public int ScanLcIndex { get; }
         public int ScanLcOffset { get; }

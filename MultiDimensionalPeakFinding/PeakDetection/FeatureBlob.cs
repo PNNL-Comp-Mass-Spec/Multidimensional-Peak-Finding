@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using PNNLOmics.Algorithms.Solvers.LevenburgMarquadt;
-using PNNLOmics.Algorithms.Solvers.LevenburgMarquadt.BasisFunctions;
+﻿using System.Collections.Generic;
 
 namespace MultiDimensionalPeakFinding.PeakDetection
 {
@@ -21,7 +16,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
                 if (m_statistics == null) CalculateStatistics();
                 return m_statistics;
             }
-            private set { m_statistics = value; }
+            private set => m_statistics = value;
         }
 
         public FeatureBlob(int id)

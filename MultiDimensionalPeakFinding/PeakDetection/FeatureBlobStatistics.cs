@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace MultiDimensionalPeakFinding.PeakDetection
+﻿namespace MultiDimensionalPeakFinding.PeakDetection
 {
     public class FeatureBlobStatistics
     {
@@ -18,9 +13,10 @@ namespace MultiDimensionalPeakFinding.PeakDetection
         public ushort NumPoints { get; }
         public bool IsSaturated { get; }
 
+        // Size: ScanLcMax - ScanLcMin + 1
         public float[] LcApexPeakProfile { get; set; }
 
-        // Size: ScanImsMax-ScanImsMin+1
+        // Size: ScanImsMax - ScanImsMin + 1
         public float[] ImsApexPeakProfile { get; set; }
 
         public FeatureBlobStatistics(int scanLcMin, int scanLcMax, int scanLcRep, int scanImsMin, int scanImsMax, int scanImsRep, double intensityMax, double sumIntensities, int numPoints, bool isSaturated)
@@ -50,35 +46,17 @@ namespace MultiDimensionalPeakFinding.PeakDetection
             IsSaturated = isSaturated;
         }
 
-        public int ScanLcMin
-        {
-            get { return ScanLcStart; }
-        }
+        public int ScanLcMin => ScanLcStart;
 
-        public int ScanLcMax
-        {
-            get { return ScanLcStart + ScanLcLength - 1; }
-        }
+        public int ScanLcMax => ScanLcStart + ScanLcLength - 1;
 
-        public int ScanLcRep
-        {
-            get { return ScanLcStart + ScanLcRepOffset; }
-        }
+        public int ScanLcRep => ScanLcStart + ScanLcRepOffset;
 
-        public int ScanImsMin
-        {
-            get { return ScanImsStart; }
-        }
+        public int ScanImsMin => ScanImsStart;
 
-        public int ScanImsMax
-        {
-            get { return ScanImsStart + ScanImsLength - 1; }
-        }
+        public int ScanImsMax => ScanImsStart + ScanImsLength - 1;
 
-        public int ScanImsRep
-        {
-            get { return ScanImsStart + ScanImsRepOffset; }
-        }
+        public int ScanImsRep => ScanImsStart + ScanImsRepOffset;
 
         public void ComputePeakProfile(Point apex)
         {
