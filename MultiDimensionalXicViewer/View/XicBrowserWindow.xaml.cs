@@ -354,16 +354,17 @@ namespace MultiDimensionalXicViewer.View
             if (!(sender is CheckBox checkBox))
                 return;
 
+            if (checkBox.Content.ToString().Contains('1'))
             {
-                this.XicBrowserViewModel.FragmentChargeStateList.Remove(1);
+                XicBrowserViewModel.FragmentChargeStateList.Remove(1);
             }
-            else if (checkbox.Content.ToString().Contains('2'))
+            else if (checkBox.Content.ToString().Contains('2'))
             {
-                this.XicBrowserViewModel.FragmentChargeStateList.Remove(2);
+                XicBrowserViewModel.FragmentChargeStateList.Remove(2);
             }
-            else if (checkbox.Content.ToString().Contains('3'))
+            else if (checkBox.Content.ToString().Contains('3'))
             {
-                this.XicBrowserViewModel.FragmentChargeStateList.Remove(3);
+                XicBrowserViewModel.FragmentChargeStateList.Remove(3);
             }
 
             RefreshPlots();
@@ -371,21 +372,21 @@ namespace MultiDimensionalXicViewer.View
 
         private void RefreshPlots()
         {
-            this.XicBrowserViewModel.CreateLcAndImsSlicePlots(this.XicBrowserViewModel.CurrentFeature);
+            XicBrowserViewModel.CreateLcAndImsSlicePlots(XicBrowserViewModel.CurrentFeature);
         }
 
         private void WaterLossChecked(object sender, RoutedEventArgs e)
         {
-            if(!this.XicBrowserViewModel.FragmentNeutralLossList.Contains(NeutralLoss.H2O))
+            if(!XicBrowserViewModel.FragmentNeutralLossList.Contains(NeutralLoss.H2O))
             {
-                this.XicBrowserViewModel.FragmentNeutralLossList.Add(NeutralLoss.H2O);
+                XicBrowserViewModel.FragmentNeutralLossList.Add(NeutralLoss.H2O);
                 RefreshPlots();
             }
         }
 
         private void WaterLossUnchecked(object sender, RoutedEventArgs e)
         {
-            if(this.XicBrowserViewModel.FragmentNeutralLossList.Remove(NeutralLoss.H2O))
+            if(XicBrowserViewModel.FragmentNeutralLossList.Remove(NeutralLoss.H2O))
             {
                 RefreshPlots();
             }
@@ -393,16 +394,16 @@ namespace MultiDimensionalXicViewer.View
 
         private void AmmoniaLossChecked(object sender, RoutedEventArgs e)
         {
-            if (!this.XicBrowserViewModel.FragmentNeutralLossList.Contains(NeutralLoss.NH3))
+            if (!XicBrowserViewModel.FragmentNeutralLossList.Contains(NeutralLoss.NH3))
             {
-                this.XicBrowserViewModel.FragmentNeutralLossList.Add(NeutralLoss.NH3);
+                XicBrowserViewModel.FragmentNeutralLossList.Add(NeutralLoss.NH3);
                 RefreshPlots();
             }
         }
 
         private void AmmoniaLossUnchecked(object sender, RoutedEventArgs e)
         {
-            if (this.XicBrowserViewModel.FragmentNeutralLossList.Remove(NeutralLoss.NH3))
+            if (XicBrowserViewModel.FragmentNeutralLossList.Remove(NeutralLoss.NH3))
             {
                 RefreshPlots();
             }

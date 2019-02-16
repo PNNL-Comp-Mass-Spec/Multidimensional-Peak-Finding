@@ -640,7 +640,7 @@ namespace MultiDimensionalXicViewer.ViewModel
             {
                 var title = selectedSeries.Title;
 
-                foreach (var seriesItem in this.ImsSlicePlot.Series.Concat(this.LcSlicePlot.Series))
+                foreach (var seriesItem in ImsSlicePlot.Series.Concat(LcSlicePlot.Series))
                 {
                     var series = (LineSeries)seriesItem;
 
