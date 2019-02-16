@@ -1,7 +1,7 @@
 # Multidimensional Peak Finding
 
 Peak finding library used by the [IMS Informed Library](https://github.com/PNNL-Comp-Mass-Spec/IMS-Informed-Library) 
-and by [LIQUID](https://github.com/PNNL-Comp-Mass-Spec/LIQUID).  Groups LC-IMS-MS featuers 
+and by [LIQUID](https://github.com/PNNL-Comp-Mass-Spec/LIQUID).  Groups LC-IMS-MS features. 
 
 ## MultiDimensional XIC Viewer 
 
