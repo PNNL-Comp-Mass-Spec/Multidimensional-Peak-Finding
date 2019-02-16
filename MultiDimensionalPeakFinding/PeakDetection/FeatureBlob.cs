@@ -26,19 +26,19 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 
         public FeatureBlob(int id)
         {
-            this.Id = id;
-            this.PointList = new List<Point>();
-            this.Statistics = null;
+            Id = id;
+            PointList = new List<Point>();
+            Statistics = null;
         }
 
         public double[,] ToArray()
         {
-            if (this.Statistics == null) this.CalculateStatistics();
+            if (Statistics == null) CalculateStatistics();
 
-            int scanImsMin = this.Statistics.ScanImsMin;
-            int scanImsMax = this.Statistics.ScanImsMax;
-            int scanLcMin = this.Statistics.ScanLcMin;
-            int scanLcMax = this.Statistics.ScanLcMax;
+            var scanImsMin = Statistics.ScanImsMin;
+            var scanImsMax = Statistics.ScanImsMax;
+            var scanLcMin = Statistics.ScanLcMin;
+            var scanLcMax = Statistics.ScanLcMax;
 
             double[,] returnArray = new double[scanLcMax - scanLcMin + 1, scanImsMax - scanImsMin + 1];
 
@@ -63,7 +63,7 @@ namespace MultiDimensionalPeakFinding.PeakDetection
             Point apex = null;
             bool isSaturated = false;
 
-            foreach (Point point in this.PointList)
+            foreach (var point in PointList)
             {
                 int scanIms = point.ScanIms;
                 int scanLc = point.ScanLc;
@@ -86,9 +86,9 @@ namespace MultiDimensionalPeakFinding.PeakDetection
                 if (point.IsSaturated) isSaturated = true;
             }
 
-            FeatureBlobStatistics statistics = new FeatureBlobStatistics(scanLcMin, scanLcMax, scanLcRep, scanImsMin, scanImsMax, scanImsRep, maxIntensity, sumIntensities, this.PointList.Count, isSaturated);
+            var statistics = new FeatureBlobStatistics(scanLcMin, scanLcMax, scanLcRep, scanImsMin, scanImsMax, scanImsRep, maxIntensity, sumIntensities, PointList.Count, isSaturated);
             statistics.ComputePeakProfile(apex);
-            this.Statistics = statistics;
+            Statistics = statistics;
 
             return statistics;
         }

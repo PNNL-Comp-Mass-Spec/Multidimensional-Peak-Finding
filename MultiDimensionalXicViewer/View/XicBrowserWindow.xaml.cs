@@ -26,11 +26,11 @@ namespace MultiDimensionalXicViewer.View
             m_yIonCheckBoxes = new List<CheckBox>();
             m_aIonCheckBoxes = new List<CheckBox>();
 
-            this.XicBrowserViewModel = new XicBrowserViewModel();
+            XicBrowserViewModel = new XicBrowserViewModel();
 
             InitializeComponent();
 
-            this.DataContext = this.XicBrowserViewModel;
+            DataContext = XicBrowserViewModel;
         }
 
         private void UimfOpenButtonClick(object sender, RoutedEventArgs e)
@@ -44,7 +44,7 @@ namespace MultiDimensionalXicViewer.View
             {
                 // Open file
                 string fileName = dialog.FileName;
-                this.XicBrowserViewModel.OpenUimfFile(fileName);
+                XicBrowserViewModel.OpenUimfFile(fileName);
             }
         }
 
@@ -58,13 +58,13 @@ namespace MultiDimensionalXicViewer.View
             int ppmTolerance = 50;
             int.TryParse(ppmToleranceSelectedTextBox.Text, out ppmTolerance);
 
-            this.XicBrowserViewModel.CurrentPeptide = peptideSequence;
-            this.XicBrowserViewModel.CurrentTolerance = ppmTolerance;
-            this.XicBrowserViewModel.CurrentChargeState = chargeState;
+            XicBrowserViewModel.CurrentPeptide = peptideSequence;
+            XicBrowserViewModel.CurrentTolerance = ppmTolerance;
+            XicBrowserViewModel.CurrentChargeState = chargeState;
 
-            this.FeatureDataGrid.SelectedItem = null;
+            FeatureDataGrid.SelectedItem = null;
 
-            this.XicBrowserViewModel.OnFindFeatures();
+            XicBrowserViewModel.OnFindFeatures();
         }
 
         private void FeatureSelectionChange(object sender, SelectionChangedEventArgs e)

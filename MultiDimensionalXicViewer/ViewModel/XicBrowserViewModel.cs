@@ -82,13 +82,13 @@ namespace MultiDimensionalXicViewer.ViewModel
         public XicBrowserViewModel()
         {
             //this.XicPlot = new LinesVisual3D();
-            this.XicPlotPoints = new List<Point3D>();
-            this.FeatureList = new List<FeatureBlob>();
-            this.FragmentFeaturesDictionary = new Dictionary<Tuple<IonType, int>, List<FeatureBlob>>();
-            this.FragmentChargeStateList = new List<int>();
-            this.FragmentNeutralLossList = new List<NeutralLoss> { NeutralLoss.NoLoss };
-            this.FragmentIonList = new List<string>();
-            this.IsotopeFeaturesDictionary = new Dictionary<string, List<FeatureBlob>>();
+            XicPlotPoints = new List<Point3D>();
+            FeatureList = new List<FeatureBlob>();
+            FragmentFeaturesDictionary = new Dictionary<Tuple<IonType, int>, List<FeatureBlob>>();
+            FragmentChargeStateList = new List<int>();
+            FragmentNeutralLossList = new List<NeutralLoss> { NeutralLoss.NoLoss };
+            FragmentIonList = new List<string>();
+            IsotopeFeaturesDictionary = new Dictionary<string, List<FeatureBlob>>();
 
             m_aminoAcidSet = new AminoAcidSet(Modification.Carbamidomethylation);
             m_ionTypeFactory = new IonTypeFactory(
@@ -102,9 +102,9 @@ namespace MultiDimensionalXicViewer.ViewModel
             var uimfFileInfo = new FileInfo(filePath);
             UpdateBinCentricTableProgress(0);
 
-            this.UimfUtil = new UimfUtil(filePath);
+            UimfUtil = new UimfUtil(filePath);
 
-            if(!this.UimfUtil.DoesContainBinCentricData())
+            if(!UimfUtil.DoesContainBinCentricData())
             {
                 //IContainer components = new System.ComponentModel.Container();
 
@@ -142,7 +142,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 
             }
 
-            this.CurrentUimfFileName = uimfFileInfo.Name;
+            CurrentUimfFileName = uimfFileInfo.Name;
             OnPropertyChanged("CurrentUimfFileName");
         }
 
@@ -233,7 +233,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 
         public void OnFindFeatures()
         {
-            this.FeatureFindingProgressDialog = new ProgressDialog
+            FeatureFindingProgressDialog = new ProgressDialog
             {
                 WindowTitle = @"Feature Finding Progress",
                 Description = @"Feature Finding Progress",
@@ -242,14 +242,14 @@ namespace MultiDimensionalXicViewer.ViewModel
             };
 
 
-            this.FeatureFindingProgressDialog.DoWork += ProgressDialogOnDoWork;
+            FeatureFindingProgressDialog.DoWork += ProgressDialogOnDoWork;
 
-            this.FeatureFindingProgressDialog.ShowDialog();
+            FeatureFindingProgressDialog.ShowDialog();
         }
 
         public void CreateLcAndImsSlicePlots(FeatureBlob feature)
         {
-            this.CurrentFeature = feature;
+            CurrentFeature = feature;
             OnPropertyChanged("CurrentFeature");
 
             if(feature != null)
@@ -268,12 +268,12 @@ namespace MultiDimensionalXicViewer.ViewModel
 
         private void AddIsotopesToPlots()
         {
-            if (this.CurrentFeature == null) return;
+            if (CurrentFeature == null) return;
 
-            var precursor = new Feature(this.CurrentFeature.Statistics);
+            var precursor = new Feature(CurrentFeature.Statistics);
             var precursorBoundary = precursor.GetBoundary();
 
-            foreach (var isotopeEntry in this.IsotopeFeaturesDictionary)
+            foreach (var isotopeEntry in IsotopeFeaturesDictionary)
             {
                 var isotopeName = isotopeEntry.Key;
 
@@ -295,12 +295,12 @@ namespace MultiDimensionalXicViewer.ViewModel
 
         private void MatchPrecursorToFragments()
         {
-            if (this.CurrentFeature == null) return;
+            if (CurrentFeature == null) return;
 
-            var precursor = new Feature(this.CurrentFeature.Statistics);
+            var precursor = new Feature(CurrentFeature.Statistics);
             var precursorBoundary = precursor.GetBoundary();
 
-            foreach (var kvp in this.FragmentFeaturesDictionary)
+            foreach (var kvp in FragmentFeaturesDictionary)
             {
                 var ionTypeTuple = kvp.Key;
 
@@ -333,18 +333,18 @@ namespace MultiDimensionalXicViewer.ViewModel
 
             // Check charge state
             var charge = ionType.Charge;
-            if (!this.FragmentChargeStateList.Contains(charge)) return false;
+            if (!FragmentChargeStateList.Contains(charge)) return false;
 
             // Check specific ion (e.g. b3, a7, y1)
             var residueNumber = ionTypeTuple.Item2;
             var ionLetter = ionType.BaseIonType.Symbol.ToLower();
             var fragmentName = ionLetter + residueNumber;
-            if (!this.FragmentIonList.Contains(fragmentName)) return false;
+            if (!FragmentIonList.Contains(fragmentName)) return false;
 
             // Check for neutral loss
             if(ionType.NeutralLoss != NeutralLoss.NoLoss)
             {
-                if (!this.FragmentNeutralLossList.Contains(ionType.NeutralLoss)) return false;
+                if (!FragmentNeutralLossList.Contains(ionType.NeutralLoss)) return false;
             }
 
             // If all filters pass, return true
@@ -372,7 +372,7 @@ namespace MultiDimensionalXicViewer.ViewModel
                 newLcSeries.Points.Add(dataPoint);
             }
 
-            this.LcSlicePlot.Series.Add(newLcSeries);
+            LcSlicePlot.Series.Add(newLcSeries);
         }
 
         private void AddToImsPlot(FeatureBlob feature, string title, OxyColor color)
@@ -395,7 +395,7 @@ namespace MultiDimensionalXicViewer.ViewModel
                 newImsSeries.Points.Add(dataPoint);
             }
 
-            this.ImsSlicePlot.Series.Add(newImsSeries);
+            ImsSlicePlot.Series.Add(newImsSeries);
         }
 
         private void CreateLcSlicePlot(FeatureBlob feature)
@@ -466,7 +466,7 @@ namespace MultiDimensionalXicViewer.ViewModel
             plotModel.Axes.Add(yAxis);
 
             m_maxLcIntensity = maxIntensity;
-            this.LcSlicePlot = plotModel;
+            LcSlicePlot = plotModel;
             OnPropertyChanged("LcSlicePlot");
         }
 
@@ -538,7 +538,7 @@ namespace MultiDimensionalXicViewer.ViewModel
             plotModel.Axes.Add(yAxis);
 
             m_maxImsIntensity = maxIntensity;
-            this.ImsSlicePlot = plotModel;
+            ImsSlicePlot = plotModel;
             OnPropertyChanged("ImsSlicePlot");
         }
 
@@ -603,7 +603,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 
         public void FeatureSelectionChange(FeatureBlob featureBlob)
         {
-            this.CurrentFeature = featureBlob;
+            CurrentFeature = featureBlob;
             OnPropertyChanged("CurrentFeature");
 
             CreateLcAndImsSlicePlots(featureBlob);
@@ -669,8 +669,8 @@ namespace MultiDimensionalXicViewer.ViewModel
                     }
                 }
 
-                this.ImsSlicePlot.InvalidatePlot(true);
-                this.LcSlicePlot.InvalidatePlot(true);
+                ImsSlicePlot.InvalidatePlot(true);
+                LcSlicePlot.InvalidatePlot(true);
             }
         }
 
@@ -690,40 +690,40 @@ namespace MultiDimensionalXicViewer.ViewModel
         {
             m_FeatureFinderBackgroundWorker.ReportProgress(0, "Finding 3-D Features for Precursor and Fragments");
 
-            var seqGraph = SequenceGraph.CreateGraph(m_aminoAcidSet, this.CurrentPeptide);
+            var seqGraph = SequenceGraph.CreateGraph(m_aminoAcidSet, CurrentPeptide);
             // var scoringGraph = seqGraph.GetScoringGraph(0);
             // var precursorIon = scoringGraph.GetPrecursorIon(this.CurrentChargeState);
             // var monoMz = precursorIon.GetMz();
 
-            var sequence = new Sequence(this.CurrentPeptide, m_aminoAcidSet);
-            var precursorIon = sequence.GetPrecursorIon(this.CurrentChargeState);
+            var sequence = new Sequence(CurrentPeptide, m_aminoAcidSet);
+            var precursorIon = sequence.GetPrecursorIon(CurrentChargeState);
             var monoMz = precursorIon.GetMonoIsotopicMz();
 
-            var uimfPointList = this.UimfUtil.GetXic(monoMz, this.CurrentTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+            var uimfPointList = UimfUtil.GetXic(monoMz, CurrentTolerance, UIMFData.FrameType.MS1, DataReader.ToleranceType.PPM);
             var watershedPointList = WaterShedMapUtil.BuildWatershedMap(uimfPointList);
 
             var smoother = new SavitzkyGolaySmoother(11, 2);
             smoother.Smooth(ref watershedPointList);
 
-            this.FeatureList = FeatureDetection.DoWatershedAlgorithm(watershedPointList).ToList();
+            FeatureList = FeatureDetection.DoWatershedAlgorithm(watershedPointList).ToList();
 
-            this.IsotopeFeaturesDictionary.Clear();
-            var precursorTargetList = this.CurrentChargeState == 2 ? new List<string> { "-1", "0.5", "1", "1.5", "2", "3" } : new List<string> { "-1", "1", "2", "3" };
+            IsotopeFeaturesDictionary.Clear();
+            var precursorTargetList = CurrentChargeState == 2 ? new List<string> { "-1", "0.5", "1", "1.5", "2", "3" } : new List<string> { "-1", "1", "2", "3" };
             foreach (var precursorTarget in precursorTargetList)
             {
                 var targetMz = precursorIon.GetIsotopeMz(double.Parse(precursorTarget));
 
-                var isotopeUimfPointList = this.UimfUtil.GetXic(targetMz, this.CurrentTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+                var isotopeUimfPointList = UimfUtil.GetXic(targetMz, CurrentTolerance, UIMFData.FrameType.MS1, DataReader.ToleranceType.PPM);
                 var isotopeWatershedPointList = WaterShedMapUtil.BuildWatershedMap(isotopeUimfPointList);
 
                 var isotopeFeatures = FeatureDetection.DoWatershedAlgorithm(isotopeWatershedPointList).ToList();
-                this.IsotopeFeaturesDictionary.Add(precursorTarget, isotopeFeatures);
+                IsotopeFeaturesDictionary.Add(precursorTarget, isotopeFeatures);
             }
 
-            this.LcSlicePlot = new PlotModel();
-            this.ImsSlicePlot = new PlotModel();
+            LcSlicePlot = new PlotModel();
+            ImsSlicePlot = new PlotModel();
 
-            this.FragmentFeaturesDictionary.Clear();
+            FragmentFeaturesDictionary.Clear();
             // var sequence = new Sequence(this.CurrentPeptide, m_aminoAcidSet);
             var ionTypeDictionary = sequence.GetProductIons(m_ionTypeFactory.GetAllKnownIonTypes());
 
@@ -736,12 +736,12 @@ namespace MultiDimensionalXicViewer.ViewModel
                 var ion = ionTypeKvp.Value;
                 var fragmentMz = ion.GetMonoIsotopicMz();
 
-                uimfPointList = this.UimfUtil.GetXic(fragmentMz, this.CurrentTolerance, DataReader.FrameType.MS2, DataReader.ToleranceType.PPM);
+                uimfPointList = UimfUtil.GetXic(fragmentMz, CurrentTolerance, UIMFData.FrameType.MS2, DataReader.ToleranceType.PPM);
                 watershedPointList = WaterShedMapUtil.BuildWatershedMap(uimfPointList);
                 smoother.Smooth(ref watershedPointList);
 
                 var fragmentFeatureBlobList = FeatureDetection.DoWatershedAlgorithm(watershedPointList).ToList();
-                this.FragmentFeaturesDictionary.Add(ionTypeTuple, fragmentFeatureBlobList);
+                FragmentFeaturesDictionary.Add(ionTypeTuple, fragmentFeatureBlobList);
 
                 index++;
                 var progress = (int)((index / fragmentCount) * 100);
@@ -758,11 +758,11 @@ namespace MultiDimensionalXicViewer.ViewModel
             var displayString = progressChangedEventArgs.UserState != null ? progressChangedEventArgs.UserState.ToString() : "";
             if (!displayString.Equals(""))
             {
-                this.FeatureFindingProgressDialog.ReportProgress(progressChangedEventArgs.ProgressPercentage, displayString, "Processing: " + progressChangedEventArgs.ProgressPercentage + "%");
+                FeatureFindingProgressDialog.ReportProgress(progressChangedEventArgs.ProgressPercentage, displayString, "Processing: " + progressChangedEventArgs.ProgressPercentage + "%");
             }
             else
             {
-                this.FeatureFindingProgressDialog.ReportProgress(progressChangedEventArgs.ProgressPercentage, null, "Processing: " + progressChangedEventArgs.ProgressPercentage + "%");
+                FeatureFindingProgressDialog.ReportProgress(progressChangedEventArgs.ProgressPercentage, null, "Processing: " + progressChangedEventArgs.ProgressPercentage + "%");
             }
         }
     }
