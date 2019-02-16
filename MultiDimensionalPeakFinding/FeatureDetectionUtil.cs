@@ -15,7 +15,7 @@ namespace MultiDimensionalPeakFinding
         private readonly ParallelOptions m_parallelOptions;
 
         /// <summary>
-        /// Creates an object that can be used for findinf 3-D XIC Features while taking advantage of multithreading.
+        /// Creates an object that can be used for finding 3-D XIC Features while taking advantage of multithreading.
         /// </summary>
         /// <param name="uimfFileLocation">The location of the UIMF file.</param>
         /// <param name="numPointsToSmooth">The number of points to use for Savitzky Golay smoothing. Defaults to 11.</param>
@@ -36,7 +36,7 @@ namespace MultiDimensionalPeakFinding
             m_parallelOptions = new ParallelOptions {MaxDegreeOfParallelism = degreeOfParallelism};
         }
 
-        public IDictionary<double, IEnumerable<FeatureBlob>> GetFeatures(IEnumerable<double> targetMzList, double tolerance, DataReader.FrameType frameType, DataReader.ToleranceType toleranceType)
+        public IDictionary<double, IEnumerable<FeatureBlob>> GetFeatures(IEnumerable<double> targetMzList, double tolerance, UIMFData.FrameType frameType, DataReader.ToleranceType toleranceType)
         {
             var resultDictionary = new Dictionary<double, IEnumerable<FeatureBlob>>();
 
@@ -61,7 +61,7 @@ namespace MultiDimensionalPeakFinding
             return resultDictionary;
         }
 
-        public IDictionary<int, IEnumerable<FeatureBlob>> GetFeatures(IEnumerable<int> targetBinList, double tolerance, DataReader.FrameType frameType, DataReader.ToleranceType toleranceType)
+        public IDictionary<int, IEnumerable<FeatureBlob>> GetFeatures(IEnumerable<int> targetBinList, double tolerance, UIMFData.FrameType frameType, DataReader.ToleranceType toleranceType)
         {
             var resultDictionary = new Dictionary<int, IEnumerable<FeatureBlob>>();
 
@@ -88,7 +88,7 @@ namespace MultiDimensionalPeakFinding
             return resultDictionary;
         }
 
-        public IDictionary<double, IEnumerable<FeatureBlobStatistics>> GetFeatureStatistics(IEnumerable<double> targetMzList, double tolerance, DataReader.FrameType frameType, DataReader.ToleranceType toleranceType)
+        public IDictionary<double, IEnumerable<FeatureBlobStatistics>> GetFeatureStatistics(IEnumerable<double> targetMzList, double tolerance, UIMFData.FrameType frameType, DataReader.ToleranceType toleranceType)
         {
             var resultDictionary = new Dictionary<double, IEnumerable<FeatureBlobStatistics>>();
 
@@ -113,7 +113,7 @@ namespace MultiDimensionalPeakFinding
             return resultDictionary;
         }
 
-        public IDictionary<int, IEnumerable<FeatureBlobStatistics>> GetFeatureStatistics(IEnumerable<int> targetBinList, double tolerance, DataReader.FrameType frameType, DataReader.ToleranceType toleranceType)
+        public IDictionary<int, IEnumerable<FeatureBlobStatistics>> GetFeatureStatistics(IEnumerable<int> targetBinList, double tolerance, UIMFData.FrameType frameType, DataReader.ToleranceType toleranceType)
         {
             var resultDictionary = new Dictionary<int, IEnumerable<FeatureBlobStatistics>>();
 

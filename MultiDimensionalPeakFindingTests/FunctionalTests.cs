@@ -22,7 +22,7 @@ namespace MultiDimensionalPeakFindingTests
             var targetMz = 582.32181703760114;
             double ppmTolerance = 25;
 
-            var intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+            var intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, UIMFData.FrameType.MS1, DataReader.ToleranceType.PPM);
 
             Console.WriteLine(intensityBlock.Length);
         }
@@ -36,7 +36,7 @@ namespace MultiDimensionalPeakFindingTests
             var targetMz = 643.27094937;
             double ppmTolerance = 50;
 
-            var intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+            var intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, UIMFData.FrameType.MS1, DataReader.ToleranceType.PPM);
 
             var smoother = new SavitzkyGolaySmoother(5, 2);
             smoother.Smooth(ref intensityBlock);
@@ -53,7 +53,7 @@ namespace MultiDimensionalPeakFindingTests
             var targetMz = 643.27094937;
             double ppmTolerance = 50;
 
-            var intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+            var intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, UIMFData.FrameType.MS1, DataReader.ToleranceType.PPM);
 
             var smoother = new SavitzkyGolaySmoother(5, 2);
             smoother.Smooth(ref intensityBlock);
@@ -72,7 +72,7 @@ namespace MultiDimensionalPeakFindingTests
             var targetMz = 582.32181703760114;
             double ppmTolerance = 25;
 
-            var intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+            var intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, UIMFData.FrameType.MS1, DataReader.ToleranceType.PPM);
 
             var smoother = new SavitzkyGolaySmoother(11, 2);
             smoother.Smooth(ref intensityBlock);
@@ -86,7 +86,7 @@ namespace MultiDimensionalPeakFindingTests
             }
             Console.WriteLine("******************************************************");
 
-            var intensityPointList = uimfUtil.GetXic(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+            var intensityPointList = uimfUtil.GetXic(targetMz, ppmTolerance, UIMFData.FrameType.MS1, DataReader.ToleranceType.PPM);
 
             var newPointList = WaterShedMapUtil.BuildWatershedMap(intensityPointList);
             smoother.Smooth(ref newPointList);
@@ -109,7 +109,7 @@ namespace MultiDimensionalPeakFindingTests
 
             TextWriter unsmoothedWriter = new StreamWriter("unsmoothedRaw.csv");
 
-            var intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+            var intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, UIMFData.FrameType.MS1, DataReader.ToleranceType.PPM);
 
             var boundX = intensityBlock.GetUpperBound(0);
             var boundY = intensityBlock.GetUpperBound(1);
@@ -168,7 +168,7 @@ namespace MultiDimensionalPeakFindingTests
             var parentMz = 643.27094937;
             double ppmTolerance = 50;
 
-            var parentIntensityBlock = uimfUtil.GetXicAsArray(parentMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+            var parentIntensityBlock = uimfUtil.GetXicAsArray(parentMz, ppmTolerance, UIMFData.FrameType.MS1, DataReader.ToleranceType.PPM);
 
             var smoother = new SavitzkyGolaySmoother(5, 2);
             smoother.Smooth(ref parentIntensityBlock);
@@ -192,7 +192,7 @@ namespace MultiDimensionalPeakFindingTests
 
                     TextWriter unsmoothedWriter = new StreamWriter("unsmoothedRaw" + targetMz + ".csv");
 
-                    var intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, DataReader.FrameType.MS2, scanLcMin, scanLcMax, scanImsMin, scanImsMax, DataReader.ToleranceType.PPM);
+                    var intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, UIMFData.FrameType.MS2, scanLcMin, scanLcMax, scanImsMin, scanImsMax, DataReader.ToleranceType.PPM);
 
                     var boundX = intensityBlock.GetUpperBound(0);
                     var boundY = intensityBlock.GetUpperBound(1);
@@ -248,7 +248,7 @@ namespace MultiDimensionalPeakFindingTests
             var parentMz = 643.27094937;
             double ppmTolerance = 50;
 
-            var parentIntensityBlock = uimfUtil.GetXicAsArray(parentMz, ppmTolerance, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+            var parentIntensityBlock = uimfUtil.GetXicAsArray(parentMz, ppmTolerance, UIMFData.FrameType.MS1, DataReader.ToleranceType.PPM);
 
             var smoother = new SavitzkyGolaySmoother(5, 2);
             smoother.Smooth(ref parentIntensityBlock);
@@ -267,7 +267,7 @@ namespace MultiDimensionalPeakFindingTests
 
                     TextWriter unsmoothedWriter = new StreamWriter("unsmoothedRaw" + targetMz + ".csv");
 
-                    var intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, DataReader.FrameType.MS2, DataReader.ToleranceType.PPM);
+                    var intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, UIMFData.FrameType.MS2, DataReader.ToleranceType.PPM);
 
                     var boundX = intensityBlock.GetUpperBound(0);
                     var boundY = intensityBlock.GetUpperBound(1);
@@ -325,7 +325,7 @@ namespace MultiDimensionalPeakFindingTests
             var smoother = new SavitzkyGolaySmoother(5, 2);
 
             var bin = 73009;
-            var intensityPointList = uimfUtil.GetXic(bin, DataReader.FrameType.MS1);
+            var intensityPointList = uimfUtil.GetXic(bin, UIMFData.FrameType.MS1);
 
             var pointList = WaterShedMapUtil.BuildWatershedMap(intensityPointList);
 
@@ -361,7 +361,7 @@ namespace MultiDimensionalPeakFindingTests
             for (var i = 73009; i <= 84000; i++)
             {
                 var mz = uimfUtil.GetMzFromBin(i);
-                var intensityPointList = uimfUtil.GetXic(mz, 25, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+                var intensityPointList = uimfUtil.GetXic(mz, 25, UIMFData.FrameType.MS1, DataReader.ToleranceType.PPM);
                 //List<IntensityPoint> intensityPointList = uimfUtil.GetXic(i, DataReader.FrameType.MS1);
 
                 //SavitzkyGolaySmoother smoother = new SavitzkyGolaySmoother(9, 2);
@@ -426,7 +426,7 @@ namespace MultiDimensionalPeakFindingTests
             var targetMz = 964.40334;
             double tolerance = 20;
 
-            var intensityPointList = uimfUtil.GetXic(targetMz, tolerance, DataReader.FrameType.MS1,
+            var intensityPointList = uimfUtil.GetXic(targetMz, tolerance, UIMFData.FrameType.MS1,
                                                                       DataReader.ToleranceType.PPM);
             var pointList = WaterShedMapUtil.BuildWatershedMap(intensityPointList);
             smoother.Smooth(ref pointList);
@@ -459,7 +459,7 @@ namespace MultiDimensionalPeakFindingTests
             var targetMzList = new List<double> { 582.3218, 964.40334, 643.27094937 };
 
             var featureUtil = new FeatureDetectionUtil(fileLocation, 11, 4);
-            var targetDictionary = featureUtil.GetFeatures(targetMzList, 30, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+            var targetDictionary = featureUtil.GetFeatures(targetMzList, 30, UIMFData.FrameType.MS1, DataReader.ToleranceType.PPM);
 
             foreach (var kvp in targetDictionary)
             {
@@ -480,7 +480,7 @@ namespace MultiDimensionalPeakFindingTests
             }
 
             var featureUtil = new FeatureDetectionUtil(fileLocation, 11, 4);
-            var targetDictionary = featureUtil.GetFeatures(targetBinList, 30, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+            var targetDictionary = featureUtil.GetFeatures(targetBinList, 30, UIMFData.FrameType.MS1, DataReader.ToleranceType.PPM);
 
             //foreach (var kvp in targetDictionary)
             //{
@@ -498,7 +498,7 @@ namespace MultiDimensionalPeakFindingTests
             var minTargetBin = uimfUtil.GetBinFromMz(500.0);
             var maxTargetBin = uimfUtil.GetBinFromMz(600.0);
             var targetMzList = Enumerable.Range(minTargetBin, maxTargetBin - minTargetBin + 1).Select(uimfUtil.GetMzFromBin).ToList();
-            featureDetectionUtil.GetFeatureStatistics(targetMzList, 15, DataReader.FrameType.MS1, DataReader.ToleranceType.PPM);
+            featureDetectionUtil.GetFeatureStatistics(targetMzList, 15, UIMFData.FrameType.MS1, DataReader.ToleranceType.PPM);
         }
     }
 }
