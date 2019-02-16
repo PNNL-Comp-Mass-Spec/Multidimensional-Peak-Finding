@@ -25,6 +25,8 @@ namespace MultiDimensionalPeakFindingTests
             var intensityBlock = uimfUtil.GetXicAsArray(targetMz, ppmTolerance, UIMFData.FrameType.MS1, DataReader.ToleranceType.PPM);
 
             Console.WriteLine(intensityBlock.Length);
+
+            Assert.AreEqual(270000, intensityBlock.Length);
         }
 
         [Test]
@@ -42,6 +44,11 @@ namespace MultiDimensionalPeakFindingTests
             smoother.Smooth(ref intensityBlock);
 
             Console.WriteLine(intensityBlock.Length);
+
+            Assert.AreEqual(270000, intensityBlock.Length);
+            Assert.AreEqual(intensityBlock[112, 120], 2.32898, 0.0001);
+            Assert.AreEqual(intensityBlock[183, 122], 48.82041, 0.0001);
+
         }
 
         [Test]
@@ -58,9 +65,16 @@ namespace MultiDimensionalPeakFindingTests
             var smoother = new SavitzkyGolaySmoother(5, 2);
             smoother.Smooth(ref intensityBlock);
 
-            WaterShedMapUtil.BuildWatershedMap(intensityBlock, 0, 0);
+            var pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, 0, 0).ToList();
 
             Console.WriteLine(intensityBlock.Length);
+
+
+            Assert.AreEqual(270000, intensityBlock.Length);
+            Assert.AreEqual(12969, pointList.Count);
+
+            Assert.AreEqual(pointList[1000].Intensity, 14.844082, 0.0001);
+            Assert.AreEqual(pointList[5000].Intensity, 5.760, 0.0001);
         }
 
         [Test]
@@ -182,12 +196,15 @@ namespace MultiDimensionalPeakFindingTests
             var scanImsMin = statistics.ScanImsMin;
             var scanImsMax = statistics.ScanImsMax;
 
-            using (TextReader fragmentReader = new StreamReader(@"..\..\..\testFiles\OneFragment.csv"))
+            using (var fragmentReader = new StreamReader(@"\\proto-2\UnitTest_Files\MultidimensionalFeatureFinding\testFiles\OneFragment.csv"))
             {
-                var line = "";
-                while ((line = fragmentReader.ReadLine()) != null)
+                while (!fragmentReader.EndOfStream)
                 {
-                    var mzString = line.Trim();
+                    var dataLine = fragmentReader.ReadLine();
+                    if (string.IsNullOrWhiteSpace(dataLine))
+                        continue;
+
+                    var mzString = dataLine.Trim();
                     var targetMz = double.Parse(mzString);
 
                     TextWriter unsmoothedWriter = new StreamWriter("unsmoothedRaw" + targetMz + ".csv");
@@ -224,16 +241,28 @@ namespace MultiDimensionalPeakFindingTests
 
                     smoothedWriter.Close();
 
-                    var pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, scanLcMin, scanImsMin);
-                    var featureList = FeatureDetection.DoWatershedAlgorithm(pointList);
+                    var pointList = WaterShedMapUtil.BuildWatershedMap(intensityBlock, scanLcMin, scanImsMin).ToList();
+                    var featureList = FeatureDetection.DoWatershedAlgorithm(pointList).ToList();
+
+                    Assert.AreEqual(430, pointList.Count);
+                    Assert.AreEqual(37, featureList.Count);
 
                     Console.WriteLine("******************************************************");
                     Console.WriteLine("targetMz = " + targetMz);
 
-                    foreach (var featureBlob in featureList)
+                    for (var i = 0; i < featureList.Count; i++)
                     {
+                        var featureBlob = featureList[i];
                         var mostIntensePoint = featureBlob.PointList.OrderByDescending(x => x.Intensity).First();
                         Console.WriteLine("Num Points = " + featureBlob.PointList.Count + "\tLC = " + mostIntensePoint.ScanLc + "\tIMS = " + mostIntensePoint.ScanIms + "\tIntensity = " + mostIntensePoint.Intensity);
+                        if (i != 1)
+                            continue;
+
+                        // Num Points = 34	LC = 138	IMS = 122	Intensity = 79.5697959183673
+                        Assert.AreEqual(34, featureBlob.PointList.Count);
+                        Assert.AreEqual(138, mostIntensePoint.ScanLc);
+                        Assert.AreEqual(122, mostIntensePoint.ScanIms);
+                        Assert.AreEqual(79.569796, mostIntensePoint.Intensity, 0.0001);
                     }
                 }
             }
@@ -256,13 +285,15 @@ namespace MultiDimensionalPeakFindingTests
             var parentPointList = WaterShedMapUtil.BuildWatershedMap(parentIntensityBlock, 0, 0);
             var parentFeature = FeatureDetection.DoWatershedAlgorithm(parentPointList).First();
 
-            using (TextReader fragmentReader = new StreamReader(@"..\..\..\testFiles\fragments.csv"))
-            //using (TextReader fragmentReader = new StreamReader(@"..\..\..\testFiles\OneFragment.csv"))
+            using (var fragmentReader = new StreamReader(@"\\proto-2\UnitTest_Files\MultidimensionalFeatureFinding\testFiles\fragments.csv"))
             {
-                var line = "";
-                while ((line = fragmentReader.ReadLine()) != null)
+                while (!fragmentReader.EndOfStream)
                 {
-                    var mzString = line.Trim();
+                    var dataLine = fragmentReader.ReadLine();
+                    if (string.IsNullOrWhiteSpace(dataLine))
+                        continue;
+
+                    var mzString = dataLine.Trim();
                     var targetMz = double.Parse(mzString);
 
                     TextWriter unsmoothedWriter = new StreamWriter("unsmoothedRaw" + targetMz + ".csv");
