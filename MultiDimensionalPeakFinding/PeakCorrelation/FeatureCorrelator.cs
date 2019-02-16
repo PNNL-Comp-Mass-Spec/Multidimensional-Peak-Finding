@@ -208,15 +208,15 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
             return rSquared;
         }
 
-        private static void GetLinearRegression(IReadOnlyList<double> xvals, IReadOnlyList<double> yvals, out double slope, out double intercept, out double rSquaredVal)
+        private static void GetLinearRegression(IReadOnlyList<double> xVals, IReadOnlyList<double> yYals, out double slope, out double intercept, out double rSquaredVal)
         {
-            var inputData = new double[xvals.Count, 2];
+            var inputData = new double[xVals.Count, 2];
             double sumOfYValues = 0;
 
-            for (var i = 0; i < xvals.Count; i++)
+            for (var i = 0; i < xVals.Count; i++)
             {
-                var xValue = xvals[i];
-                var yValue = yvals[i];
+                var xValue = xVals[i];
+                var yValue = yYals[i];
 
                 inputData[i, 0] = xValue;
                 inputData[i, 1] = yValue;
@@ -225,7 +225,7 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
             }
 
             var numIndependentVariables = 1;
-            var numPoints = yvals.Count;
+            var numPoints = yYals.Count;
 
             alglib.lrbuild(inputData, numPoints, numIndependentVariables, out _, out var linearModel, out _);
 
@@ -251,10 +251,10 @@ namespace MultiDimensionalPeakFinding.PeakCorrelation
             double sumOfSquaredMeanResiduals = 0;
             double sumOfSquaredResiduals = 0;
 
-            for (var i = 0; i < xvals.Count; i++)
+            for (var i = 0; i < xVals.Count; i++)
             {
-                var xValue = xvals[i];
-                var yValue = yvals[i];
+                var xValue = xVals[i];
+                var yValue = yYals[i];
 
                 var calculatedYValue = alglib.lrprocess(linearModel, new[] { xValue });
 
