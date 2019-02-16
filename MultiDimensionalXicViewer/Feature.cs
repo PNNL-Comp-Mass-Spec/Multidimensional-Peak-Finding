@@ -6,21 +6,17 @@ namespace MultiDimensionalXicViewer
 {
     public class Feature
     {
-        public ushort ScanLcStart { get; private set; }// 100
-        public byte ScanLcLength { get; private set; }// 5 -> 100-104
-        public byte ScanLcRepOffset { get; private set; }// to highest point
-        public ushort ScanImsStart { get; private set; }
-        public byte ScanImsLength { get; private set; }
-        public byte ScanImsRepOffset { get; private set; }
-        public float IntensityMax { get; private set; }
-        public float SumIntensities { get; private set; }
-        public ushort NumPoints { get; private set; }
-        public float[] LcApexPeakProfile { get; private set; }//ScanLcLength
-        public float[] ImsApexPeakProfile { get; private set; }//ScanImsLength
-
-        public Feature()
-        {
-        }
+        public ushort ScanLcStart { get; }   // 100
+        public byte ScanLcLength { get; }    // 5 -> 100-104
+        public byte ScanLcRepOffset { get; } // to highest point
+        public ushort ScanImsStart { get; }
+        public byte ScanImsLength { get; }
+        public byte ScanImsRepOffset { get; }
+        public float IntensityMax { get; }
+        public float SumIntensities { get; }
+        public ushort NumPoints { get; }
+        public float[] LcApexPeakProfile { get; }  //ScanLcLength
+        public float[] ImsApexPeakProfile { get; } //ScanImsLength
 
         public Feature(FeatureBlobStatistics featureBlobStatistics)
         {

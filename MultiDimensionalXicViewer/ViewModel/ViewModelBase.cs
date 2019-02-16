@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 
 namespace MultiDimensionalXicViewer.ViewModel
 {
@@ -39,7 +36,7 @@ namespace MultiDimensionalXicViewer.ViewModel
         /// The default value is false, but subclasses used by unit tests might
         /// override this property's getter to return true.
         /// </summary>
-        protected virtual bool ThrowOnInvalidPropertyName { get; private set; }
+        protected virtual bool ThrowOnInvalidPropertyName { get; } = false;
 
         public event PropertyChangedEventHandler PropertyChanged;
 

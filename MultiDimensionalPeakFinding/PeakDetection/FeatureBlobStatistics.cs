@@ -7,18 +7,17 @@ namespace MultiDimensionalPeakFinding.PeakDetection
 {
     public class FeatureBlobStatistics
     {
-        public ushort ScanLcStart { get; private set; }
-        public byte ScanLcLength { get; private set; }
-        public byte ScanLcRepOffset { get; private set; }
-        public ushort ScanImsStart { get; private set; }
-        public byte ScanImsLength { get; private set; }
-        public byte ScanImsRepOffset { get; private set; }
-        public float IntensityMax { get; private set; }
-        public float SumIntensities { get; private set; }
-        public ushort NumPoints { get; private set; }
-        public bool IsSaturated { get; private set; }
+        public ushort ScanLcStart { get; }
+        public byte ScanLcLength { get; }
+        public byte ScanLcRepOffset { get; }
+        public ushort ScanImsStart { get; }
+        public byte ScanImsLength { get; }
+        public byte ScanImsRepOffset { get; }
+        public float IntensityMax { get; }
+        public float SumIntensities { get; }
+        public ushort NumPoints { get; }
+        public bool IsSaturated { get; }
 
-        // Size: ScanLcMax-ScanLcMin+1
         public float[] LcApexPeakProfile { get; set; }
 
         // Size: ScanImsMax-ScanImsMin+1

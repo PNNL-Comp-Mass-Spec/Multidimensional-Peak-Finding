@@ -17,10 +17,10 @@ namespace MultiDimensionalPeakFinding.PeakDetection
             get { return this.ScanImsIndex + this.ScanImsOffset; }
         }
 
-        public int ScanLcIndex { get; private set; }
-        public int ScanLcOffset { get; private set; }
-        public int ScanImsIndex { get; private set; }
-        public int ScanImsOffset { get; private set; }
+        public int ScanLcIndex { get; }
+        public int ScanLcOffset { get; }
+        public int ScanImsIndex { get; }
+        public int ScanImsOffset { get; }
 
         public double Intensity { get; set; }
 

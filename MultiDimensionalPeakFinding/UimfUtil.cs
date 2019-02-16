@@ -6,7 +6,7 @@ namespace MultiDimensionalPeakFinding
 {
     public class UimfUtil
     {
-        public DataReader UimfReader { get; private set; }
+        public DataReader UimfReader { get; }
 
         public UimfUtil(string fileLocation)
         {

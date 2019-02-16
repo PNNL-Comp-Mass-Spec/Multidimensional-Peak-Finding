@@ -14,9 +14,6 @@ using Ookii.Dialogs.Wpf;
 using OxyPlot;
 using OxyPlot.Axes;
 using UIMFLibrary;
-
-using Feature = MultiDimensionalXicViewer.Feature;
-
 using LineSeries = OxyPlot.Series.LineSeries;
 using LinearAxis = OxyPlot.Axes.LinearAxis;
 using Rectangle = System.Drawing.Rectangle;
@@ -25,7 +22,7 @@ namespace MultiDimensionalXicViewer.ViewModel
 {
     public sealed class XicBrowserViewModel : ViewModelBase
     {
-        private double BIN_CENTRIC_PROGRESS_START = 0.0001;
+        private readonly double BIN_CENTRIC_PROGRESS_START = 0.0001;
 
         public string CurrentPeptide { get; set; }
         public int CurrentChargeState { get; set; }

@@ -11,8 +11,8 @@ namespace MultiDimensionalPeakFinding.PeakDetection
     {
         private FeatureBlobStatistics m_statistics;
 
-        public int Id { get; private set; }
-        public List<Point> PointList { get; private set; }
+        public int Id { get; }
+        public List<Point> PointList { get; }
 
         public FeatureBlobStatistics Statistics
         {

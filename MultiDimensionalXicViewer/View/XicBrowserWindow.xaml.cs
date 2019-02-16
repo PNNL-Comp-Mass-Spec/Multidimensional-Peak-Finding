@@ -16,9 +16,9 @@ namespace MultiDimensionalXicViewer.View
     {
         public XicBrowserViewModel XicBrowserViewModel { get; set; }
 
-        private List<CheckBox> m_bIonCheckBoxes;
-        private List<CheckBox> m_yIonCheckBoxes;
-        private List<CheckBox> m_aIonCheckBoxes;
+        private readonly List<CheckBox> m_bIonCheckBoxes;
+        private readonly List<CheckBox> m_yIonCheckBoxes;
+        private readonly List<CheckBox> m_aIonCheckBoxes;
 
         public XicBrowserWindow()
         {
